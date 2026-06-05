@@ -1,4 +1,7 @@
-<h1 style="text-align: center;">VNExos Bản Nguyên<br /><span style="font-size: 50%; opacity: 60%">VNExos Apeiron</span></h1>
+<div align="center">
+  <h1>VNExos Bản Nguyên</h1>
+  <p><em>VNExos Apeiron</em></p>
+</div>
 
 ### 📖 Mục lục
 | STT   | Mục                                                          |
@@ -7,7 +10,7 @@
 | 2     | [Công nghệ sử dụng](#-công-nghệ-sử-dụng-trong-dự-án)         |
 | 3     | [Cây thư mục](#-cây-thư-mục)                                 |
 | 4     | [Quy ước ghi chú cam kết](#-quy-ước-ghi-chú-cam-kết)         |
-| 4     | [Tên trong các ngôn ngữ khác](#-tên-trong-các-ngôn-ngữ-khác) |
+| 5     | [Tên trong các ngôn ngữ khác](#-tên-trong-các-ngôn-ngữ-khác) |
 
 ---
 ### 📃 Giới thiệu
@@ -59,7 +62,7 @@ apeiron/                 ← Thư mục gốc (Mã nguồn mở)
 - `🌐 kt`: **Khởi tạo** dự án (chỉ có duy nhất một lần)
 
 ### 🌐 Tên trong các ngôn ngữ khác
-<span style="opacity: 60%">Chán quá làm cho vui</span>
+<p><em>Chán quá làm cho vui</em></p>
 | Ngôn ngữ    | Tên                | Phiên âm                          |
 |:------------|:-------------------|:----------------------------------|
 | Tiếng Việt  | VNExos Bản Nguyên  | (Vi-en-éc-sợt) Bản Nguyên         |
