@@ -63,6 +63,7 @@ apeiron/                 ← Thư mục gốc (Mã nguồn mở)
 
 ### 🌐 Tên trong các ngôn ngữ khác
 <p><em>Chán quá làm cho vui</em></p>
+
 | Ngôn ngữ    | Tên                | Phiên âm                          |
 |:------------|:-------------------|:----------------------------------|
 | Tiếng Việt  | VNExos Bản Nguyên  | (Vi-en-éc-sợt) Bản Nguyên         |
