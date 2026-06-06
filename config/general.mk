@@ -50,10 +50,10 @@ else ifeq ($(ARCH),riscv64)
     EDK2_TYPE       := $(ARCH)
     # RISC-V cần cấm sử dụng các thanh ghi số thực (Floating-Point) ở tầng Kernel
     # để tránh làm hỏng trạng thái FPU khi xảy ra Ngắt (Interrupt Context).
-    ARCH_CXX_FLAGS  := -mno-implicit-float -mabi=lp64x
+    ARCH_CXX_FLAGS  := -mno-implicit-float -mabi=lp64
     # -mno-implicit-float        : Cấm tự động dùng các thanh ghi số thực để đề phòng biến dạng dữ liệu lúc xảy ra ngắt.
     # -mabi=lp64x                : Ép sử dụng quy ước gọi hàm dùng các thanh ghi số nguyên 64-bit cho kiến trúc RISC-V.
-    ARCH_ASM_FLAGS  := -march=rv64imac -mabi=lp64x
+    ARCH_ASM_FLAGS  := -march=rv64imac -mabi=lp64
 endif
 
 BOOT_LDFLAGS      = --target=$(BOOT_TARGET) -nostdlib -fuse-ld=lld-link \
@@ -73,7 +73,7 @@ BOOT_LDFLAGS      = --target=$(BOOT_TARGET) -nostdlib -fuse-ld=lld-link \
 CXX              := clang++
 ASM              := clang++
 QEMU             := qemu-system-$(ARCH)
-EDK2_DIR         := $(ROOT_DIR)/firmwafe/$(EDK2_TYPE)
+EDK2_DIR         := $(ROOT_DIR)/firmware/$(EDK2_TYPE)
 BOOT_LD          := clang++
 # Dùng ld.lld để hỗ trợ biên dịch chéo đa kiến trúc tốt hơn
 KERN_LD          := ld.lld
