@@ -1,5 +1,10 @@
 # =========================================================
 # CẦU HÌNH MÀU CHO THÔNG TIN IN RA MÀN HÌNH
+#
+# Copyright (c) 2026 VNExos Inc.
+#
+# Được cấp phép theo Giấy phép MIT.
+# Xem tệp LICENSE tại thư mục gốc để biết thêm chi tiết.
 # =========================================================
 
 # Khởi tạo mã ĐIỀU KHIỂN (điều khiển định dạng và màu)

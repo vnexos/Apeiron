@@ -60,7 +60,7 @@ apeiron/                 ← Thư mục gốc (Mã nguồn mở)
 - `📃 tl`: **Tài liệu** được cập nhật trong cam kết này
 - `⚙️ ch`: **Cấu hình** cho việc xây dựng được thay đổi
 - `🌐 kt`: **Khởi tạo** dự án (chỉ có duy nhất một lần)
-
+⚙️ ch: Viết toàn bộ cấu hình cho lõi
 ### 🌐 Tên trong các ngôn ngữ khác
 <p><em>Chán quá làm cho vui</em></p>
 

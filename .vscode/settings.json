@@ -1,0 +1,11 @@
+{
+    "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd",
+    "dotnet.formatting.organizeImportsOnFormat": false,
+    "editor.formatOnSave": true,
+    "editor.tabCompletion": "off",
+    "editor.detectIndentation": true,
+    "editor.wordWrap": "off",
+    "clangd.arguments": [
+        "--header-insertion=never"
+    ]
+}
