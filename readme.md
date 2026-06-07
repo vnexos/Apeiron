@@ -50,11 +50,11 @@ apeiron/                 ← Thư mục gốc (Mã nguồn mở)
 ├── makefile             ← Quản lý toàn bộ xây dựng, chạy thử dự án
 ├── build.sh             ← Kịch bản xây dựng
 ├── run.sh               ← Kịch bản chạy
-├── readme.md            ← là file này!
+├── readme.md            ← là tệp này!
 └── LICENSE              ← Giấy phép bản quyền cho dự án
 ```
 ### 📜 Quy ước ghi chú cam kết
-- `✨ tm`: **Thêm mới** một tính năng
+- `✨ tm`: **Thêm mới** một tính năng hoặc một dòng code (không mang tính sửa chữa)
 - `🛠️ sl`: **Sửa lỗi** một tính năng nào đó
 - `🚀 tc`: **Tái cấu** hoặc dọn dẹp một phần hoặc toàn bộ
 - `📃 tl`: **Tài liệu** được cập nhật trong cam kết này
