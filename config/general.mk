@@ -18,7 +18,13 @@ KERNEL_DIR       := $(SYSROOT_DIR)
 KERNEL_FILE      := $(KERNEL_DIR)/apeiron.kern
 EFI_BIN_DIR      := $(SYSROOT_DIR)/EFI/BOOT
 
-BOOT_TARGET      := $(ARCH)-unknown-windows
+# Với riscv64, LLVM chưa hỗ trợ sinh mã COFF/PE trực tiếp, nên dùng ELF none-elf
+# rồi chuyển đổi sang PE bằng riscv64-linux-gnu-objcopy sau khi link
+ifeq ($(ARCH),riscv64)
+    BOOT_TARGET  := $(ARCH)-unknown-none-elf
+else
+    BOOT_TARGET  := $(ARCH)-unknown-windows
+endif
 KERN_TARGET      := $(ARCH)-unknown-none-elf
 DISK_IMG         := $(ROOT_DIR)/disk.img
 
@@ -50,33 +56,53 @@ else ifeq ($(ARCH),riscv64)
     EDK2_TYPE       := $(ARCH)
     # RISC-V cần cấm sử dụng các thanh ghi số thực (Floating-Point) ở tầng Kernel
     # để tránh làm hỏng trạng thái FPU khi xảy ra Ngắt (Interrupt Context).
-    ARCH_CXX_FLAGS  := -mno-implicit-float -mabi=lp64
+    ARCH_CXX_FLAGS  := -mno-implicit-float -mabi=lp64 -mcmodel=medany
     # -mno-implicit-float        : Cấm tự động dùng các thanh ghi số thực để đề phòng biến dạng dữ liệu lúc xảy ra ngắt.
     # -mabi=lp64x                : Ép sử dụng quy ước gọi hàm dùng các thanh ghi số nguyên 64-bit cho kiến trúc RISC-V.
-    ARCH_ASM_FLAGS  := -march=rv64imac -mabi=lp64
+    # -mcmodel=medany            : Dùng địa chỉ tương đối theo PC (auipc), cho phép code chạy độc lập vị trí (PIE/UEFI).
+    ARCH_ASM_FLAGS  := -march=rv64imac -mabi=lp64 -mcmodel=medany
 endif
 
-BOOT_LDFLAGS      = --target=$(BOOT_TARGET) -nostdlib -fuse-ld=lld-link \
+# Cờ liên kết bootloader khác nhau theo kiến trúc:
+# - x86_64/aarch64: dùng lld-link (COFF/PE trực tiếp)
+# - riscv64: dùng ld.lld + linker script -> ELF -> tools/elf2efi_riscv64.py -> PE/EFI
+ifeq ($(ARCH),riscv64)
+    BOOT_LDFLAGS  = -nostdlib -m elf64lriscv
+    # -nostdlib                      : Không dùng các thư viện tiêu chuẩn mặc định.
+    # -m elf64lriscv                 : Chỉ định emulation target cho RISC-V 64-bit little-endian.
+    # -T <linker script>             : Dùng linker script để đặt code từ VAddr=0x1000
+    #                                  (tránh overlap với PE header tại địa chỉ 0).
+else
+    BOOT_LDFLAGS  = --target=$(BOOT_TARGET) -nostdlib -fuse-ld=lld-link \
                     -Wl,-entry:vnexos_main -Wl,-subsystem:efi_application \
                     -Wl,-nodefaultlib -Wl,-dll -Wl,-dynamicbase -Wl,-noimplib
-# --target=<...>                 : Chỉ định kiến trúc và hệ điều hành đích để sinh mã máy phù hợp.
-# -nostdlib                      : Không dùng các thư viện tiêu chuẩn mặc định.
-# -fuse-ld=lld-link              : Ép sử dụng trình liên kết để tạo ra định dạng tệp Windows PE.
-# -Wl,-entry:vnexos_main         : Thiết lập hàm vnexos_main làm điểm khởi đầu của chương trình.
-# -Wl,-subsystem:efi_application : Định nghĩa phần mềm này là một ứng dụng chạy trên môi trường UEFI.
-# -Wl,-nodefaultlib              : Bỏ qua tất cả các thư viện liên kết mặc định của hệ điều hành.
-# -Wl,-dll                       : Xuất ra định dạng thư viện liên kết động, bắt buộc đối với tệp EFI.
-# -Wl,-dynamicbase               : Cho phép thay đổi ngẫu nhiên địa chỉ nạp trong bộ nhớ để bảo mật.
-# -Wl,-noimplib                  : Không tạo ra tệp thư viện nhập khẩu phụ khi phát sinh định dạng thư viện liên kết động.
+    # --target=<...>                 : Chỉ định kiến trúc và hệ điều hành đích để sinh mã máy phù hợp.
+    # -nostdlib                      : Không dùng các thư viện tiêu chuẩn mặc định.
+    # -fuse-ld=lld-link              : Ép sử dụng trình liên kết để tạo ra định dạng tệp Windows PE.
+    # -Wl,-entry:vnexos_main         : Thiết lập hàm vnexos_main làm điểm khởi đầu của chương trình.
+    # -Wl,-subsystem:efi_application : Định nghĩa phần mềm này là một ứng dụng chạy trên môi trường UEFI.
+    # -Wl,-nodefaultlib              : Bỏ qua tất cả các thư viện liên kết mặc định của hệ điều hành.
+    # -Wl,-dll                       : Xuất ra định dạng thư viện liên kết động, bắt buộc đối với tệp EFI.
+    # -Wl,-dynamicbase               : Cho phép thay đổi ngẫu nhiên địa chỉ nạp trong bộ nhớ để bảo mật.
+    # -Wl,-noimplib                  : Không tạo ra tệp thư viện nhập khẩu phụ khi phát sinh định dạng thư viện liên kết động.
+endif
 
 # clang++ làm cả compile lẫn link driver
 CXX              := clang++
 ASM              := clang++
 QEMU             := qemu-system-$(ARCH)
 EDK2_DIR         := $(ROOT_DIR)/firmware/$(EDK2_TYPE)
-BOOT_LD          := clang++
 # Dùng ld.lld để hỗ trợ biên dịch chéo đa kiến trúc tốt hơn
 KERN_LD          := ld.lld
+# Với riscv64 dùng ld.lld trực tiếp; các kiến trúc khác dùng clang+nên+ làm driver
+ifeq ($(ARCH),riscv64)
+    BOOT_LD      := ld.lld
+    # Công cụ chuyển đổi ELF sang PE/UEFI cho RISC-V
+    # GNU objcopy tạo PE bị hỏng header nên dùng script Python tự viết
+    RISCV_ELF2EFI := python3 $(ROOT_DIR)/tools/elf2efi_riscv64.py
+else
+    BOOT_LD      := clang++
+endif
 
 ifeq ($(ARCH),x86_64)
     QEMU_ARCH_FLAGS   := \
@@ -136,6 +162,11 @@ BOOT_FLAGS     := $(CXX_BASE_FLAGS) --target=$(BOOT_TARGET) -fshort-wchar
 KERNEL_FLAGS   := $(CXX_BASE_FLAGS) --target=$(KERN_TARGET)
 # BOOT_FLAGS   : Thêm '-fshort-wchar' ép kiểu kí tự rộng về 16-bit, tương thích chuỗi UCS-2 của UEFI.
 # KERNEL_FLAGS : Nhân tự quản lý chuỗi riêng (ASCII/UTF-8) nên giữ nguyên tập cờ cơ bản.
+# Với riscv64: tắt cảnh báo ms_abi vì RISC-V UEFI không dùng calling convention của Windows.
+# Đây là cảnh báo chính xác và vô hại — hàm sẽ dùng calling convention mặc định của RISC-V.
+ifeq ($(ARCH),riscv64)
+    BOOT_FLAGS += -Wno-ignored-attributes
+endif
 BOOT_ASMFLAGS  := $(ARCH_ASM_FLAGS) --target=$(BOOT_TARGET)
 KERNEL_ASMFLAGS:= $(ARCH_ASM_FLAGS) --target=$(KERN_TARGET)
 
