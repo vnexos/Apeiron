@@ -1,14 +1,14 @@
 # ============================================================================
-# CLANG-FORMAT CONFIGURATION FOR VNExos Lamencia (C++23 Bare-Metal)
+# CẤU HÌNH CLANG-FORMAT CHO VNExos Bản Nguyên
 # ============================================================================
 BasedOnStyle: LLVM
 Language: Cpp
 
-# Target the latest C++ standard driven by your Arch Linux toolchain
+# Chuẩn C++ mới nhất
 Standard: Latest
 
 # ----------------------------------------------------------------------------
-# Indentation and Layout (Compact & Structured)
+# Khoảng đệm và khoảng cách
 # ----------------------------------------------------------------------------
 IndentWidth: 2
 TabWidth: 2
@@ -16,16 +16,16 @@ UseTab: Never
 ColumnLimit: 0
 ContinuationIndentWidth: 4
 
-# Keep namespaces tight to avoid wasting horizontal screenspace in nested modules
+# Xóa khoảng đệm cho các namespace
 NamespaceIndentation: None
 
 # ----------------------------------------------------------------------------
-# Pointer and Reference Alignment (Critical for OSDev)
+# Con trỏ
 # ----------------------------------------------------------------------------
 PointerAlignment: Left
 
 # ----------------------------------------------------------------------------
-# Bracket and Brace Breaking Configurations
+# Dấu ngoặc
 # ----------------------------------------------------------------------------
 BreakBeforeBraces: Custom
 BraceWrapping:
@@ -47,7 +47,7 @@ BraceWrapping:
   SplitEmptyNamespace: true
 
 # ----------------------------------------------------------------------------
-# Alignment & Aesthetics (Maximizes Scannability)
+# Căn hàng
 # ----------------------------------------------------------------------------
 # Căn thẳng hàng các dấu bằng (=) khi gán giá trị
 AlignConsecutiveAssignments:
@@ -69,13 +69,13 @@ AlignConsecutiveDeclarations:
   AcrossEmptyLines: false
   AcrossComments: false
 
-# Căn thẳng hàng các comment (//) ở cuối dòng
+# Căn thẳng hàng các ghi chú (//) ở cuối dòng
 AlignTrailingComments:
   Kind: Always
   OverEmptyLines: 1
 
 # ----------------------------------------------------------------------------
-# Modern C++ Features & Inline Assembly Formatting
+# Các chứng năng C++ hiện đại
 # ----------------------------------------------------------------------------
 AllowShortBlocksOnASingleLine: false
 AllowShortFunctionsOnASingleLine: Inline
@@ -85,7 +85,7 @@ AllowShortIfStatementsOnASingleLine: WithoutElse
 AllowShortLambdasOnASingleLine: All
 
 # ----------------------------------------------------------------------------
-# Spaces and Padding
+# Dấu cách và khoảng cách
 # ----------------------------------------------------------------------------
 SpaceBeforeParens: ControlStatements
 SpaceInEmptyBlock: false
@@ -98,7 +98,7 @@ SpacesInSquareBrackets: false
 SpacesInAngles: Never
 
 # ----------------------------------------------------------------------------
-# Sort Includes (Sắp xếp include theo bảng chữ cái cho sạch sẽ)
+# Sắp xếp include theo bảng chữ cái cho sạch sẽ
 # ----------------------------------------------------------------------------
 SortIncludes: CaseSensitive
 
