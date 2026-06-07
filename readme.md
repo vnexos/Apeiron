@@ -33,8 +33,6 @@ apeiron/                 ← Thư mục gốc (Mã nguồn mở)
 ├── modules/             ← Chứa các thành phần ngoại vi
 ├── internal/            ← Chương trình cốt lõi (Mã nguồn đóng)
 │   ├── shared           ← Thư viện chung cho Bộ nạp khởi động và Nhân lõi
-│   │   ├── include/     ← Các tệp thư viện dùng chung
-│   │   └── src/         ← Các mã lệnh dùng chung
 │   ├── bootloader/      ← Bộ nạp khởi động VNExos
 │   │   ├── uefi/        ← Chứa toàn bộ lệnh gọi hàm UEFI
 │   │   └── dtb/         ← Chứa toàn bộ lệnh gọi hàm Device Tree
@@ -46,12 +44,14 @@ apeiron/                 ← Thư mục gốc (Mã nguồn mở)
 │       │   └── riscv64/ ← M/S/U, thanh ghi CSRs, phân trang Sv39, Sv48
 │       ├── include/     ← Các tệp thư viện nội bộ của Nhân lõi
 │       └── src/         ← Các tệp mã cốt lõi (Bộ lên lịch, IPC,...)
-├── Makefile             ← Quản lý toàn bộ xây dựng, 
+├── tools/               ← Chứa các kịch bản, công cụ hỗ trợ biên dịch
+├── .clang-format        ← Chứa các cấu hình định dạng mã C++
+├── compile_flags.txt    ← Chứa các cờ cho tiện ích clangd
+├── makefile             ← Quản lý toàn bộ xây dựng, chạy thử dự án
 ├── build.sh             ← Kịch bản xây dựng
 ├── run.sh               ← Kịch bản chạy
 ├── readme.md            ← là file này!
-├── OVMF_CODE.4m.fd      ← Cơ sở UEFI cho QEMU (Phần mã)
-└── OVMF_VARS.4m.fd      ← Cơ sở UEFI cho QEMU (Phần biến môi trường)
+└── LICENSE              ← Giấy phép bản quyền cho dự án
 ```
 ### 📜 Quy ước ghi chú cam kết
 - `✨ tm`: **Thêm mới** một tính năng
@@ -69,10 +69,10 @@ apeiron/                 ← Thư mục gốc (Mã nguồn mở)
 | Tiếng Việt  | VNExos Bản Nguyên  | (Vi-en-éc-sợt) Bản Nguyên         |
 | 㗂越（字喃）  | VNExos 本原         | Bản Nguyên                       |
 | 中文         | VNExos 本源        | Bẩn-doén                          |
-| 日本語       | VNExos 本源         | Hon-gen                           |
+| 日本語       | VNExos 本源         | Hon-ghen                          |
 | 한국어       | VNExos 본원         | Bon-uôn                           |
 | English     | VNExos Apeiron     | A-pia-rần                         |
-| Français    | VNExos L'Apeiron   | La-pie-gòn                        |
+| Français    | VNExos L'Apeiron   | La-pia-gòn                        |
 | Deutsch     | VNExos Das Apeiron | Đát Ây-pai-on                     |
 | Español     | VNExos El Ápeiron  | Ê-lá-pây-ròn                      |
 | Português   | VNExos O Ápeiron   | U Á-pê-ròn                        |
