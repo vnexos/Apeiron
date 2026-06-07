@@ -57,7 +57,7 @@ VNEXOS_BOOT_UUID := 2ef6ee17-2a14-4db9-8129-42a6dc48f8af
 VNEXOS_TYPE_UUID := c48d1722-723b-43d6-bead-f2b2623343dd
 VNEXOS_PART_UUID := 9c7ba30b-e2ee-4bbe-9fe4-ab5f23fe2b9b
 
-.PHONY: all clean run $(SUBDIRS)
+.PHONY: all clean clean-all run $(SUBDIRS)
 all: $(DISK_IMG)
 	@echo -e "$(MSG_VNEXOS) Đã xây dựng xong chương trình!"
 
@@ -105,3 +105,6 @@ clean:
 	@rm -rf $(BUILD_DIR) $(SYSROOT_DIR)
 	@echo -e "$(MSG_CLEAN) Dự án đã được làm sạch sâu!"
 
+clean-all:
+	@rm -rf $(ROOT_DIR)/build $(SYSROOT_DIR)
+	@rm -f $(DISK_IMG)
