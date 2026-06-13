@@ -9,6 +9,7 @@
 
 EDK2_TYPE      := riscv64
 EDK2_DIR       := $(ROOT_DIR)/firmware/$(EDK2_TYPE)
+ALLOW_SHIM     := 0
 
 # ==[ Cờ riêng của bộ xử lý ]===========================================
 # RISC-V cần cấm sử dụng các thanh ghi số thực ở tầng Nhân để tránh làm hỏng
