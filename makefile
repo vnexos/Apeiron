@@ -17,7 +17,6 @@ include config/general.mk
 BOX_OPEN  := $(COLOR_WHITE)[
 BOX_CLOSE := $(COLOR_WHITE)]$(MODE_RESET)
 
-
 # ==[ ĐỊNH NGHĨA TEXT BÊN TRONG CÁC MẪU THÔNG TIN ]=====================
 # VNExos: VN (Màu Đỏ tươi) + Exos (Màu Lime) -> [ VNExos ]
 # Sử dụng thêm MODE_BOLD để tên Hệ điều hành nổi bật hẳn lên
@@ -51,7 +50,7 @@ MSG_CXX    := $(BOX_OPEN) $(TXT_CXX)    $(BOX_CLOSE)
 MSG_ASM    := $(BOX_OPEN) $(TXT_ASM)    $(BOX_CLOSE)
 
 # ==[ CHUẨN BỊ CÁC BIẾN CẦN THIẾT ]=====================================
-SUBDIRS    := internal
+SUBDIRS    := grub internal
 
 # Chuỗi UUID độc quyền cho VNExos
 VNEXOS_BOOT_UUID := 2ef6ee17-2a14-4db9-8129-42a6dc48f8af
@@ -59,14 +58,28 @@ VNEXOS_TYPE_UUID := c48d1722-723b-43d6-bead-f2b2623343dd
 VNEXOS_PART_UUID := 9c7ba30b-e2ee-4bbe-9fe4-ab5f23fe2b9b
 
 # ==[ KỊCH BẢN XÂY DỰNG HỆ THỐNG ]======================================
-.PHONY: all clean clean-all run $(SUBDIRS)
+.PHONY: all clean clean-all run $(SUBDIRS) shim
 all: $(DISK_IMG)
 	@echo -e "$(MSG_VNEXOS) Đã xây dựng xong chương trình!"
 
 $(SUBDIRS):
 	@$(MAKE) -C $@
 
-$(DISK_IMG): $(SUBDIRS)
+# Cấu hình môi trường cho Shim
+EFI_BIN_LOWER := $(shell echo $(EFI_BIN_NAME) | tr 'A-Z' 'a-z')
+GRUB_NAME     := $(EFI_BIN_DIR)/$(patsubst boot%,grub%,$(EFI_BIN_LOWER))
+MM_NAME       := $(EFI_BIN_DIR)/$(patsubst boot%,mm%,$(EFI_BIN_LOWER))
+shim:
+ifeq ($(ALLOW_SHIM),1)
+	@$(TOOLS_ADDSBAT) $(EFI_BIN)
+	@sbsign --key $(PRIV_FILE) --cert $(PUB_FILE) --output $(EFI_BIN) $(EFI_BIN)
+	@cp $(DER_FILE) $(EFI_BIN_DIR)/
+	@mv $(EFI_BIN) $(GRUB_NAME)
+	@cp $(SHIM_DIR)/* $(EFI_BIN_DIR)/
+	@echo -e "$(MSG_VNEXOS) Đã copy xong file shim!"
+endif
+
+$(DISK_IMG): $(SUBDIRS) shim
 # Tạo tệp ảnh đĩa trống kích thước 1 GiB (1024 MiB)
 	@dd if=/dev/zero of=$(DISK_IMG) bs=1M count=1024 status=none
 
@@ -86,11 +99,9 @@ $(DISK_IMG): $(SUBDIRS)
 	@mkfs.vfat -F 32 --offset=2048 -s 1 -n "VNEXOS_BOOT" $(DISK_IMG) 61440 > /dev/null
 
 # Tạo cấu trúc thư mục và sao chép Bộ nạp khởi động vào phân vùng 1 thông qua mtools
-	@mmd -i $(DISK_IMG)@@1M ::/EFI ::/EFI/BOOT
-	@mcopy -i $(DISK_IMG)@@1M $(EFI_BIN) ::/EFI/BOOT/$(EFI_BIN_NAME)
-
-# Sao chép Nhân lõi vào phân vùng 1 thông qua mtools
-	@mcopy -i $(DISK_IMG)@@1M $(KERNEL_FILE) ::/$(notdir $(KERNEL_FILE))
+	@mcopy -s -i $(DISK_IMG)@@1M $(SYSROOT_DIR)/* ::/
+# 	@mcopy -i $(DISK_IMG)@@1M $(CERT_DIR)/Microsoft_KEK.cer ::/Microsoft_KEK.cer
+# 	@mcopy -i $(DISK_IMG)@@1M $(CERT_DIR)/Microsoft_Production_PCA.cer ::/Microsoft_Production_PCA.cer
 
 	@echo -e "$(MSG_IMG) Đã tạo disk image $(DISK_IMG)"
 
@@ -101,9 +112,10 @@ firmware/.ready:
 	@cp -r /usr/share/edk2/* $(dir $(EDK2_DIR)) || true
 	@touch $@
 
+
 run: all firmware/.ready
 	@echo -e "$(MSG_QEMU) Đang khởi chạy hệ thống..."
-	@$(QEMU) $(QEMU_FLAGS) \
+	$(QEMU) $(QEMU_FLAGS) \
 		-drive file=$(DISK_IMG),format=raw,media=disk
 
 clean:

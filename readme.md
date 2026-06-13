@@ -31,6 +31,8 @@
 apeiron/                 ← Thư mục gốc (Mã nguồn mở)
 ├── config/              ← Chứa cấu hình xây dựng toàn hệ thống
 ├── modules/             ← Chứa các thành phần ngoại vi
+├── cert/                ← Bộ nạp mồi để có thể tùy biến cho shim
+├── grub/                ← Bộ nạp mồi để có thể tùy biến cho shim
 ├── internal/            ← Chương trình cốt lõi (Mã nguồn đóng)
 │   ├── shared           ← Thư viện chung cho Bộ nạp khởi động và Nhân lõi
 │   ├── bootloader/      ← Bộ nạp khởi động VNExos

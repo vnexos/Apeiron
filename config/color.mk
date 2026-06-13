@@ -1,5 +1,5 @@
 # =========================================================
-# CẦU HÌNH MÀU CHO THÔNG TIN IN RA MÀN HÌNH
+# CẤU HÌNH MÀU CHO THÔNG TIN IN RA MÀN HÌNH
 #
 # Copyright (c) 2026 VNExos Inc.
 #

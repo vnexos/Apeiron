@@ -9,6 +9,7 @@
 
 EDK2_TYPE      := x64
 EDK2_DIR       := $(ROOT_DIR)/firmware/$(EDK2_TYPE)
+ALLOW_SHIM     := 1
 
 # ==[ Cờ riêng của bộ xử lý ]===========================================
 ARCH_CXX_FLAGS := -mno-red-zone
@@ -54,5 +55,5 @@ QEMU_ARCH_FLAGS := \
     -cpu host \
     -enable-kvm \
     -vga virtio \
-    -drive if=pflash,format=raw,readonly=on,file=$(EDK2_DIR)/OVMF_CODE.4m.fd \
+    -drive if=pflash,format=raw,readonly=on,file=$(EDK2_DIR)/OVMF_CODE.secboot.4m.fd \
     -drive if=pflash,format=raw,file=$(EDK2_DIR)/OVMF_VARS.4m.fd
