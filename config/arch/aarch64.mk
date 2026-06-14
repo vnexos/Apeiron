@@ -53,4 +53,5 @@ QEMU_ARCH_FLAGS := \
     -cpu cortex-a57 \
     -device virtio-gpu-pci \
     -drive if=pflash,format=raw,readonly=on,file=$(EDK2_DIR)/QEMU_EFI.fd \
-    -drive if=pflash,format=raw,file=$(EDK2_DIR)/QEMU_VARS.fd
+    -drive if=pflash,format=raw,file=$(EDK2_DIR)/QEMU_VARS.fd \
+    -device tpm-tis-device,tpmdev=tpm0

@@ -31,10 +31,9 @@
 apeiron/                 ← Thư mục gốc (Mã nguồn mở)
 ├── config/              ← Chứa cấu hình xây dựng toàn hệ thống
 ├── modules/             ← Chứa các thành phần ngoại vi
-├── cert/                ← Bộ nạp mồi để có thể tùy biến cho shim
+├── cert/                ← Chứa các giấy phép chữ ký số để xác minh file
 ├── grub/                ← Bộ nạp mồi để có thể tùy biến cho shim
 ├── internal/            ← Chương trình cốt lõi (Mã nguồn đóng)
-│   ├── shared           ← Thư viện chung cho Bộ nạp khởi động và Nhân lõi
 │   ├── bootloader/      ← Bộ nạp khởi động VNExos
 │   │   ├── uefi/        ← Chứa toàn bộ lệnh gọi hàm UEFI
 │   │   └── dtb/         ← Chứa toàn bộ lệnh gọi hàm Device Tree
@@ -46,6 +45,7 @@ apeiron/                 ← Thư mục gốc (Mã nguồn mở)
 │       │   └── riscv64/ ← M/S/U, thanh ghi CSRs, phân trang Sv39, Sv48
 │       ├── include/     ← Các tệp thư viện nội bộ của Nhân lõi
 │       └── src/         ← Các tệp mã cốt lõi (Bộ lên lịch, IPC,...)
+├── shared               ← Thư viện chung cho toàn bộ hệ thống
 ├── tools/               ← Chứa các kịch bản, công cụ hỗ trợ biên dịch
 ├── .clang-format        ← Chứa các cấu hình định dạng mã C++
 ├── compile_flags.txt    ← Chứa các cờ cho tiện ích clangd
@@ -57,7 +57,7 @@ apeiron/                 ← Thư mục gốc (Mã nguồn mở)
 ```
 ### 📜 Quy ước ghi chú cam kết
 - `✨ tm`: **Thêm mới** một tính năng hoặc một dòng code (không mang tính sửa chữa)
-- `🛠️ sl`: **Sửa lỗi** một tính năng nào đó
+- `🛠️ sl`: **Sửa lại** một tính năng nào đó
 - `🚀 tc`: **Tái cấu** hoặc dọn dẹp một phần hoặc toàn bộ
 - `📃 tl`: **Tài liệu** được cập nhật trong cam kết này
 - `⚙️ ch`: **Cấu hình** cho việc xây dựng được thay đổi

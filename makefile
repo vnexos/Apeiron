@@ -112,10 +112,13 @@ firmware/.ready:
 	@cp -r /usr/share/edk2/* $(dir $(EDK2_DIR)) || true
 	@touch $@
 
-
 run: all firmware/.ready
 	@echo -e "$(MSG_QEMU) Đang khởi chạy hệ thống..."
-	$(QEMU) $(QEMU_FLAGS) \
+	@if [ ! -S "$(TPM_SOCK)" ]; then \
+		mkdir -p "$(TPM_DIR)" && \
+		swtpm socket --tpmstate dir="$(TPM_DIR)" --tpm2 --ctrl type=unixio,path="$(TPM_SOCK)" --daemon; \
+	fi
+	@$(QEMU) $(QEMU_FLAGS) \
 		-drive file=$(DISK_IMG),format=raw,media=disk
 
 clean:

@@ -56,4 +56,5 @@ QEMU_ARCH_FLAGS := \
     -enable-kvm \
     -vga virtio \
     -drive if=pflash,format=raw,readonly=on,file=$(EDK2_DIR)/OVMF_CODE.secboot.4m.fd \
-    -drive if=pflash,format=raw,file=$(EDK2_DIR)/OVMF_VARS.4m.fd
+    -drive if=pflash,format=raw,file=$(EDK2_DIR)/OVMF_VARS.4m.fd \
+    -device tpm-tis,tpmdev=tpm0
