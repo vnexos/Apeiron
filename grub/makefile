@@ -22,8 +22,7 @@ $(eval $(call COMPILE_TEMPLATE,\
 	$(GRUB_DIR)/src,\
 	$(GRUB_BUILD_DIR),\
 	$(BOOT_FLAGS),\
-	$(BOOT_ASMFLAGS),\
-	-I$(GRUB_DIR)/inc))
+	$(BOOT_ASMFLAGS)))
 
 .PHONY: all clean
 all: \
