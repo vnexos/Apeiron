@@ -20,6 +20,7 @@ ARCH ?= x86_64
 include $(CURRENT_CONFIG_DIR)/arch/$(ARCH).mk
 
 # ==[ Đường dẫn đầu ra ]================================================
+SHARED_DIR := $(ROOT_DIR)/shared
 BUILD_DIR  := $(ROOT_DIR)/build/$(ARCH)
 SYSROOT_DIR:= $(ROOT_DIR)/sysroot
 KERNEL_DIR := $(SYSROOT_DIR)
@@ -56,6 +57,7 @@ CXX_BASE_FLAGS := \
     -fno-asynchronous-unwind-tables \
     -fno-use-cxa-atexit \
     -fno-threadsafe-statics \
+    -I$(SHARED_DIR) \
     $(ARCH_CXX_FLAGS)
 # -std=c++23                      : Sử dụng tiêu chuẩn ngôn ngữ C++23 để tận dụng các tính năng hiện đại.
 # -ffreestanding                  : Biên dịch trong môi trường độc lập, không giả định sự tồn tại
@@ -98,10 +100,14 @@ KERN_LDFLAGS := \
 #                          khớp với cấu trúc phân trang mặc định.
 
 # ==[ Cờ chạy QEMU ]====================================================
+TPM_DIR  := /tmp/tpm_state
+TPM_SOCK := $(TPM_DIR)/sock
 QEMU_FLAGS := \
     $(QEMU_ARCH_FLAGS) \
     -m 2G \
     -net none \
     -serial stdio \
     -display sdl \
-    -monitor telnet:127.0.0.1:5555,server,nowait
+    -monitor telnet:127.0.0.1:5555,server,nowait\
+    -chardev socket,id=chrtpm,path=$(TPM_SOCK) \
+    -tpmdev type=emulator,id=tpm0,chardev=chrtpm

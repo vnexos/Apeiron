@@ -53,4 +53,5 @@ QEMU_ARCH_FLAGS := \
     -cpu rv64 \
     -device virtio-gpu-pci \
     -drive if=pflash,format=raw,readonly=on,file=$(EDK2_DIR)/RISCV_VIRT_CODE.fd \
-    -drive if=pflash,format=raw,file=$(EDK2_DIR)/RISCV_VIRT_VARS.fd
+    -drive if=pflash,format=raw,file=$(EDK2_DIR)/RISCV_VIRT_VARS.fd \
+    -device tpm-tis-device,tpmdev=tpm0
