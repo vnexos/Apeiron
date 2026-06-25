@@ -7,7 +7,7 @@
 | STT   | Mục                                                          |
 |------:|--------------------------------------------------------------|
 | 1     | [Giới thiệu](#-giới-thiệu)                                   |
-| 2     | [Công nghệ sử dụng](#-công-nghệ-sử-dụng-trong-dự-án)         |
+| 2     | [Công nghệ sử dụng](#️-công-nghệ-sử-dụng)                    |
 | 3     | [Cây thư mục](#-cây-thư-mục)                                 |
 | 4     | [Quy ước ghi chú cam kết](#-quy-ước-ghi-chú-cam-kết)         |
 | 5     | [Tên trong các ngôn ngữ khác](#-tên-trong-các-ngôn-ngữ-khác) |
@@ -31,7 +31,7 @@
 apeiron/                 ← Thư mục gốc (Mã nguồn mở)
 ├── config/              ← Chứa cấu hình xây dựng toàn hệ thống
 ├── modules/             ← Chứa các thành phần ngoại vi
-├── cert/                ← Chứa các giấy phép chữ ký số để xác minh file
+├── cert/                ← Chứa các giấy phép chữ ký số để xác minh các tệp khởi động
 ├── grub/                ← Bộ nạp mồi để có thể tùy biến cho shim
 ├── internal/            ← Chương trình cốt lõi (Mã nguồn đóng)
 │   ├── bootloader/      ← Bộ nạp khởi động VNExos

@@ -1,0 +1,42 @@
+Giấy phép MIT
+
+Bản quyền (c) 2026 VNExos Inc.
+
+Theo đây, quyền cho phép được cấp miễn phí cho bất kỳ ai có được một bản sao 
+của phần mềm này và các tệp tài liệu liên quan (sau đây gọi là "Phần mềm"), 
+để định đoạt Phần mềm mà không có giới hạn, bao gồm nhưng không giới hạn ở 
+các quyền sử dụng, sao chép, sửa đổi, hợp nhất, xuất bản, phân phối, cấp 
+phép thứ cấp và/hoặc bán các bản sao của Phần mềm, cũng như cho phép những 
+người được cung cấp Phần mềm làm như vậy, tuân theo các điều kiện sau:
+
+Thông báo bản quyền trên và thông báo cấp phép này phải được bao gồm trong 
+tất cả các bản sao hoặc các phần quan trọng của Phần mềm.
+
+PHẦN MỀM ĐƯỢC CUNG CẤP THEO TRẠNG THÁI "NGUYÊN TRẠNG", KHÔNG CÓ BẤT KỲ SỰ ĐẢM 
+BẢO NÀO, DÙ LÀ DIỄN ĐẠT HAY NGỤ Ý, BAO GỒM NHƯNG KHÔNG GIỚI HẠN Ở CÁC BẢO ĐẢM 
+VỀ KHẢ NĂNG THƯƠNG MẠI, SỰ PHÙ HỢP CHO MỘT MỤC ĐÍCH CỤ THỂ VÀ SỰ KHÔNG VI 
+PHẠM. TRONG BẤT KỲ TRƯỜNG HỢP NÀO, CÁC TÁC GIẢ HOẶC CHỦ SỞ HỮU BẢN QUYỀN SẼ 
+KHÔNG CHỊU TRÁCH NHIỆM VỀ BẤT KỲ KHIẾU NẠI, THIỆT HẠI HOẶC TRÁCH NHIỆM PHÁP LÝ 
+NÀO KHÁC, DÙ LÀ TRONG MỘT HÀNH VI HỢP ĐỒNG, SAI PHẠM DÂN SỰ HOẶC CÁC CƠ SỞ 
+KHÁC, PHÁT SINH TỪ, HOẶC CÓ LIÊN QUAN ĐẾN PHẦN MỀM HOẶC VIỆC SỬ DỤNG HOẶC CÁC 
+GIAO DỊCH KHÁC TRONG PHẦN MỀM.
+
+------------------------------------------------------------------------------
+PHỤ LỤC: THÔNG BÁO DỰ ÁN MÃ NGUỒN HỖN HỢP (HYBRID-SOURCE)
+------------------------------------------------------------------------------
+
+Kho lưu trữ này được cấu trúc theo mô hình dự án mã nguồn hỗn hợp (hybrid-source).
+
+1. CÁC THÀNH PHẦN MÃ NGUỒN MỞ: Giấy phép MIT này áp dụng ĐỘC QUYỀN cho các thư 
+mục và tệp tin mã nguồn mở thuộc dự án này, bao gồm nhưng không giới hạn ở các 
+thư mục /config và /modules.
+
+2. CÁC THÀNH PHẦN ĐỘC QUYỀN: Giấy phép này KHÔNG áp dụng cho bất kỳ tệp tin, 
+thư mục con hoặc tài nguyên nào nằm bên trong thư mục /internal. Thư mục 
+/internal chứa mã nguồn hoàn toàn bảo mật, riêng tư và độc quyền, thuộc sở hữu 
+duy nhất của VNExos Inc.
+
+VNEXOS INC. BẢO LƯU TẤT CẢ CÁC QUYỀN ĐỐI VỚI THƯ MỤC /internal. Nghiêm cấm mọi 
+hành vi sao chép, phân phối, sửa đổi, đảo ngược mã nguồn (reverse engineering) 
+hoặc hiển thị công khai bất kỳ tệp tin nào trong thư mục /internal dưới mọi 
+hình thức khi chưa có sự cho phép bằng văn bản chính thức từ VNExos Inc.
