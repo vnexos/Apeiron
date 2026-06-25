@@ -1,30 +1,41 @@
-Giấy phép MIT
+MIT License
 
 Copyright (c) 2026 VNExos Inc.
 
-Theo đây, quyền cho phép được cấp miễn phí cho bất kỳ ai có được một bản
-sao của phần mềm này và các tệp tài liệu liên quan (sau đây gọi là "Phần
-mềm"), để định đoạt Phần mềm mà không có giới hạn, bao gồm nhưng không giới
-hạn ở các quyền sử dụng, sao chép, sửa đổi, hợp nhất, xuất bản, phân phối,
-cấp phép thứ cấp và/hoặc bán các bản sao của Phần mềm, cũng như cho phép
-những người được cung cấp Phần mềm làm như vậy, tuân theo các điều kiện sau:
+Permission is hereby granted, free of charge, to any person obtaining a copy 
+of this software and associated documentation files (the "Software"), to deal 
+in the Software without restriction, including without limitation the rights 
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
+copies of the Software, and to permit persons to whom the Software is 
+furnished to do so, subject to the following conditions:
 
-Thông báo bản quyền trên và thông báo cấp phép này phải được bao gồm trong
-tất cả các bản sao hoặc các phần quan trọng của Phần mềm.
+The above copyright notice and this permission notice shall be included in all 
+copies or substantial portions of the Software.
 
-PHẦN MỀM ĐƯỢC CUNG CẤP THEO TRẠNG THÁI "NGUYÊN TRẠNG", KHÔNG CÓ BẤT KỲ SỰ
-ĐẢM BẢO NÀO, DÙ LÀ DIỄN ĐẠT HAY NGỤ Ý, BAO GỒM NHƯNG KHÔNG GIỚI HẠN Ở CÁC
-BẢO ĐẢM VỀ KHẢ NĂNG THƯƠNG MẠI, SỰ PHÙ HỢP CHO MỘT MỤC ĐÍCH CỤ THỂ VÀ SỰ
-KHÔNG VI PHẠM. TRONG BẤT KỲ TRƯỜNG HỢP NÀO, CÁC TÁC GIẢ HOẶC CHỦ SỞ HỮU BẢN
-QUYỀN SẼ KHÔNG CHỊU TRÁCH NHIỆM VỀ BẤT KỲ KHIẾU NẠI, THIỆT HẠI HOẶC TRÁCH
-NHIỆM PHÁP LÝ NÀO KHÁC, DÙ LÀ TRONG MỘT HÀNH VI HỢP ĐỒNG, SAI PHẠM DÂN SỰ
-HOẶC CÁC CƠ SỞ KHÁC, PHÁT SINH TỪ, HOẶC CÓ LIÊN QUAN ĐẾN PHẦN MỀM HOẶC VIỆC
-SỬ DỤNG HOẶC CÁC GIAO DỊCH KHÁC TRONG PHẦN MỀM.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
+SOFTWARE.
 
-⚠️ LƯU Ý: Đây là một dự án mã nguồn hỗn hợp (hybrid-source).
-Giấy phép MIT này CHỈ áp dụng cho các thành phần mã nguồn mở của dự án này
-(bao gồm các thư mục /config, /modules, v.v.).
+------------------------------------------------------------------------------
+ADDENDUM: HYBRID-SOURCE PROJECT NOTICE
+------------------------------------------------------------------------------
 
-Giấy phép này KHÔNG áp dụng cho bất kỳ tệp tin nào nằm bên trong thư mục
-"/internal". Thư mục "/internal" là khu vực hoàn toàn riêng tư, bảo mật và
-độc quyền.
+This repository is structured as a hybrid-source project.
+
+1. OPEN-SOURCE COMPONENTS: This MIT License applies EXCLUSIVELY to the 
+open-source directories and files within this project, including but not 
+limited to the /config and /modules directories.
+
+2. PROPRIETARY COMPONENTS: This license DOES NOT apply to any files, 
+subdirectories, or assets located within the /internal directory. The 
+/internal directory contains strictly confidential, private, and proprietary 
+source code owned solely by VNExos Inc.
+
+ALL RIGHTS RESERVED BY VNEXOS INC. REGARDING THE /internal DIRECTORY. 
+Unauthorized copying, distribution, modification, reverse engineering, or 
+public display of any files within the /internal directory, via any medium, 
+is strictly prohibited without the express written permission of VNExos Inc.
