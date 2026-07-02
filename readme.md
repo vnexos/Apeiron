@@ -61,6 +61,7 @@ apeiron/                 ← Thư mục gốc (Mã nguồn mở)
 - `🚀 tc`: **Tái cấu** hoặc dọn dẹp một phần hoặc toàn bộ
 - `📃 tl`: **Tài liệu** được cập nhật trong cam kết này
 - `⚙️ ch`: **Cấu hình** cho việc xây dựng được thay đổi
+- `🔀 gn`: **Gộp nhánh** nào với nhánh nào
 - `🌐 kt`: **Khởi tạo** dự án (chỉ có duy nhất một lần)
 
 ### 🌐 Tên trong các ngôn ngữ khác
