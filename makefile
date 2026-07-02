@@ -73,7 +73,7 @@ shim:
 ifeq ($(ALLOW_SHIM),1)
 	@$(TOOLS_ADDSBAT) $(EFI_BIN)
 	@sbsign --key $(PRIV_FILE) --cert $(PUB_FILE) --output $(EFI_BIN) $(EFI_BIN)
-	@cp $(DER_FILE) $(EFI_BIN_DIR)/
+	@cp $(DER_FILE) $(SYSROOT_DIR)/
 	@mv $(EFI_BIN) $(GRUB_NAME)
 	@cp $(SHIM_DIR)/* $(EFI_BIN_DIR)/
 	@echo -e "$(MSG_VNEXOS) Đã copy xong file shim!"

@@ -9,7 +9,7 @@
 
 EDK2_TYPE      := aarch64
 EDK2_DIR       := $(ROOT_DIR)/firmware/$(EDK2_TYPE)
-ALLOW_SHIM     := 1
+ALLOW_SHIM     := 0
 
 # ==[ Cờ riêng của bộ xử lý ]===========================================
 # ARM64 không có Red-zone nhưng cần ép căn chỉnh ngăn xếp 16-byte.

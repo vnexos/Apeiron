@@ -8,9 +8,10 @@
 # Xem tệp LICENSE tại thư mục gốc để biết thêm chi tiết.
 #
 # LÝ DO CẦN TOOL NÀY:
-#   - LLVM/Clang chưa hỗ trợ xuất COFF/PE cho riscv64
-#   - GNU objcopy (pei-riscv64-little) tạo PE bị lỗi tiêu đề
-#   - UEFI EDK2 RISC-V loader yêu cầu PE32+ hợp lệ có phân vùng .reloc
+#   - Các trình biên dịch hiện đại hiện đã không còn hỗ trợ
+#     xuất ra tệp EFI với một phân vùng `.sbat`.
+#   - Đối với Secboot thì Shim sẽ kiểm tra phân vùng .sbat
+#     trong tệp boot.
 # =========================================================
 """
 add_sbat.py - Thêm hoặc thay thế một phân vùng .sbat trong tệp nhị phân UEFI EFI.
