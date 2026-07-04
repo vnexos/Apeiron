@@ -8,9 +8,10 @@
 |------:|--------------------------------------------------------------|
 | 1     | [Giới thiệu](#-giới-thiệu)                                   |
 | 2     | [Công nghệ sử dụng](#️-công-nghệ-sử-dụng)                    |
-| 3     | [Cây thư mục](#-cây-thư-mục)                                 |
-| 4     | [Quy ước ghi chú cam kết](#-quy-ước-ghi-chú-cam-kết)         |
-| 5     | [Tên trong các ngôn ngữ khác](#-tên-trong-các-ngôn-ngữ-khác) |
+| 3     | [Chuẩn bị môi trường](#-chuẩn-bị-môi-trường)                 |
+| 4     | [Cây thư mục](#-cây-thư-mục)                                 |
+| 5     | [Quy ước ghi chú cam kết](#-quy-ước-ghi-chú-cam-kết)         |
+| 6     | [Tên trong các ngôn ngữ khác](#-tên-trong-các-ngôn-ngữ-khác) |
 
 ---
 ### 📃 Giới thiệu
@@ -26,7 +27,7 @@
 | ![Makefile](https://img.shields.io/badge/MAKEFILE-ef5350?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHBhdGggZmlsbD0iI2ZmZmZmZiIgZD0ibTI5LjUgMjQuMDItMS42LS45MmE0LjQgNC40IDAgMCAwIC4wOS0uOUExLjMgMS4zIDAgMCAwIDI4IDIyYTUuNiA1LjYgMCAwIDAtLjEtMS4xbDEuNi0uOTJhLjQ5My40OTMgMCAwIDAgLjE4LS42OGwtMS41LTIuNmEuNDUuNDUgMCAwIDAtLjE4LS4xOFY2LjAxYTIuMDA2IDIuMDA2IDAgMCAwLTItMkg0YTIuMDA2IDIuMDA2IDAgMCAwLTIgMlYyMmEyLjAwNiAyLjAwNiAwIDAgMCAyIDJoMTAuNTNsLS4wMy4wMmEuNDkzLjQ5MyAwIDAgMC0uMTguNjhsMS41IDIuNmEuNDkzLjQ5MyAwIDAgMCAuNjguMThsMS42LS45MmE1LjkgNS45IDAgMCAwIDEuOSAxLjA5djEuODVhLjQ5NS40OTUgMCAwIDAgLjUuNWgzYS40OTUuNDk1IDAgMCAwIC41LS41di0xLjg1YTUuOSA1LjkgMCAwIDAgMS45LTEuMDlsMS42LjkyYS40OTMuNDkzIDAgMCAwIC42OC0uMThsMS41LTIuNmEuNDkzLjQ5MyAwIDAgMC0uMTgtLjY4TTI0IDIyLjAxYTEuOTkgMS45OSAwIDAgMS0uODggMS42NWwtLjE4LjExYTIuMDQgMi4wNCAwIDAgMS0xLjg4IDBsLS4xOC0uMTFhMS45OSAxLjk5IDAgMCAxLS44OC0xLjY1VjIyYTIgMiAwIDAgMSAuODgtMS42NmwuMTgtLjExYTIuMDQgMi4wNCAwIDAgMSAxLjg4IDBsLjE4LjExQTIgMiAwIDAgMSAyNCAyMlptMi00LjYzLS4xLjA2YTUuOSA1LjkgMCAwIDAtMS45LTEuMDlWMTQuNWEuNDk1LjQ5NSAwIDAgMC0uNS0uNWgtM2EuNDk1LjQ5NSAwIDAgMC0uNS41djEuODVhNS45IDUuOSAwIDAgMC0xLjkgMS4wOWwtMS42LS45MmEuNDkzLjQ5MyAwIDAgMC0uNjguMThsLTEuNSAyLjZhLjQ5My40OTMgMCAwIDAgLjE4LjY4bDEuNi45MkE1LjYgNS42IDAgMCAwIDE2IDIydi4wMUw0IDIyVjEwLjAxaDIyWiIvPjwvc3ZnPg==) | **Makefile** | Công cụ quản lý và tự động hóa quy trình biên dịch (Build Toolchain), giúp điều phối việc đóng gói các phân vùng độc lập giữa các thành phần ngoại vi một cách chính xác. |
 | ![Bash](https://img.shields.io/badge/bash-121011.svg?style=for-the-badge&logo=gnu-bash&logoColor=white) | **Bash** | Các kịch bản lệnh (Script) hỗ trợ tự động hóa và thực hiện các thao tác điều phối dự án một cách nhanh chóng, tối ưu. |
 
-### 📂 Chuẩn bị môi trường
+### 📂 Chuẩn bị môi trường (Đối với môi trường Ubuntu)
 
 1. Cài đặt các chương trình cần thiết
     ```bash
@@ -34,20 +35,19 @@
         clang \
         lld \
         llvm \
-        qemu-system-x86 \
-        qemu-system-misc \
-        qemu-system-arm \
+        qemu-system \
+        qemu-utils \
         libsdl2-2.0-0 \
-        swtpm \
-        swtpm-tools \
         python3 \
         telnet \
         gdisk \
         dosfstools \
         mtools \
-        sbsigntool \
         curl \
-        python3-pefile
+        python3-pefile && \
+    git clone https://github.com/vnexos/Boreas.git && \
+    cd Boreas && sudo make install && \
+    cd .. && rm -rf Boreas
     ```
 2. Cài đặt môi trường cho QEMU
     ```bash
@@ -58,26 +58,28 @@
     sudo cp -r /usr/share/AAVMF/* /usr/share/edk2/aarch64/ && \
     sudo cp -r /usr/share/qemu-efi-riscv64/* /usr/share/edk2/riscv64/
     ```
-3. Khởi tạo khóa cho dự án
+3. Khởi tạo khóa cho dự án và điền thông tin
     ```bash
-    openssl req -new -x509 -newkey rsa:2048 -sha256 -nodes \
-      -keyout cert/vnexos.key \
-      -out cert/vnexos.crt \
-      -subj "/CN=VNExos OS/O=VNExos Inc./C=VN/" \
-      -days 3650
+    boreas -sign -g cert/root.key cert/root.crt
+    boreas -sign -g cert/vnexos.key cert/vnexos.crt
     ```
-4. Chuyển đổi khóa CRT sang khóa DER
-    ```bash
-    openssl x509 -in cert/vnexos.crt -outform DER -out cert/vnexos.cer
-    ```
-5. Đặt quyền chạy cho toàn bộ tệp kịch bản
+4. Đặt quyền chạy cho toàn bộ tệp kịch bản (nếu tệp không chạy được)
     ```bash
     sudo chmod +x *.sh
     ```
-6. Chạy chương trình chính thức:
-    ```bash
-    ./run.sh x86_64
-    ```
+5. Chạy chương trình chính thức:
+    - Cho dòng Vi xử lý Intel/AMD64
+      ```bash
+      ./run.sh x86_64
+      ```
+    - Cho dòng Vi xử lý ARM64
+      ```bash
+      ./run.sh aarch64
+      ```
+    - Cho dòng Vi xử lý RISC-V
+      ```bash
+      ./run.sh riscv64
+      ```
 
 ### 🌳 Cây thư mục
 ```plaintext
