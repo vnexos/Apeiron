@@ -10,8 +10,8 @@
 EDK2_TYPE      := x64
 EDK2_DIR       := $(ROOT_DIR)/firmware/$(EDK2_TYPE)
 
-FD_CODE        := OVMF_CODE.4m.fd
-FD_VARS        := OVMF_VARS.4m.fd
+FD_CODE        := OVMF_CODE_4M.fd
+FD_VARS        := OVMF_VARS_4M.fd
 
 # ==[ Cờ riêng của bộ xử lý ]===========================================
 ARCH_CXX_FLAGS := -mno-red-zone
