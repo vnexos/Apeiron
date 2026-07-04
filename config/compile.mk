@@ -11,12 +11,12 @@ define COMPILE_TEMPLATE
 
 $(2)/%.o: $(1)/%.cpp
 	@mkdir -p $$(dir $$@)
-	@echo -e "$$(MSG_CXX) Đang biên dịch: $$@"
+	@echo "$$(MSG_CXX) Đang biên dịch: $$@"
 	@$$(CXX) $(3) $(5) -c $$< -o $$@
 
 $(2)/%.s.o: $(1)/%.s
 	@mkdir -p $$(dir $$@)
-	@echo -e "$$(MSG_ASM) Đang biên dịch: $$@"
+	@echo "$$(MSG_ASM) Đang biên dịch: $$@"
 	@$$(ASM) $(4) -c $$< -o $$@
 
 endef

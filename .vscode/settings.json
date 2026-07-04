@@ -7,5 +7,6 @@
     "editor.wordWrap": "off",
     "clangd.arguments": [
         "--header-insertion=never"
-    ]
+    ],
+    "terminal.integrated.fontFamily": "'Cascadia Code', 'JetBrains Mono', 'DejaVu Sans Mono', monospace"
 }

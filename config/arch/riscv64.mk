@@ -11,6 +11,9 @@ EDK2_TYPE      := riscv64
 EDK2_DIR       := $(ROOT_DIR)/firmware/$(EDK2_TYPE)
 ALLOW_SHIM     := 0
 
+FD_CODE        := RISCV_VIRT_CODE.fd
+FD_VARS        := RISCV_VIRT_VARS.fd
+
 # ==[ Cờ riêng của bộ xử lý ]===========================================
 # RISC-V cần cấm sử dụng các thanh ghi số thực ở tầng Nhân để tránh làm hỏng
 # trạng thái bộ tính toán dấu phẩy động khi xảy ra ngắt.
@@ -52,6 +55,6 @@ QEMU_ARCH_FLAGS := \
     -M virt \
     -cpu rv64 \
     -device virtio-gpu-pci \
-    -drive if=pflash,format=raw,readonly=on,file=$(EDK2_DIR)/RISCV_VIRT_CODE.fd \
-    -drive if=pflash,format=raw,file=$(EDK2_DIR)/RISCV_VIRT_VARS.fd \
+    -drive if=pflash,format=raw,readonly=on,file=$(EDK2_DIR)/$(FD_CODE) \
+    -drive if=pflash,format=raw,file=$(EDK2_DIR)/$(FD_VARS) \
     -device tpm-tis-device,tpmdev=tpm0

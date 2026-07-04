@@ -27,7 +27,7 @@ $(eval $(call COMPILE_TEMPLATE,\
 .PHONY: all clean
 all: \
 	$(EFI_BIN)
-	@echo -e "$(MSG_VNEXOS) Hoàn tất biên dịch $(COLOR_AQUA)Bộ nạp mồi$(MODE_RESET)."
+	@echo "$(MSG_VNEXOS) Hoàn tất biên dịch $(COLOR_AQUA)Bộ nạp mồi$(MODE_RESET)."
 
 # Với riscv64, quy trình build EFI gồm 2 bước:
 # 1. ld.lld + tập lệnh liên kết -> ELF thực thi (mã bắt đầu từ Địa chỉ ảo=0x1000)
@@ -36,16 +36,16 @@ all: \
 $(EFI_BIN): $(OBJS)
 	@mkdir -p $(EFI_BIN_DIR) $(GRUB_BUILD_DIR)
 ifeq ($(ARCH),riscv64)
-	@echo -e "$(MSG_LD) Đang liên kết ELF trung gian: $(GRUB_ELF_SO)"
+	@echo "$(MSG_LD) Đang liên kết ELF trung gian: $(GRUB_ELF_SO)"
 	@$(BOOT_LD) $(BOOT_LDFLAGS) -T$(GRUB_LINKER_SCRIPT) -o $(GRUB_ELF_SO) $^
-	@echo -e "$(MSG_LD) Đang chuyển đổi ELF -> PE/UEFI: $@"
+	@echo "$(MSG_LD) Đang chuyển đổi ELF -> PE/UEFI: $@"
 	@$(RISCV_ELF2EFI) $(GRUB_ELF_SO) $@
 else
-	@echo -e "$(MSG_LD) Đang liên kết thành tệp EFI khởi động: $@"
+	@echo "$(MSG_LD) Đang liên kết thành tệp EFI khởi động: $@"
 	@$(BOOT_LD) $(BOOT_LDFLAGS) -Wl,-entry:vnexos_grub_main -o $@ $^
 endif
-	@echo -e "$(MSG_LD) Đã liên kết thành công thành bộ nạp khởi động!"
+	@echo "$(MSG_LD) Đã liên kết thành công thành bộ nạp khởi động!"
 
 clean:
 	@rm -rf $(GRUB_BUILD_DIR)
-	@echo -e "$(MSG_CLEAN) Bộ nạp khởi động đã được làm sạch!"
+	@echo "$(MSG_CLEAN) Bộ nạp khởi động đã được làm sạch!"

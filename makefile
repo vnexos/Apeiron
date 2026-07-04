@@ -60,7 +60,7 @@ VNEXOS_PART_UUID := 9c7ba30b-e2ee-4bbe-9fe4-ab5f23fe2b9b
 # ==[ KỊCH BẢN XÂY DỰNG HỆ THỐNG ]======================================
 .PHONY: all clean clean-all run $(SUBDIRS) shim
 all: $(DISK_IMG)
-	@echo -e "$(MSG_VNEXOS) Đã xây dựng xong chương trình!"
+	@echo "$(MSG_VNEXOS) Đã xây dựng xong chương trình!"
 
 $(SUBDIRS):
 	@$(MAKE) -C $@
@@ -76,7 +76,7 @@ ifeq ($(ALLOW_SHIM),1)
 	@cp $(DER_FILE) $(SYSROOT_DIR)/
 	@mv $(EFI_BIN) $(GRUB_NAME)
 	@cp $(SHIM_DIR)/* $(EFI_BIN_DIR)/
-	@echo -e "$(MSG_VNEXOS) Đã copy xong file shim!"
+	@echo "$(MSG_VNEXOS) Đã sao chép xong file shim!"
 endif
 
 $(DISK_IMG): $(SUBDIRS) shim
@@ -103,17 +103,17 @@ $(DISK_IMG): $(SUBDIRS) shim
 # 	@mcopy -i $(DISK_IMG)@@1M $(CERT_DIR)/Microsoft_KEK.cer ::/Microsoft_KEK.cer
 # 	@mcopy -i $(DISK_IMG)@@1M $(CERT_DIR)/Microsoft_Production_PCA.cer ::/Microsoft_Production_PCA.cer
 
-	@echo -e "$(MSG_IMG) Đã tạo disk image $(DISK_IMG)"
+	@echo "$(MSG_IMG) Đã tạo disk image $(DISK_IMG)"
 
-# Dấu hiệu đã copy firmware - Make kiểm tra file này thay vì thư mục firmware/
-# Chỉ chạy một lần duy nhất; xóa firmware/.ready để buộc copy lại
+# Dấu hiệu đã sao chép firmware - Make kiểm tra file này thay vì thư mục firmware/
+# Chỉ chạy một lần duy nhất; xóa firmware/.ready để buộc sao chép lại
 firmware/.ready:
 	@mkdir -p $(dir $(EDK2_DIR))
 	@cp -r /usr/share/edk2/* $(dir $(EDK2_DIR)) || true
 	@touch $@
 
 run: all firmware/.ready
-	@echo -e "$(MSG_QEMU) Đang khởi chạy hệ thống..."
+	@echo "$(MSG_QEMU) Đang khởi chạy hệ thống..."
 	@if [ ! -S "$(TPM_SOCK)" ]; then \
 		mkdir -p "$(TPM_DIR)" && \
 		swtpm socket --tpmstate dir="$(TPM_DIR)" --tpm2 --ctrl type=unixio,path="$(TPM_SOCK)" --daemon; \
@@ -125,9 +125,9 @@ clean:
 	@for dir in $(SUBDIRS); do $(MAKE) -C $$dir clean; done
 	@rm -f $(DISK_IMG)
 	@rm -rf $(BUILD_DIR) $(SYSROOT_DIR)
-	@echo -e "$(MSG_CLEAN) Dự án đã được làm sạch sâu!"
+	@echo "$(MSG_CLEAN) Dự án đã được làm sạch sâu!"
 
 clean-all:
 	@rm -rf $(ROOT_DIR)/build $(SYSROOT_DIR)
 	@rm -f $(DISK_IMG)
-	@echo -e "$(MSG_CLEAN) Toàn bộ dự án đã được làm sạch hoàn toàn!"
+	@echo "$(MSG_CLEAN) Toàn bộ dự án đã được làm sạch hoàn toàn!"
