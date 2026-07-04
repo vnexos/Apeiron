@@ -65,21 +65,7 @@ all: $(DISK_IMG)
 $(SUBDIRS):
 	@$(MAKE) -C $@
 
-# Cấu hình môi trường cho Shim
-EFI_BIN_LOWER := $(shell echo $(EFI_BIN_NAME) | tr 'A-Z' 'a-z')
-GRUB_NAME     := $(EFI_BIN_DIR)/$(patsubst boot%,grub%,$(EFI_BIN_LOWER))
-MM_NAME       := $(EFI_BIN_DIR)/$(patsubst boot%,mm%,$(EFI_BIN_LOWER))
-shim:
-ifeq ($(ALLOW_SHIM),1)
-	@$(TOOLS_ADDSBAT) $(EFI_BIN)
-	@sbsign --key $(PRIV_FILE) --cert $(PUB_FILE) --output $(EFI_BIN) $(EFI_BIN)
-	@cp $(DER_FILE) $(SYSROOT_DIR)/
-	@mv $(EFI_BIN) $(GRUB_NAME)
-	@cp $(SHIM_DIR)/* $(EFI_BIN_DIR)/
-	@echo "$(MSG_VNEXOS) Đã sao chép xong file shim!"
-endif
-
-$(DISK_IMG): $(SUBDIRS) shim
+$(DISK_IMG): $(SUBDIRS)
 # Tạo tệp ảnh đĩa trống kích thước 1 GiB (1024 MiB)
 	@dd if=/dev/zero of=$(DISK_IMG) bs=1M count=1024 status=none
 
@@ -100,8 +86,6 @@ $(DISK_IMG): $(SUBDIRS) shim
 
 # Tạo cấu trúc thư mục và sao chép Bộ nạp khởi động vào phân vùng 1 thông qua mtools
 	@mcopy -s -i $(DISK_IMG)@@1M $(SYSROOT_DIR)/* ::/
-# 	@mcopy -i $(DISK_IMG)@@1M $(CERT_DIR)/Microsoft_KEK.cer ::/Microsoft_KEK.cer
-# 	@mcopy -i $(DISK_IMG)@@1M $(CERT_DIR)/Microsoft_Production_PCA.cer ::/Microsoft_Production_PCA.cer
 
 	@echo "$(MSG_IMG) Đã tạo disk image $(DISK_IMG)"
 

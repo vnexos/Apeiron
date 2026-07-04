@@ -24,7 +24,7 @@
 #include <protocol/efi_graphics.hpp>
 
 /** Giao thức TCG phiên bản 1 (TPM 1.2) và phiên bản 2 (TPM 2.0). */
-// #include "efi_tcg.hpp"
+#include <protocol/efi_tcg.hpp>
 
 /** Kiểu bộ nhớ, chiến lược cấp phát và bộ mô tả bản đồ bộ nhớ. */
 #include <efi_memory.hpp>

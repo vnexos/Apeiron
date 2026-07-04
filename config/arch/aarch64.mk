@@ -9,7 +9,6 @@
 
 EDK2_TYPE      := aarch64
 EDK2_DIR       := $(ROOT_DIR)/firmware/$(EDK2_TYPE)
-ALLOW_SHIM     := 0
 
 FD_CODE        := AAVMF_CODE.fd
 FD_VARS        := AAVMF_VARS.fd
@@ -56,5 +55,4 @@ QEMU_ARCH_FLAGS := \
     -cpu cortex-a57 \
     -device virtio-gpu-pci \
     -drive if=pflash,format=raw,readonly=on,file=$(EDK2_DIR)/$(FD_CODE) \
-    -drive if=pflash,format=raw,file=$(EDK2_DIR)/$(FD_VARS) \
-    -device tpm-tis-device,tpmdev=tpm0
+    -drive if=pflash,format=raw,file=$(EDK2_DIR)/$(FD_VARS)

@@ -27,7 +27,6 @@ KERNEL_DIR := $(SYSROOT_DIR)
 KERNEL_FILE:= $(KERNEL_DIR)/Apeiron.kern
 EFI_BIN_DIR:= $(SYSROOT_DIR)/EFI/BOOT
 EFI_BIN    := $(EFI_BIN_DIR)/$(EFI_BIN_NAME)
-SHIM_DIR   := $(ROOT_DIR)/shim/$(ARCH)
 DISK_IMG   := $(ROOT_DIR)/disk.img
 
 # ==[ Tệp chữ ký số công khai ]==========================================
@@ -108,6 +107,4 @@ QEMU_FLAGS := \
     -net none \
     -serial stdio \
     -display sdl \
-    -monitor telnet:127.0.0.1:5555,server,nowait\
-    -chardev socket,id=chrtpm,path=$(TPM_SOCK) \
-    -tpmdev type=emulator,id=tpm0,chardev=chrtpm
+    -monitor telnet:127.0.0.1:5555,server,nowait
