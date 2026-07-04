@@ -98,10 +98,6 @@ firmware/.ready:
 
 run: all firmware/.ready
 	@echo "$(MSG_QEMU) Đang khởi chạy hệ thống..."
-	@if [ ! -S "$(TPM_SOCK)" ]; then \
-		mkdir -p "$(TPM_DIR)" && \
-		swtpm socket --tpmstate dir="$(TPM_DIR)" --tpm2 --ctrl type=unixio,path="$(TPM_SOCK)" --daemon; \
-	fi
 	@$(QEMU) $(QEMU_FLAGS) \
 		-drive file=$(DISK_IMG),format=raw,media=disk
 
