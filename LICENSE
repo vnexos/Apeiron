@@ -35,6 +35,13 @@ subdirectories, or assets located within the /internal directory. The
 /internal directory contains strictly confidential, private, and proprietary 
 source code owned solely by VNExos Inc.
 
+3. CRYPTOGRAPHIC COMPONENTS: The GNU General Public License v3 (GPLv3) applies 
+FULLY and EXCLUSIVELY to all source code, mathematical specifications, and 
+algorithmic implementations located within the /shared/post_quantum directory. 
+This component represents the open-source post-quantum cryptographic 
+subsystem of VNExos Inc., and any derivative works utilizing these assets must 
+comply with the GPLv3 copyleft provisions.
+
 ALL RIGHTS RESERVED BY VNEXOS INC. REGARDING THE /internal DIRECTORY. 
 Unauthorized copying, distribution, modification, reverse engineering, or 
 public display of any files within the /internal directory, via any medium, 

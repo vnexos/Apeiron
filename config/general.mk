@@ -56,6 +56,7 @@ CXX_BASE_FLAGS := \
     -fno-asynchronous-unwind-tables \
     -fno-use-cxa-atexit \
     -fno-threadsafe-statics \
+    -mno-stack-arg-probe \
     -I$(SHARED_DIR) \
     $(ARCH_CXX_FLAGS)
 # -std=c++23                      : Sử dụng tiêu chuẩn ngôn ngữ C++23 để tận dụng các tính năng hiện đại.
@@ -79,7 +80,9 @@ CXX_BASE_FLAGS := \
 # ==[ Cờ biên dịch theo thành phần ]====================================
 # BOOT_FLAGS   : Thêm -fshort-wchar ép kiểu ký tự rộng về 16-bit,
 #                tương thích chuỗi UCS-2 của UEFI.
-BOOT_FLAGS     := $(CXX_BASE_FLAGS) --target=$(BOOT_TARGET) -fshort-wchar $(BOOT_FLAGS_EXTRA)
+#                -mno-stack-arg-probe tắt gọi __chkstk vì môi trường
+#                freestanding không có guard page như Windows.
+BOOT_FLAGS     := $(CXX_BASE_FLAGS) --target=$(BOOT_TARGET) -fshort-wchar -mno-stack-arg-probe $(BOOT_FLAGS_EXTRA)
 
 # KERNEL_FLAGS : Nhân tự quản lý chuỗi riêng (ASCII/UTF-8) nên giữ nguyên tập cờ cơ bản.
 KERNEL_FLAGS   := $(CXX_BASE_FLAGS) --target=$(KERN_TARGET)
