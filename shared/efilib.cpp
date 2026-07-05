@@ -1,3 +1,12 @@
+/**
+ * Copyright (c) 2026 VNExos Inc.
+ *
+ * Được cấp phép theo Giấy phép MIT.
+ * Xem tệp LICENSE tại thư mục gốc để biết thêm chi tiết.
+ *
+ * @file efilib.hpp
+ * @brief Triển khai các hàm tiện ích.
+ */
 #include "efilib.hpp"
 #include <efi.hpp>
 #include <stdarg.h>

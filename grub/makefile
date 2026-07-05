@@ -15,7 +15,8 @@ GRUB_BUILD_DIR := $(BUILD_DIR)/grub
 # Tệp ELF trung gian (chỉ dùng cho riscv64 trước khi chuyển sang PE)
 GRUB_ELF_SO    := $(GRUB_BUILD_DIR)/grub.elf
 SRCS           := $(shell find $(GRUB_DIR)/src -type f \( -name "*.cpp" -o -name "*.s" \))
-OBJS           := $(patsubst $(GRUB_DIR)/src/%.cpp,$(GRUB_BUILD_DIR)/%.o,$(filter %.cpp,$(SRCS)))
+OBJS           := $(patsubst $(GRUB_DIR)/src/%.cpp,$(GRUB_BUILD_DIR)/%.o,$(filter %.cpp,$(SRCS))) \
+				  $(shell find $(SHARED_BUILD_DIR) -type f \( -name "*.o" \))
 GRUB_LINKER_SCRIPT := $(GRUB_DIR)/linker_grub_riscv64.ld
 
 $(eval $(call COMPILE_TEMPLATE,\

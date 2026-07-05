@@ -54,7 +54,7 @@ MSG_ASM    := $(BOX_OPEN) $(TXT_ASM)    $(BOX_CLOSE)
 MSG_BOREAS := $(BOX_OPEN) $(TXT_SIGN)   $(BOX_CLOSE)
 
 # ==[ CHUẨN BỊ CÁC BIẾN CẦN THIẾT ]=====================================
-SUBDIRS    := grub internal
+SUBDIRS    := shared grub internal
 
 # Chuỗi UUID độc quyền cho VNExos
 VNEXOS_BOOT_UUID := 2ef6ee17-2a14-4db9-8129-42a6dc48f8af
@@ -105,7 +105,7 @@ firmware/.ready:
 
 run: all firmware/.ready
 	@echo "$(MSG_QEMU) Đang khởi chạy hệ thống..."
-	$(QEMU) $(QEMU_FLAGS) \
+	@$(QEMU) $(QEMU_FLAGS) \
 		-drive file=$(DISK_IMG),format=raw,media=disk
 
 clean:

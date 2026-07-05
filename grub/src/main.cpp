@@ -7,8 +7,8 @@
  * @file main.cpp
  * @brief Tệp khởi đầu của Bộ nạp mồi
  */
-#include "efilib.hpp"
 #include <cpu.hpp>
+#include <efilib.hpp>
 
 using namespace EFI;
 

@@ -28,6 +28,7 @@ KERNEL_FILE:= $(KERNEL_DIR)/Apeiron.kern
 EFI_BIN_DIR:= $(SYSROOT_DIR)/EFI/BOOT
 EFI_BIN    := $(EFI_BIN_DIR)/$(EFI_BIN_NAME)
 DISK_IMG   := $(ROOT_DIR)/disk.img
+SHARED_BUILD_DIR := $(BUILD_DIR)/shared
 
 # ==[ Tệp chữ ký số công khai ]==========================================
 CERT_DIR   := $(ROOT_DIR)/cert

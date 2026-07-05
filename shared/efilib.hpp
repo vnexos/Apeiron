@@ -1,9 +1,17 @@
-#pragma once
+/**
+ * Copyright (c) 2026 VNExos Inc.
+ *
+ * Được cấp phép theo Giấy phép MIT.
+ * Xem tệp LICENSE tại thư mục gốc để biết thêm chi tiết.
+ *
+ * @file efilib.hpp
+ * @brief Khai báo các hàm tiện ích. Một số hàm gỡ lỗi có
+ * thể sẽ bị xóa theo sự phát triển của VNExos Bản Nguyên.
+ */
+#ifndef __SHARED__EFILIB_HPP
+#define __SHARED__EFILIB_HPP
 
 #include <efi.hpp>
-
-#define ALIGN_UP_4KB(size)   (((size) + 4095) & ~4095)
-#define ALIGN_DOWN_4KB(size) ((size) & ~4095)
 
 namespace EFI {
 /**
@@ -39,3 +47,5 @@ void waitForKey(uint8_t k = 0);
  */
 EFI_STATUS loadFile(const uint16_t* path, void** buffer, uint64_t* size);
 } // namespace EFI
+
+#endif // __SHARED__EFILIB_HPP
