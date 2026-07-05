@@ -7,15 +7,33 @@
  * @file main.cpp
  * @brief Tệp khởi đầu của Bộ nạp mồi
  */
+#include "efilib.hpp"
 #include <cpu.hpp>
-#include <efi.hpp>
+
+using namespace EFI;
 
 extern "C" [[gnu::ms_abi]] EFI_STATUS
 vnexos_grub_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable)
 {
-  (void)ImageHandle;
-  SystemTable->ConOut->ClearScreen(SystemTable->ConOut);
-  SystemTable->ConOut->OutputString(SystemTable->ConOut, EFI_TEXT("Hello world!\r\n"));
+  EFI_BOOT_SERVICES* bs = SystemTable->BootServices;
+
+  init(ImageHandle, SystemTable);
+  clear();
+
+  printf("Nhan phim bat ky de doc tep...\n");
+  waitForKey();
+
+  void*      buffer;
+  uint64_t   size;
+  EFI_STATUS status = loadFile(EFI_TEXT("\\EFI\\BOOT\\vnexos.efi"), &buffer, &size);
+
+  if (EFI_ERROR(status))
+  {
+    printf("LOI: Khong the doc tep: %s\n", "\\EFI\\BOOT\\vnexos.efi");
+    return 1;
+  }
+
+  printf("Hello world! Tep o vi tri: 0x%p", buffer);
 
   while (true)
   {

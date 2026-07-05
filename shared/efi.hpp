@@ -26,6 +26,9 @@
 /** Giao thức TCG phiên bản 1 (TPM 1.2) và phiên bản 2 (TPM 2.0). */
 #include <protocol/efi_tcg.hpp>
 
+/** Giao thức tệp ảnh đã tải */
+#include <protocol/efi_image.hpp>
+
 /** Kiểu bộ nhớ, chiến lược cấp phát và bộ mô tả bản đồ bộ nhớ. */
 #include <efi_memory.hpp>
 

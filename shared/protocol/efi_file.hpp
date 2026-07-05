@@ -145,7 +145,7 @@ typedef EFI_STATUS(EFI_API* EFI_FILE_DELETE)(struct EFI_FILE_PROTOCOL* This);
 typedef EFI_STATUS(EFI_API* EFI_FILE_READ)(
     struct EFI_FILE_PROTOCOL* This,
     uint64_t*                 BufferSize,
-    uint64_t*                 Buffer);
+    void*                     Buffer);
 
 /** Ghi dữ liệu từ vùng đệm vào tệp. */
 typedef EFI_STATUS(EFI_API* EFI_FILE_WRITE)(
