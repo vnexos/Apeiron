@@ -31,9 +31,8 @@ DISK_IMG   := $(ROOT_DIR)/disk.img
 
 # ==[ Tệp chữ ký số công khai ]==========================================
 CERT_DIR   := $(ROOT_DIR)/cert
-PUB_FILE   := $(CERT_DIR)/vnexos.crt
-DER_FILE   := $(CERT_DIR)/vnexos.cer
-PRIV_FILE  := $(CERT_DIR)/vnexos.key
+PUB_FILE   := $(CERT_DIR)/root.crt
+KEY_FILE   := $(CERT_DIR)/root.key
 
 # ==[ Công cụ biên dịch ]================================================
 TOOLS_ADDSBAT := python3 $(ROOT_DIR)/tools/add_sbat.py

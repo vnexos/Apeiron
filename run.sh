@@ -6,6 +6,6 @@ if [ -z "$ARCH" ]; then
     ARCH=x86_64
 fi
 
-./build.sh $ARCH
+make ARCH=$ARCH clean
 
 make ARCH=$ARCH run

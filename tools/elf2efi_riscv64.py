@@ -81,7 +81,9 @@ def create_riscv_efi(elf_path: str, output_path: str) -> None:
     sections = []
     for (flags, offset, vaddr, filesz, memsz) in load_segs:
         raw = bytes(elf[offset:offset + filesz])
-        padded = raw + b'\x00' * (align_up(len(raw), FILE_ALIGN) - len(raw))
+        # Mở rộng raw lên memsz (zero-fill cho .bss) rồi mới căn chỉnh FILE_ALIGN
+        raw_full = raw + b'\x00' * (memsz - filesz)
+        padded = raw_full + b'\x00' * (align_up(len(raw_full), FILE_ALIGN) - len(raw_full))
 
         if flags & 0x1:   # Cờ thực thi (Execute flag)
             name = b'.text\x00\x00\x00'

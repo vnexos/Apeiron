@@ -45,6 +45,7 @@ else
 	@$(BOOT_LD) $(BOOT_LDFLAGS) -Wl,-entry:vnexos_grub_main -o $@ $^
 endif
 	@echo "$(MSG_LD) Đã liên kết thành công thành bộ nạp khởi động!"
+	@boreas -sign -s $(KEY_FILE) $(PUB_FILE) $@ $@
 
 clean:
 	@rm -rf $(GRUB_BUILD_DIR)

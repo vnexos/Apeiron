@@ -40,6 +40,9 @@ TXT_CXX    := $(COLOR_BLUE)CXX
 # ASM (Biên dịch hợp ngữ): Sử dụng màu RED (Đỏ tươi) để phân biệt với biên dịch C++
 TXT_ASM    := $(COLOR_RED)ASM
 
+# BOREAS (Ký tệp): Sử dụng màu GRAY (Trắng) để báo hiệu các tác vụ 
+TXT_SIGN := $(COLOR_SILVER)SIGN
+
 # ==[ ĐÓNG GÓI THÀNH CÁC BIẾN MẪU HOÀN CHỈNH ]==========================
 MSG_VNEXOS := $(BOX_OPEN) $(TXT_VNEXOS) $(BOX_CLOSE)
 MSG_LD     := $(BOX_OPEN) $(TXT_LD)     $(BOX_CLOSE)
@@ -48,6 +51,7 @@ MSG_QEMU   := $(BOX_OPEN) $(TXT_QEMU)   $(BOX_CLOSE)
 MSG_CLEAN  := $(BOX_OPEN) $(TXT_CLEAN)  $(BOX_CLOSE)
 MSG_CXX    := $(BOX_OPEN) $(TXT_CXX)    $(BOX_CLOSE)
 MSG_ASM    := $(BOX_OPEN) $(TXT_ASM)    $(BOX_CLOSE)
+MSG_BOREAS := $(BOX_OPEN) $(TXT_SIGN)   $(BOX_CLOSE)
 
 # ==[ CHUẨN BỊ CÁC BIẾN CẦN THIẾT ]=====================================
 SUBDIRS    := grub internal
@@ -58,14 +62,17 @@ VNEXOS_TYPE_UUID := c48d1722-723b-43d6-bead-f2b2623343dd
 VNEXOS_PART_UUID := 9c7ba30b-e2ee-4bbe-9fe4-ab5f23fe2b9b
 
 # ==[ KỊCH BẢN XÂY DỰNG HỆ THỐNG ]======================================
-.PHONY: all clean clean-all run $(SUBDIRS) shim
+.PHONY: all clean clean-all run certs $(SUBDIRS)
 all: $(DISK_IMG)
 	@echo "$(MSG_VNEXOS) Đã xây dựng xong chương trình!"
 
 $(SUBDIRS):
 	@$(MAKE) -C $@
 
-$(DISK_IMG): $(SUBDIRS)
+certs:
+	@cp $(CERT_DIR)/root.crt $(EFI_BIN_DIR)/
+
+$(DISK_IMG): $(SUBDIRS) certs
 # Tạo tệp ảnh đĩa trống kích thước 1 GiB (1024 MiB)
 	@dd if=/dev/zero of=$(DISK_IMG) bs=1M count=1024 status=none
 
@@ -98,7 +105,7 @@ firmware/.ready:
 
 run: all firmware/.ready
 	@echo "$(MSG_QEMU) Đang khởi chạy hệ thống..."
-	@$(QEMU) $(QEMU_FLAGS) \
+	$(QEMU) $(QEMU_FLAGS) \
 		-drive file=$(DISK_IMG),format=raw,media=disk
 
 clean:

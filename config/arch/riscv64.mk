@@ -16,7 +16,7 @@ FD_VARS        := RISCV_VIRT_VARS.fd
 # ==[ Cờ riêng của bộ xử lý ]===========================================
 # RISC-V cần cấm sử dụng các thanh ghi số thực ở tầng Nhân để tránh làm hỏng
 # trạng thái bộ tính toán dấu phẩy động khi xảy ra ngắt.
-ARCH_CXX_FLAGS := -mno-implicit-float -mabi=lp64 -mcmodel=medany
+ARCH_CXX_FLAGS := -march=rv64imac -mno-implicit-float -mabi=lp64 -mcmodel=medany -mno-relax -msmall-data-limit=0 -fno-jump-tables
 # -mno-implicit-float : Cấm tự động dùng các thanh ghi số thực để đề phòng biến dạng dữ liệu lúc xảy ra ngắt.
 # -mabi=lp64          : Ép sử dụng quy ước gọi hàm dùng các thanh ghi số nguyên 64-bit cho kiến trúc RISC-V.
 # -mcmodel=medany     : Dùng địa chỉ tương đối theo bộ đếm chương trình (auipc),

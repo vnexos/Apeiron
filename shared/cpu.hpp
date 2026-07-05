@@ -18,8 +18,9 @@ inline void cpu_halt()
   // Trạng thái nghỉ tiết kiệm điện của ARM, chờ ngắt từ GIC (Generic Interrupt Controller)
   __asm__ __volatile__("wfi");
 #elif defined(__riscv)
-  // Trạng thái nghỉ của RISC-V, chờ ngắt từ PLIC/CLINT
-  __asm__ __volatile__("wfi");
+  // Trong môi trường UEFI (S-mode), lệnh wfi có thể bị OpenSBI từ chối (bắt lỗi Illegal Instruction)
+  // để ngăn hệ điều hành làm treo CPU. Do đó, ta chỉ dùng nop trong vòng lặp chờ.
+  __asm__ __volatile__("nop");
 #else
 #error "Kiến trúc chip này chưa được VNExos hỗ trợ!"
 #endif
