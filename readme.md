@@ -15,9 +15,9 @@
 
 ---
 ### 📃 Giới thiệu
-- Hệ điều hành **VNExos Bản Nguyên** (tiếng Anh là: **VNExos Apeiron OS**) là hệ điều hành được xây dựng bởi VNExos. Dự án mang theo khát vọng đóng góp một nền tảng vững chắc cho sự phát triển công nghệ của Việt Nam và vươn tầm thế giới.
+- Hệ điều hành **VNExos Bản Nguyên** (tiếng Anh là: **VNExos Apeiron** OS) là hệ điều hành được xây dựng bởi VNExos. Dự án mang theo khát vọng đóng góp một nền tảng vững chắc cho sự phát triển công nghệ của Việt Nam và vươn tầm thế giới.
 - Đây là dự án mã nguồn hỗn hợp (đóng một phần) để đảm bảo sự bảo mật cho những chương trình cốt lõi của **VNExos Bản Nguyên**.
-- Các tài liệu bên trong dự án hoặc chú thích bên trong mã nguồn trừ các tên riêng đều sẽ được viết bằng tiếng Việt.
+- Các tài liệu bên trong dự án hoặc chú thích bên trong mã nguồn trừ các tên riêng và các tài liệu chuẩn quốc tế đều sẽ được viết bằng tiếng Việt.
 
 ### 🖥️ Công nghệ sử dụng
 | Thành phần   |Tên | Mục đích |
