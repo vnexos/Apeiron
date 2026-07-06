@@ -36,6 +36,13 @@ thư mục con hoặc tài nguyên nào nằm bên trong thư mục /internal. T
 /internal chứa mã nguồn hoàn toàn bảo mật, riêng tư và độc quyền, thuộc sở hữu 
 duy nhất của VNExos Inc.
 
+3. CÁC THÀNH PHẦN MẬT MÃ: Giấy phép Công cộng Toàn bách khoa GNU Phiên bản 3 
+(GPLv3) được áp dụng HOÀN TOÀN và ĐỘC QUYỀN cho tất cả mã nguồn, thông số kỹ 
+thuật toán học và các triển khai thuật toán nằm trong thư mục /shared/post_quantum. 
+Thành phần này đại diện cho phân hệ mật mạ hậu lượng tử mã nguồn mở của 
+VNExos Inc., và bất kỳ tác phẩm phái sinh nào sử dụng các tài sản này đều phải 
+tuân thủ các điều khoản copyleft của GPLv3.
+
 VNEXOS INC. BẢO LƯU TẤT CẢ CÁC QUYỀN ĐỐI VỚI THƯ MỤC /internal. Nghiêm cấm mọi 
 hành vi sao chép, phân phối, sửa đổi, đảo ngược mã nguồn (reverse engineering) 
 hoặc hiển thị công khai bất kỳ tệp tin nào trong thư mục /internal dưới mọi 

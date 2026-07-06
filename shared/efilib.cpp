@@ -234,6 +234,7 @@ EFI_STATUS EFI::loadFile(const uint16_t* path, void** buffer, uint64_t* size)
 
   bs->AllocatePool(EfiLoaderData, readSize, buffer);
 
+  // Đọc tệp vào bộ nhớ
   status = fileHandle->Read(fileHandle, &readSize, *buffer);
   fileHandle->Close(fileHandle);
   if (EFI_ERROR(status)) return status;
