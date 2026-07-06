@@ -45,7 +45,7 @@ void waitForKey(uint8_t k = 0);
  * @param size   Kích thước của tệp
  * @return 0 nếu chạy thành công, 1 thì ngược lại
  */
-EFI_STATUS loadFile(const uint16_t* path, void** buffer, uint64_t* size);
+EFI_STATUS loadFile(const uint16_t* path, uint8_t** buffer, uint64_t* size);
 } // namespace EFI
 
 #endif // __SHARED__EFILIB_HPP

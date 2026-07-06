@@ -183,7 +183,7 @@ void EFI::waitForKey(uint8_t k)
   }
 }
 
-EFI_STATUS EFI::loadFile(const uint16_t* path, void** buffer, uint64_t* size)
+EFI_STATUS EFI::loadFile(const uint16_t* path, uint8_t** buffer, uint64_t* size)
 {
   EFI_STATUS         status;
   EFI_BOOT_SERVICES* bs = SystemTable->BootServices;
@@ -232,7 +232,7 @@ EFI_STATUS EFI::loadFile(const uint16_t* path, void** buffer, uint64_t* size)
 
   uint64_t readSize = *size;
 
-  bs->AllocatePool(EfiLoaderData, readSize, buffer);
+  bs->AllocatePool(EfiLoaderData, readSize, (void**)buffer);
 
   // Đọc tệp vào bộ nhớ
   status = fileHandle->Read(fileHandle, &readSize, *buffer);
