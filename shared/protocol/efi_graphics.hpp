@@ -62,6 +62,28 @@ typedef struct
   uint32_t ReservedMask;
 } EFI_PIXEL_BITMASK;
 
+/**
+ * Các thao tác thông qua hàm Blt
+ */
+typedef enum {
+  EfiBltVideoFill,                 // 0: Tô đặc một khối chữ nhật trên màn hình bằng 1 màu duy nhất (Xóa màn hình).
+  EfiBltVideoToBltBuffer,          // 1: Đọc ngược pixel từ màn hình (VRAM) lưu vào mảng RAM thường.
+  EfiBltBufferToVideo,             // 2: Đẩy một mảng pixel từ RAM thường lên màn hình (Vẽ ảnh/logo).
+  EfiBltVideoToVideo,              // 3: Copy trực tiếp một khối pixel từ vùng này sang vùng khác trên VRAM.
+  EfiGraphicsOutputBltOperationMax // Giá trị lính canh để kiểm tra giới hạn biên của enum.
+} EFI_GRAPHICS_OUTPUT_BLT_OPERATION;
+
+/**
+ * Lưu các giá trị của Pixel
+ */
+typedef struct
+{
+  uint8_t Blue;     // Kênh màu Xanh lam (0 - 255)
+  uint8_t Green;    // Kênh màu Xanh lục (0 - 255)
+  uint8_t Red;      // Kênh màu Đỏ       (0 - 255)
+  uint8_t Reserved; // Kênh dự phòng / Alpha channel (Thường để mặc định bằng 0)
+} EFI_GRAPHICS_OUTPUT_BLT_PIXEL;
+
 /**************************************************************
  * THÔNG TIN CHẾ ĐỘ HIỂN THỊ
  **************************************************************/
