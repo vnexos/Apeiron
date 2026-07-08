@@ -32,7 +32,7 @@ static bool getKeyData(Sign::KeyMetadata* metadata, const uint8_t* rawPublicKey,
   return true;
 }
 
-bool Sign::verifyFileData(const uint8_t* rawData, uint64_t dataSize, const uint8_t* rawPublicKey, uint64_t keySize)
+bool Sign::verifyFileSignature(const uint8_t* rawData, uint64_t dataSize, const uint8_t* rawPublicKey, uint64_t keySize)
 {
   // Nếu tệp nhỏ hơn chữ ký + siêu dữ liệu
   if (dataSize < DILITHIUM_BYTES + 64)

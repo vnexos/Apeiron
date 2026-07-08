@@ -33,7 +33,8 @@ typedef uint64_t EFI_TPL;
  **************************************************************/
 
 /** Thực thi thành công, không có lỗi. */
-#define EFI_SUCCESS 0
+#define EFI_SUCCESS     0
+#define EFI_UNSUPPORTED 3
 
 /** Kiểm tra xem mã trạng thái có phải là lỗi hay không. */
 #define EFI_ERROR(status) ((status) != EFI_SUCCESS)

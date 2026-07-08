@@ -26,7 +26,7 @@ typedef struct
  * @param rawPublicKey Dữ liệu thô của khóa công khai
  * @param keySize      Kích thước của khóa công khai
  */
-bool verifyFileData(
+bool verifyFileSignature(
     const uint8_t* rawData,
     uint64_t       dataSize,
     const uint8_t* rawPublicKey,

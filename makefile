@@ -72,7 +72,11 @@ $(SUBDIRS):
 certs:
 	@cp $(CERT_DIR)/root.crt $(EFI_BIN_DIR)/
 
-$(DISK_IMG): $(SUBDIRS) certs
+logos:
+	@mkdir -p $(SYS_LOGO_DIR)/
+	@cp $(LOGO_DIR)/logo*.bmp $(SYS_LOGO_DIR)/
+
+$(DISK_IMG): $(SUBDIRS) certs logos
 # Tạo tệp ảnh đĩa trống kích thước 1 GiB (1024 MiB)
 	@dd if=/dev/zero of=$(DISK_IMG) bs=1M count=1024 status=none
 

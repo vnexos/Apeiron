@@ -13,6 +13,25 @@
 
 #include <efi.hpp>
 
+struct __attribute__((packed)) BmpFileHeader
+{
+  uint16_t BfType; // Phải là 0x4d42 ('B', 'M')
+  uint32_t BfSize; // Tổng dung lượng toàn bộ tệp BMP
+  uint16_t BfReserved1;
+  uint16_t BfReserved2;
+  uint32_t BfOffBits; // Vị trí bắt đầu của mảng Pixel
+};
+
+struct __attribute__((packed)) BmpInfoHeader
+{
+  uint32_t BiSize;
+  int32_t  BiWidth;       // Chiều rộng
+  int32_t  BiHeight;      // Chiều cao
+  uint16_t BiPlanes;
+  uint16_t BiBitCount;    // Sộ sâu màu (Ví dụ: 24-bit RGB hoặc 32-bit ARGB)
+  uint32_t BiCompression; // Thường là 0 (Không nén)
+};
+
 namespace EFI {
 /**
  * Khởi tạo cho thư viện EFI
@@ -46,6 +65,21 @@ void waitForKey(uint8_t k = 0);
  * @return 0 nếu chạy thành công, 1 thì ngược lại
  */
 EFI_STATUS loadFile(const uint16_t* path, uint8_t** buffer, uint64_t* size);
+
+/**
+ * Cấu hình đồ họa thông qua giao thức đồ họa
+ * @return Cấu trúc giao thức đồ họa
+ */
+EFI_GRAPHICS_OUTPUT_PROTOCOL* setupGraphics();
+
+/**
+ * Đọc tệp BMP trên bộ nhớ và vẽ ra màn hình
+ * @param imageAddress Địa chỉ của tệp BMP trên bộ nhớ
+ * @param x            Tọa độ chiều ngang của ảnh trên màn hình
+ * @param y            Tọa độ chiều dọc của ảnh trên màn hình
+ * @return 0 nếu như ảnh BMP được vẽ thành công
+ */
+EFI_STATUS drawBmp(uint64_t imageAddress, uint64_t x, uint64_t y, uint32_t* imgWidth = nullptr, uint32_t* imgHeight = nullptr);
 } // namespace EFI
 
 #endif // __SHARED__EFILIB_HPP

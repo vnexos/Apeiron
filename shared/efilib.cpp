@@ -14,6 +14,8 @@
 static EFI_HANDLE         ImageHandle;
 static EFI_SYSTEM_TABLE*  SystemTable;
 static EFI_FILE_PROTOCOL* rootDir = nullptr;
+// Cấu trúc giao thức đồ họa
+static EFI_GRAPHICS_OUTPUT_PROTOCOL* gop;
 
 void EFI::init(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable)
 {
@@ -242,4 +244,144 @@ EFI_STATUS EFI::loadFile(const uint16_t* path, uint8_t** buffer, uint64_t* size)
   *size = readSize;
 
   return 0;
+}
+
+EFI_GRAPHICS_OUTPUT_PROTOCOL* EFI::setupGraphics()
+{
+  EFI_GUID gopGuid = EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID;
+  if (EFI_ERROR(SystemTable->BootServices->LocateProtocol(&gopGuid, nullptr, (void**)&gop)))
+    return nullptr;
+
+  return gop;
+}
+
+EFI_STATUS EFI::drawBmp(uint64_t imageAddress, uint64_t x, uint64_t y, uint32_t* imgWidth, uint32_t* imgHeight)
+{
+  uint8_t* bmpBuffer = (uint8_t*)(uintptr_t)imageAddress;
+
+  BmpFileHeader* fileHeader = (BmpFileHeader*)bmpBuffer;
+  if (fileHeader->BfType != 0x4d42)
+    return 1;
+
+  BmpInfoHeader* infoHeader = (BmpInfoHeader*)(bmpBuffer + sizeof(BmpFileHeader));
+  int32_t        width      = infoHeader->BiWidth;
+  int32_t        height     = infoHeader->BiHeight;
+
+  // Xử lý chiều cao âm nghĩa là ảnh lưu từ trên xuống
+  bool isTopDown = false;
+  if (height < 0)
+  {
+    isTopDown = true;
+    height    = -height;
+  }
+
+  if (imgWidth)
+    *imgWidth = width;
+  if (imgHeight)
+    *imgHeight = height;
+
+  // Từ chối các loại ảnh không hỗ trợ
+  if (infoHeader->BiCompression != 0 && infoHeader->BiCompression != 3)
+    return EFI_UNSUPPORTED;
+  if (infoHeader->BiBitCount != 16 && infoHeader->BiBitCount != 24 && infoHeader->BiBitCount != 32)
+    return EFI_UNSUPPORTED;
+
+  uint32_t redMask   = 0;
+  uint32_t greenMask = 0;
+  uint32_t blueMask  = 0;
+  uint32_t alphaMask = 0;
+
+  if (infoHeader->BiCompression == 3)
+  {
+    // Với BI_BITFIELDS (3), các mask luôn nằm ở offset 40 từ đầu infoHeader
+    uint32_t* masks = (uint32_t*)((uint8_t*)infoHeader + 40);
+    redMask         = masks[0];
+    greenMask       = masks[1];
+    blueMask        = masks[2];
+
+    // Nếu BiSize đủ lớn cho alpha mask (>= 56, tức BITMAPV3INFOHEADER)
+    if (infoHeader->BiSize >= 56)
+      alphaMask = masks[3];
+  } else if (infoHeader->BiBitCount == 16)
+  {
+    // Mặc định của 16-bit BMP không nén là RGB555
+    redMask   = 0x7C00;
+    greenMask = 0x03E0;
+    blueMask  = 0x001F;
+  }
+
+  auto extractColor = [](uint32_t pixel, uint32_t mask) -> uint8_t {
+    if (!mask) return 0;
+    int      shift = 0;
+    uint32_t m     = mask;
+    while ((m & 1) == 0)
+    {
+      m >>= 1;
+      shift++;
+    }
+    uint32_t val = (pixel & mask) >> shift;
+    return (uint8_t)((val * 255) / m);
+  };
+
+  uint32_t rowSize   = ((infoHeader->BiBitCount * width + 31) / 32) * 4;
+  uint8_t* rawData   = bmpBuffer + fileHeader->BfOffBits;
+  uint32_t totalSize = width * height;
+
+  EFI_GRAPHICS_OUTPUT_BLT_PIXEL* image;
+  EFI_STATUS                     status = SystemTable->BootServices->AllocatePool(EfiLoaderData, totalSize * sizeof(EFI_GRAPHICS_OUTPUT_BLT_PIXEL), (void**)&image);
+  if (EFI_ERROR(status))
+    return status;
+
+  for (int32_t y = 0; y < height; ++y)
+  {
+    // Nếu là hướng từ trên xuống, copy xuôi. Nếu hướng từ dưới lên, copy ngược từ dưới lên.
+    uint32_t srcY   = isTopDown ? y : (height - 1 - y);
+    uint8_t* rowPtr = rawData + (srcY * rowSize);
+
+    for (int32_t x = 0; x < width; ++x)
+    {
+      uint64_t imageIdx = y * width + x;
+
+      if (infoHeader->BiCompression == 3 || infoHeader->BiBitCount == 16)
+      {
+        uint32_t pixel = 0;
+        if (infoHeader->BiBitCount == 32)
+          pixel = rowPtr[x * 4] | (rowPtr[x * 4 + 1] << 8) | (rowPtr[x * 4 + 2] << 16) | (rowPtr[x * 4 + 3] << 24);
+        else if (infoHeader->BiBitCount == 16)
+          pixel = rowPtr[x * 2] | (rowPtr[x * 2 + 1] << 8);
+        else if (infoHeader->BiBitCount == 24)
+          pixel = rowPtr[x * 3] | (rowPtr[x * 3 + 1] << 8) | (rowPtr[x * 3 + 2] << 16);
+
+        image[imageIdx].Red      = extractColor(pixel, redMask);
+        image[imageIdx].Green    = extractColor(pixel, greenMask);
+        image[imageIdx].Blue     = extractColor(pixel, blueMask);
+        image[imageIdx].Reserved = extractColor(pixel, alphaMask);
+      } else if (infoHeader->BiBitCount == 32)
+      {
+        image[imageIdx].Blue     = rowPtr[x * 4 + 0];
+        image[imageIdx].Green    = rowPtr[x * 4 + 1];
+        image[imageIdx].Red      = rowPtr[x * 4 + 2];
+        image[imageIdx].Reserved = rowPtr[x * 4 + 3];
+      } else if (infoHeader->BiBitCount == 24)
+      {
+        image[imageIdx].Blue     = rowPtr[x * 3 + 0];
+        image[imageIdx].Green    = rowPtr[x * 3 + 1];
+        image[imageIdx].Red      = rowPtr[x * 3 + 2];
+        image[imageIdx].Reserved = 0;
+      }
+    }
+  }
+
+  status = gop->Blt(
+      gop, image,
+      EfiBltBufferToVideo,
+      0, 0,
+      x,
+      y,
+      width, height, 0);
+
+  // Giải phóng RAM
+  SystemTable->BootServices->FreePool(image);
+
+  return status;
 }

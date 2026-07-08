@@ -15,35 +15,12 @@
 
 using namespace EFI;
 
-struct __attribute__((packed)) BmpFileHeader
-{
-  uint16_t BfType; // Phải là 0x4d42 ('B', 'M')
-  uint32_t BfSize; // Tổng dung lượng toàn bộ tệp BMP
-  uint16_t BfReserved1;
-  uint16_t BfReserved2;
-  uint32_t BfOffBits; // Vị trí bắt đầu của mảng Pixel
+static uint16_t* filePath[4] = {
+    EFI_TEXT("\\assets\\logos\\logo512.bmp"),
+    EFI_TEXT("\\assets\\logos\\logo256.bmp"),
+    EFI_TEXT("\\assets\\logos\\logo128.bmp"),
+    EFI_TEXT("\\assets\\logos\\logo64.bmp"),
 };
-
-struct __attribute__((packed)) BmpInfoHeader
-{
-  uint32_t BiSize;
-  int32_t  BiWidth;       // Chiều rộng
-  int32_t  BiHeight;      // Chiều cao
-  uint16_t BiPlanes;
-  uint16_t BiBitCount;    // Sộ sâu màu (Ví dụ: 24-bit RGB hoặc 32-bit ARGB)
-  uint32_t BiCompression; // Thường là 0 (Không nén)
-};
-
-EFI_GRAPHICS_OUTPUT_PROTOCOL* setupGraphics(EFI_BOOT_SERVICES* bs)
-{
-  // GIAO THỨC ĐỒ HỌA
-  EFI_GRAPHICS_OUTPUT_PROTOCOL* gop;
-  EFI_GUID                      gopGuid = EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID;
-  if (EFI_ERROR(bs->LocateProtocol(&gopGuid, nullptr, (void**)&gop)))
-    return nullptr;
-
-  return gop;
-}
 
 ACPI_BGRT* getBgrt(EFI_SYSTEM_TABLE* SystemTable)
 {
@@ -86,101 +63,92 @@ extern "C" [[gnu::ms_abi]] EFI_STATUS vnexos_grub_main(EFI_HANDLE ImageHandle, E
 
   /* Khởi tạo thư viện EFI */
   init(ImageHandle, SystemTable);
-  clear();
 
   /* Cấu hình đồ họa */
-  EFI_GRAPHICS_OUTPUT_PROTOCOL*      gop          = setupGraphics(bs);
+  EFI_GRAPHICS_OUTPUT_PROTOCOL*      gop          = setupGraphics();
   EFI_GRAPHICS_OUTPUT_PROTOCOL_MODE* graphicsMode = gop->Mode;
 
-  uint32_t* framebuffer = (uint32_t*)graphicsMode->FrameBufferBase;
-  uint32_t  resX        = graphicsMode->Info->HorizontalResolution;
-  uint32_t  resY        = graphicsMode->Info->VerticalResolution;
-  uint32_t  ppsl        = graphicsMode->Info->PixelsPerScanLine;
+  uint64_t resX = graphicsMode->Info->HorizontalResolution;
+  uint64_t resY = graphicsMode->Info->VerticalResolution;
+
+  /* Lấp đầy màn hình bằng một màu */
+  EFI_GRAPHICS_OUTPUT_BLT_PIXEL fill_color{
+      0,
+      0,
+      0,
+      0,
+  };
+
+  gop->Blt(
+      gop, &fill_color,
+      EfiBltVideoFill,
+      0, 0,
+      0, 0,
+      resX, resY,
+      0);
 
   /* Vẽ biểu trưng của hãng sản xuất ra màn hình */
   ACPI_BGRT* bgrt = getBgrt(SystemTable);
 
+  uint32_t logoWidth  = 0;
+  uint32_t logoHeight = 0;
+
   if (bgrt)
   {
-    uint8_t* bmpBuffer = (uint8_t*)(uintptr_t)bgrt->ImageAddress;
-
-    BmpFileHeader* fileHeader = (BmpFileHeader*)bmpBuffer;
-    if (fileHeader->BfType != 0x4d42)
-      goto invalidBgrt;
-
-    BmpInfoHeader* infoHeader = (BmpInfoHeader*)(bmpBuffer + sizeof(BmpFileHeader));
-    uint32_t       width      = infoHeader->BiWidth;
-    uint32_t       height     = infoHeader->BiHeight;
-
-    uint32_t rowSize   = ((infoHeader->BiBitCount * infoHeader->BiWidth + 31) / 32) * 4;
-    uint8_t* rawData   = bmpBuffer + fileHeader->BfOffBits;
-    uint32_t totalSize = width * height;
-
-    EFI_GRAPHICS_OUTPUT_BLT_PIXEL* logo;
-    bs->AllocatePool(EfiLoaderData, totalSize * sizeof(EFI_GRAPHICS_OUTPUT_BLT_PIXEL), (void**)&logo);
-
-    for (uint64_t y = 0; y < height; ++y)
-    {
-      // SỬA LỖI LẬT TRỤC Y: B bốc hàng từ đáy file BMP lên (height - 1 - y)
-      // để nạp vào hàng đỉnh của mảng logo, giúp ảnh hiển thị xuôi chiều!
-      uint8_t* rowPtr = rawData + ((height - 1 - y) * rowSize);
-
-      for (uint64_t x = 0; x < width; ++x)
-      {
-        uint64_t logoIdx = y * width + x;
-
-        if (infoHeader->BiBitCount == 32)
-        {
-          // SỬA LỖI MÀU 32-BIT: BMP 32-bit là BGRA, khớp hoàn toàn với cấu trúc BLT PIXEL
-          logo[logoIdx].Blue     = rowPtr[x * 4 + 0];
-          logo[logoIdx].Green    = rowPtr[x * 4 + 1];
-          logo[logoIdx].Red      = rowPtr[x * 4 + 2];
-          logo[logoIdx].Reserved = rowPtr[x * 4 + 3];
-        } else if (infoHeader->BiBitCount == 24)
-        {
-          // SỬA LỖI MÀU 24-BIT: BMP 24-bit là BGR, copy đúng kênh vào BLT PIXEL
-          logo[logoIdx].Blue     = rowPtr[x * 3 + 0];
-          logo[logoIdx].Green    = rowPtr[x * 3 + 1];
-          logo[logoIdx].Red      = rowPtr[x * 3 + 2];
-          logo[logoIdx].Reserved = 0; // Luôn xóa byte dự phòng về 0
-        }
-      }
-    }
-
-    EFI_STATUS status = gop->Blt(
-        gop, logo,
-        EfiBltBufferToVideo,
-        0, 0,
-        bgrt->ImageXOffset,
-        bgrt->ImageYOffset,
-        width, height, 0);
-    if (EFI_ERROR(status))
-      return 1;
+    drawBmp(bgrt->ImageAddress, bgrt->ImageXOffset, bgrt->ImageYOffset, &logoWidth, &logoHeight);
   }
 
-invalidBgrt:
+  /* Tính toán và phân vùng để vẽ biểu trưng phù hợp */
+  int32_t logoSegment = (resY - (bgrt->ImageYOffset + logoHeight)) / 3;
 
-  waitForKey();
-
-  uint8_t*   buffer;
-  uint64_t   size;
-  EFI_STATUS status = loadFile(EFI_TEXT("\\EFI\\BOOT\\vnexos.efi"), &buffer, &size);
-  if (EFI_ERROR(status))
-  {
-    printf("LOI: Khong the doc tep: %s\n", "\\EFI\\BOOT\\vnexos.efi");
-    return 1;
-  }
-
-  uint8_t* key;
-  uint64_t keySize;
-  status = loadFile(EFI_TEXT("\\EFI\\BOOT\\root.crt"), &key, &keySize);
+  /* Đọc chứng chỉ gốc vào bộ nhớ */
+  uint8_t*   key;
+  uint64_t   keySize;
+  EFI_STATUS status = loadFile(EFI_TEXT("\\EFI\\BOOT\\root.crt"), &key, &keySize);
   if (EFI_ERROR(status))
   {
     printf("LOI: Khong the doc tep: %s\n", "\\EFI\\BOOT\\root.crt");
     return 1;
   }
 
-  if (Sign::verifyFileData(buffer, size, key, keySize))
+  /* Kiểm tra chữ ký ảnh và vẽ ra màn hình */
+  uint8_t* imageData;
+  uint64_t imageSize;
+  if (logoSegment > 512)
+    status = loadFile(filePath[0], (uint8_t**)&imageData, &imageSize);
+  else if (logoSegment > 256)
+    status = loadFile(filePath[1], (uint8_t**)&imageData, &imageSize);
+  else if (logoSegment > 128)
+    status = loadFile(filePath[2], (uint8_t**)&imageData, &imageSize);
+  else
+    status = loadFile(filePath[3], (uint8_t**)&imageData, &imageSize);
+  if (!EFI_ERROR(status))
+  {
+    if (Sign::verifyFileSignature(imageData, imageSize, key, keySize))
+    {
+      BmpInfoHeader* bi = (BmpInfoHeader*)(imageData + sizeof(BmpFileHeader));
+
+      uint64_t logoX  = (resX - bi->BiWidth) / 2;
+      int64_t  deltaY = (logoSegment - bi->BiHeight) / 2;
+      uint64_t logoY  = (bi->BiHeight < logoSegment) ? (resY - logoSegment + deltaY) : (resY - bi->BiHeight - 20);
+
+      drawBmp((uint64_t)imageData, logoX, logoY);
+    }
+  }
+  bs->FreePool(imageData);
+
+  waitForKey();
+
+  uint8_t* buffer;
+  uint64_t size;
+  status = loadFile(EFI_TEXT("\\EFI\\BOOT\\vnexos.efi"), &buffer, &size);
+  if (EFI_ERROR(status))
+  {
+    printf("LOI: Khong the doc tep: %s\n", "\\EFI\\BOOT\\vnexos.efi");
+    return 1;
+  }
+
+  if (Sign::verifyFileSignature(buffer, size, key, keySize))
     printf("OK\n");
   else
     printf("NG\n");

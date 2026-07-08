@@ -35,6 +35,10 @@ CERT_DIR   := $(ROOT_DIR)/cert
 PUB_FILE   := $(CERT_DIR)/root.crt
 KEY_FILE   := $(CERT_DIR)/root.key
 
+# ==[ Tệp Biểu trưng ]===================================================
+LOGO_DIR      := $(ROOT_DIR)/assets
+SYS_LOGO_DIR  := $(SYSROOT_DIR)/assets/logos
+
 # ==[ Công cụ biên dịch ]================================================
 TOOLS_ADDSBAT := python3 $(ROOT_DIR)/tools/add_sbat.py
 
