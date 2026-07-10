@@ -16,12 +16,7 @@
 
 using namespace EFI;
 
-static uint16_t* logoPath[4] = {
-    EFI_TEXT("\\assets\\logos\\logo512.bmp"),
-    EFI_TEXT("\\assets\\logos\\logo256.bmp"),
-    EFI_TEXT("\\assets\\logos\\logo128.bmp"),
-    EFI_TEXT("\\assets\\logos\\logo64.bmp"),
-};
+static const uint16_t* logoPath[4];
 
 ACPI_BGRT* getBgrt(EFI_SYSTEM_TABLE* SystemTable)
 {
@@ -61,6 +56,10 @@ ACPI_BGRT* getBgrt(EFI_SYSTEM_TABLE* SystemTable)
 extern "C" [[gnu::ms_abi]] EFI_STATUS vnexos_grub_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable)
 {
   EFI_BOOT_SERVICES* bs = SystemTable->BootServices;
+  logoPath[0]           = EFI_TEXT("\\assets\\logos\\logo512.bmp");
+  logoPath[1]           = EFI_TEXT("\\assets\\logos\\logo256.bmp");
+  logoPath[2]           = EFI_TEXT("\\assets\\logos\\logo128.bmp");
+  logoPath[3]           = EFI_TEXT("\\assets\\logos\\logo64.bmp");
 
   /* Khởi tạo thư viện EFI */
   init(ImageHandle, SystemTable);
