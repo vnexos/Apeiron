@@ -226,7 +226,9 @@ EFI_STATUS EFI::loadFile(const uint16_t* path, uint8_t** buffer, uint64_t* size)
   EFI_GUID       fileInfoGuid = EFI_FILE_INFO_ID;
 
   fileHandle->GetInfo(fileHandle, &fileInfoGuid, &infoSize, nullptr);
-  bs->AllocatePool(EfiLoaderData, infoSize, (void**)&fileInfo);
+  status = bs->AllocatePool(EfiLoaderData, infoSize, (void**)&fileInfo);
+  if (EFI_ERROR(status))
+    return status;
   fileHandle->GetInfo(fileHandle, &fileInfoGuid, &infoSize, fileInfo);
 
   *size = fileInfo->FileSize;
@@ -234,12 +236,18 @@ EFI_STATUS EFI::loadFile(const uint16_t* path, uint8_t** buffer, uint64_t* size)
 
   uint64_t readSize = *size;
 
-  bs->AllocatePool(EfiLoaderData, readSize, (void**)buffer);
+  status = bs->AllocatePool(EfiLoaderData, readSize, (void**)buffer);
+  if (EFI_ERROR(status))
+    return status;
 
   // Đọc tệp vào bộ nhớ
   status = fileHandle->Read(fileHandle, &readSize, *buffer);
   fileHandle->Close(fileHandle);
-  if (EFI_ERROR(status)) return status;
+  if (EFI_ERROR(status))
+  {
+    bs->FreePool(*buffer);
+    return status;
+  }
 
   *size = readSize;
 

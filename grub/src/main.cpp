@@ -10,12 +10,13 @@
 #include <acpi.hpp>
 #include <cpu.hpp>
 #include <efilib.hpp>
+#include <post_quantum/sig/dilithium.hpp>
 #include <post_quantum/sign.hpp>
 #include <string.hpp>
 
 using namespace EFI;
 
-static uint16_t* filePath[4] = {
+static uint16_t* logoPath[4] = {
     EFI_TEXT("\\assets\\logos\\logo512.bmp"),
     EFI_TEXT("\\assets\\logos\\logo256.bmp"),
     EFI_TEXT("\\assets\\logos\\logo128.bmp"),
@@ -93,13 +94,14 @@ extern "C" [[gnu::ms_abi]] EFI_STATUS vnexos_grub_main(EFI_HANDLE ImageHandle, E
   uint32_t logoWidth  = 0;
   uint32_t logoHeight = 0;
 
+  int32_t logoSegment = 0;
+
   if (bgrt)
   {
     drawBmp(bgrt->ImageAddress, bgrt->ImageXOffset, bgrt->ImageYOffset, &logoWidth, &logoHeight);
+    /* Tính toán và phân vùng để vẽ biểu trưng phù hợp */
+    logoSegment = (resY - (bgrt->ImageYOffset + logoHeight)) / 2;
   }
-
-  /* Tính toán và phân vùng để vẽ biểu trưng phù hợp */
-  int32_t logoSegment = (resY - (bgrt->ImageYOffset + logoHeight)) / 3;
 
   /* Đọc chứng chỉ gốc vào bộ nhớ */
   uint8_t*   key;
@@ -108,34 +110,58 @@ extern "C" [[gnu::ms_abi]] EFI_STATUS vnexos_grub_main(EFI_HANDLE ImageHandle, E
   if (EFI_ERROR(status))
   {
     printf("LOI: Khong the doc tep: %s\n", "\\EFI\\BOOT\\root.crt");
-    return 1;
+    return status;
   }
 
   /* Kiểm tra chữ ký ảnh và vẽ ra màn hình */
   uint8_t* imageData;
   uint64_t imageSize;
-  if (logoSegment > 512)
-    status = loadFile(filePath[0], (uint8_t**)&imageData, &imageSize);
-  else if (logoSegment > 256)
-    status = loadFile(filePath[1], (uint8_t**)&imageData, &imageSize);
-  else if (logoSegment > 128)
-    status = loadFile(filePath[2], (uint8_t**)&imageData, &imageSize);
-  else
-    status = loadFile(filePath[3], (uint8_t**)&imageData, &imageSize);
+  uint8_t  logoPathIndex;
+  if (logoSegment)
+  {
+    if (logoSegment > 512)
+      logoPathIndex = 0;
+    else if (logoSegment > 256)
+      logoPathIndex = 1;
+    else if (logoSegment > 128)
+      logoPathIndex = 2;
+    else
+      logoPathIndex = 3;
+  } else
+  {
+    uint64_t logoPart = resY / 3;
+    if (logoPart > 512)
+      logoPathIndex = 0;
+    else if (logoPart > 256)
+      logoPathIndex = 1;
+    else if (logoPart > 128)
+      logoPathIndex = 2;
+    else
+      logoPathIndex = 3;
+  }
+
+  status = loadFile(logoPath[logoPathIndex], (uint8_t**)&imageData, &imageSize);
   if (!EFI_ERROR(status))
   {
     if (Sign::verifyFileSignature(imageData, imageSize, key, keySize))
     {
       BmpInfoHeader* bi = (BmpInfoHeader*)(imageData + sizeof(BmpFileHeader));
-
-      uint64_t logoX  = (resX - bi->BiWidth) / 2;
-      int64_t  deltaY = (logoSegment - bi->BiHeight) / 2;
-      uint64_t logoY  = (bi->BiHeight < logoSegment) ? (resY - logoSegment + deltaY) : (resY - bi->BiHeight - 20);
+      uint64_t       logoX, logoY;
+      if (logoSegment)
+      {
+        logoX          = (resX - bi->BiWidth) / 2;
+        int64_t deltaY = (logoSegment - bi->BiHeight) / 2;
+        logoY          = (bi->BiHeight < logoSegment) ? (resY - logoSegment + deltaY) : (resY - bi->BiHeight - 20);
+      } else
+      {
+        logoX = (resX - bi->BiWidth) / 2;
+        logoY = (resY - bi->BiHeight) / 2;
+      }
 
       drawBmp((uint64_t)imageData, logoX, logoY);
     }
+    bs->FreePool(imageData);
   }
-  bs->FreePool(imageData);
 
   waitForKey();
 
@@ -145,20 +171,29 @@ extern "C" [[gnu::ms_abi]] EFI_STATUS vnexos_grub_main(EFI_HANDLE ImageHandle, E
   if (EFI_ERROR(status))
   {
     printf("LOI: Khong the doc tep: %s\n", "\\EFI\\BOOT\\vnexos.efi");
-    return 1;
+    return status;
   }
 
-  if (Sign::verifyFileSignature(buffer, size, key, keySize))
-    printf("OK\n");
-  else
-    printf("NG\n");
+  if (!Sign::verifyFileSignature(buffer, size, key, keySize))
+  {
+    while (true)
+    {
+      printf("LOI: Chu ky khong hop le: %s\n", "\\EFI\\BOOT\\vnexos.efi");
+    }
+  }
 
   bs->FreePool(key);
+
+  EFI_HANDLE childImageHandle;
+  status = bs->LoadImage(
+      false,
+      ImageHandle,
+      nullptr,
+      buffer,
+      size - DILITHIUM_BYTES - 64, // Nên trừ đi phần chữ ký ở đây
+      &childImageHandle);
+
   bs->FreePool(buffer);
 
-  while (true)
-  {
-    cpu_halt();
-  }
-  return EFI_SUCCESS;
+  return bs->StartImage(childImageHandle, nullptr, nullptr);
 }
