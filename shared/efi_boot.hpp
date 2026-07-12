@@ -22,6 +22,7 @@
  * KIỂU PHỤ TRỢ CHO SỰ KIỆN VÀ BỘ ĐỊNH THỜI
  **************************************************************/
 
+/* Định nghĩa của các phương thức mở giao thức */
 #define EFI_OPEN_PROTOCOL_BY_HANDLE_PROTOCOL  0x00000001
 #define EFI_OPEN_PROTOCOL_GET_PROTOCOL        0x00000002
 #define EFI_OPEN_PROTOCOL_TEST_PROTOCOL       0x00000004
@@ -29,8 +30,22 @@
 #define EFI_OPEN_PROTOCOL_BY_DRIVER           0x00000010
 #define EFI_OPEN_PROTOCOL_EXCLUSIVE           0x00000020
 
+/* Định nghĩa các phân loại sự kiện */
+#define EVT_TIMER                         0x80000000
+#define EVT_RUNTIME                       0x40000000
+#define EVT_NOTIFY_WAIT                   0x00000100
+#define EVT_NOTIFY_SIGNAL                 0x00000200
+#define EVT_SIGNAL_EXIT_BOOT_SERVICES     0x00000201
+#define EVT_SIGNAL_VIRTUAL_ADDRESS_CHANGE 0x00000202
+
+/* Định nghĩa độ ưu tiên của các tác vụ */
+#define TPL_APPLICATION 4
+#define TPL_CALLBACK    8
+#define TPL_NOTIFY      16
+#define TPL_HIGH_LEVEL  31
+
 /** Hàm được gọi lại khi một sự kiện UEFI được kích hoạt. */
-typedef void (*EFI_EVENT_NOTIFY)(EFI_EVENT Event, void* Context);
+typedef void(EFI_API* EFI_EVENT_NOTIFY)(EFI_EVENT Event, void* Context);
 
 /**
  * Kiểu liệt kê chỉ định hành vi của bộ định thời khi đặt lịch
@@ -38,7 +53,7 @@ typedef void (*EFI_EVENT_NOTIFY)(EFI_EVENT Event, void* Context);
  */
 typedef enum {
   /** Hủy bộ định thời hiện có. */
-  TimerDefault,
+  TimerCancel,
   /** Kích hoạt sự kiện lặp đi lặp lại theo chu kỳ. */
   TimerPeriod,
   /** Kích hoạt sự kiện một lần sau khoảng thời gian chỉ định. */

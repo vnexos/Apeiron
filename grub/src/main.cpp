@@ -66,47 +66,21 @@ extern "C" [[gnu::ms_abi]] EFI_STATUS vnexos_grub_main(EFI_HANDLE ImageHandle, E
   init(ImageHandle, SystemTable);
 
   /* Cấu hình đồ họa */
-  EFI_GRAPHICS_OUTPUT_PROTOCOL*      gop          = setupGraphics();
-  EFI_GRAPHICS_OUTPUT_PROTOCOL_MODE* graphicsMode = gop->Mode;
+  EFI_GRAPHICS_OUTPUT_PROTOCOL* gop = setupGraphics();
+  EFI_STATUS                    status;
 
-  uint64_t resX = graphicsMode->Info->HorizontalResolution;
-  uint64_t resY = graphicsMode->Info->VerticalResolution;
+  uint32_t logoWidth          = 0;
+  uint32_t logoHeight         = 0;
+  uint64_t vnexosLogoSize     = 0,
+           vnexosLogoPosition = 0;
 
-  /* Lấp đầy màn hình bằng một màu */
-  EFI_GRAPHICS_OUTPUT_BLT_PIXEL fill_color{
-      0,
-      0,
-      0,
-      0,
-  };
-
-  gop->Blt(
-      gop, &fill_color,
-      EfiBltVideoFill,
-      0, 0,
-      0, 0,
-      resX, resY,
-      0);
-
-  /* Vẽ biểu trưng của hãng sản xuất ra màn hình */
-  ACPI_BGRT* bgrt = getBgrt(SystemTable);
-
-  uint32_t logoWidth  = 0;
-  uint32_t logoHeight = 0;
-
-  int32_t logoSegment = 0;
-
-  if (bgrt)
-  {
-    drawBmp(bgrt->ImageAddress, bgrt->ImageXOffset, bgrt->ImageYOffset, &logoWidth, &logoHeight);
-    /* Tính toán và phân vùng để vẽ biểu trưng phù hợp */
-    logoSegment = (resY - (bgrt->ImageYOffset + logoHeight)) / 2;
-  }
+  uint64_t resX = 0,
+           resY = 0;
 
   /* Đọc chứng chỉ gốc vào bộ nhớ */
-  uint8_t*   key;
-  uint64_t   keySize;
-  EFI_STATUS status = loadFile(EFI_TEXT("\\EFI\\BOOT\\root.crt"), &key, &keySize);
+  uint8_t* key;
+  uint64_t keySize;
+  status = loadFile(EFI_TEXT("\\EFI\\BOOT\\root.crt"), &key, &keySize);
   if (EFI_ERROR(status))
   {
     printf("LOI: Khong the doc tep: %s\nNhan phim bat ky de thoat...", "\\EFI\\BOOT\\root.crt");
@@ -115,64 +89,99 @@ extern "C" [[gnu::ms_abi]] EFI_STATUS vnexos_grub_main(EFI_HANDLE ImageHandle, E
     return status;
   }
 
-  /* Kiểm tra chữ ký ảnh và vẽ ra màn hình */
-  uint8_t* imageData;
-  uint64_t imageSize;
-  uint8_t  logoPathIndex;
-  if (logoSegment)
-  {
-    if (logoSegment > 512)
-      logoPathIndex = 0;
-    else if (logoSegment > 256)
-      logoPathIndex = 1;
-    else if (logoSegment > 128)
-      logoPathIndex = 2;
-    else
-      logoPathIndex = 3;
-  } else
-  {
-    uint64_t logoPart = resY / 3;
-    if (logoPart > 512)
-      logoPathIndex = 0;
-    else if (logoPart > 256)
-      logoPathIndex = 1;
-    else if (logoPart > 128)
-      logoPathIndex = 2;
-    else
-      logoPathIndex = 3;
-  }
+  /* Thông tin biểu trưng của hãng thiết bị */
+  ACPI_BGRT* bgrt = nullptr;
 
-  status = loadFile(logoPath[logoPathIndex], (uint8_t**)&imageData, &imageSize);
-
-  uint64_t vnexosLogoSize     = 0,
-           vnexosLogoPosition = 0;
-  if (!EFI_ERROR(status))
+  if (gop)
   {
-    if (Sign::verifyFileSignature(imageData, imageSize, key, keySize))
+    EFI_GRAPHICS_OUTPUT_PROTOCOL_MODE* graphicsMode = gop->Mode;
+
+    resX = graphicsMode->Info->HorizontalResolution;
+    resY = graphicsMode->Info->VerticalResolution;
+
+    /* Lấp đầy màn hình bằng một màu */
+    EFI_GRAPHICS_OUTPUT_BLT_PIXEL fill_color{
+        0,
+        0,
+        0,
+        0,
+    };
+
+    gop->Blt(
+        gop, &fill_color,
+        EfiBltVideoFill,
+        0, 0,
+        0, 0,
+        resX, resY,
+        0);
+
+    /* Vẽ biểu trưng của hãng sản xuất ra màn hình */
+    int32_t logoSegment = 0;
+
+    if (bgrt)
     {
-      BmpInfoHeader* bi = (BmpInfoHeader*)(imageData + sizeof(BmpFileHeader));
-      uint64_t       logoX, logoY;
-      if (logoSegment)
-      {
-        logoX          = (resX - bi->BiWidth) / 2;
-        int64_t deltaY = (logoSegment - bi->BiHeight) / 2;
-        logoY          = (bi->BiHeight < logoSegment) ? (resY - logoSegment + deltaY) : (resY - bi->BiHeight - 20);
-      } else
-      {
-        logoX = (resX - bi->BiWidth) / 2;
-        logoY = (resY - bi->BiHeight) / 2;
-      }
-      vnexosLogoSize     = PACK_32_TO_64(bi->BiWidth, bi->BiHeight);
-      vnexosLogoPosition = PACK_32_TO_64(logoX, logoY);
-      drawBmp((uint64_t)imageData, logoX, logoY);
+      drawBmp(bgrt->ImageAddress, bgrt->ImageXOffset, bgrt->ImageYOffset, &logoWidth, &logoHeight);
+      /* Tính toán và phân vùng để vẽ biểu trưng phù hợp */
+      logoSegment = (resY - (bgrt->ImageYOffset + logoHeight)) / 2;
+    }
+
+    /* Kiểm tra chữ ký ảnh và vẽ ra màn hình */
+    uint8_t* imageData;
+    uint64_t imageSize;
+    uint8_t  logoPathIndex;
+    if (logoSegment)
+    {
+      if (logoSegment > 512)
+        logoPathIndex = 0;
+      else if (logoSegment > 256)
+        logoPathIndex = 1;
+      else if (logoSegment > 128)
+        logoPathIndex = 2;
+      else
+        logoPathIndex = 3;
     } else
     {
-      printf("LOI: Tep bieu trung khong the xac thuc: %s\nNhan phim bat ky de thoat...", logoPath[logoPathIndex]);
-      waitForKey();
-      printf("\n");
-      return status;
+      uint64_t logoPart = resY / 3;
+      if (logoPart > 512)
+        logoPathIndex = 0;
+      else if (logoPart > 256)
+        logoPathIndex = 1;
+      else if (logoPart > 128)
+        logoPathIndex = 2;
+      else
+        logoPathIndex = 3;
     }
-    bs->FreePool(imageData);
+
+    status = loadFile(logoPath[logoPathIndex], (uint8_t**)&imageData, &imageSize);
+
+    if (!EFI_ERROR(status))
+    {
+      if (Sign::verifyFileSignature(imageData, imageSize, key, keySize))
+      {
+        BmpInfoHeader* bi = (BmpInfoHeader*)(imageData + sizeof(BmpFileHeader));
+        uint64_t       logoX, logoY;
+        if (logoSegment)
+        {
+          logoX          = (resX - bi->BiWidth) / 2;
+          int64_t deltaY = (logoSegment - bi->BiHeight) / 2;
+          logoY          = (bi->BiHeight < logoSegment) ? (resY - logoSegment + deltaY) : (resY - bi->BiHeight - 20);
+        } else
+        {
+          logoX = (resX - bi->BiWidth) / 2;
+          logoY = (resY - bi->BiHeight) / 2;
+        }
+        vnexosLogoSize     = PACK_32_TO_64(bi->BiWidth, bi->BiHeight);
+        vnexosLogoPosition = PACK_32_TO_64(logoX, logoY);
+        drawBmp((uint64_t)imageData, logoX, logoY);
+      } else
+      {
+        printf("LOI: Tep bieu trung khong the xac thuc: %s\nNhan phim bat ky de thoat...", logoPath[logoPathIndex]);
+        waitForKey();
+        printf("\n");
+        return status;
+      }
+      bs->FreePool(imageData);
+    }
   }
 
   /* Đọc bộ nạp mồi lên bộ nhớ, kiểm tra chữ ký và xử lý nó */
@@ -227,14 +236,16 @@ extern "C" [[gnu::ms_abi]] EFI_STATUS vnexos_grub_main(EFI_HANDLE ImageHandle, E
     return status;
   }
 
-  params->framebuffer          = graphicsMode->FrameBufferBase;
-  params->frameBufferSize      = graphicsMode->FrameBufferSize;
-  params->horizontalResolution = graphicsMode->Info->HorizontalResolution;
-  params->verticalResolution   = graphicsMode->Info->VerticalResolution;
+  params->horizontalResolution = resX;
+  params->verticalResolution   = resY;
   params->OEMLogoSize          = PACK_32_TO_64(logoWidth, logoHeight);
-  params->OEMLogoPosition      = PACK_32_TO_64(bgrt->ImageXOffset, bgrt->ImageYOffset);
-  params->logoSize             = vnexosLogoSize;
-  params->logoPosition         = vnexosLogoPosition;
+  if (bgrt)
+    params->OEMLogoPosition = PACK_32_TO_64(bgrt->ImageXOffset, bgrt->ImageYOffset);
+  else
+    params->OEMLogoPosition = 0;
+  params->logoSize               = vnexosLogoSize;
+  params->logoPosition           = vnexosLogoPosition;
+  params->graphicsOutputProtocol = gop;
 
   /* Dùng giao thức ảnh đã tải để truyền thông tin qua chương trình tiếp theo */
   EFI_LOADED_IMAGE_PROTOCOL* loadedChildImage;

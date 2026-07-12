@@ -22,11 +22,13 @@
 // Lấy 32 bit thấp (Nửa thấp)
 #define UNPACK_LOW_32(val64) ((uint32_t)((val64) & 0xFFFFFFFF))
 
+struct _EFI_GRAPHICS_OUTPUT_PROTOCOL;
+
 /* CẤU TRÚC DÙNG CHUNG CỦA CÁC TẦNG KHỞI ĐỘNG */
 typedef struct
 {
-  uint64_t framebuffer;
-  uint64_t frameBufferSize;
+  _EFI_GRAPHICS_OUTPUT_PROTOCOL* graphicsOutputProtocol;
+
   uint32_t horizontalResolution;
   uint32_t verticalResolution;
   uint64_t OEMLogoSize;     // Nửa cao: chiều cao | nửa thấp: chiều rộng
