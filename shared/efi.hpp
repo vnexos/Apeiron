@@ -38,4 +38,7 @@
 /** Bảng Hệ Thống, điểm nhập trung tâm khi bootloader được gọi. */
 #include <efi_system.hpp>
 
+/** Giao thức Đa Nhân (MP Services) cho phép tương tác với các APs. */
+#include <protocol/efi_mp.hpp>
+
 #endif // __SHARED__EFI_HPP
