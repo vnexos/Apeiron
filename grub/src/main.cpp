@@ -90,7 +90,7 @@ extern "C" [[gnu::ms_abi]] EFI_STATUS vnexos_grub_main(EFI_HANDLE ImageHandle, E
   }
 
   /* Thông tin biểu trưng của hãng thiết bị */
-  ACPI_BGRT* bgrt = nullptr;
+  ACPI_BGRT* bgrt = getBgrt(SystemTable);
 
   if (gop)
   {
