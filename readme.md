@@ -63,12 +63,19 @@
     ```bash
     boreas -sign -g cert/root.key cert/root.crt
     boreas -sign -g cert/vnexos.key cert/vnexos.crt
+    openssl req -newkey rsa:4096 -nodes -keyout vnexos_db.key \
+        -new -x509 -sha256 -days 7300 \
+        -subj "/CN=VNExos DB Key/O=VNExos Inc./C=VN/" \
+        -out vnexos_db.crt
     ```
-4. Đặt quyền chạy cho toàn bộ tệp kịch bản (nếu tệp không chạy được)
+4. Xóa `.secboot` ở dòng 13 của các tệp:
+    - `aarch64.mk`
+    - `x86_64.mk`
+5. Đặt quyền chạy cho toàn bộ tệp kịch bản (nếu tệp không chạy được)
     ```bash
     sudo chmod +x *.sh
     ```
-5. Chạy chương trình chính thức:
+6. Chạy chương trình chính thức:
     - Cho dòng Vi xử lý Intel/AMD64
       ```bash
       ./run.sh x86_64
