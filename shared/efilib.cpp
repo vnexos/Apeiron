@@ -34,12 +34,17 @@ void EFI::printf(const char* format, ...)
   uint64_t idx = 0;
 
   // Đẩy 1 ký tự vào bộ đệm
-  auto putChar = [&](char c) {
+  auto putChar = [&](uint16_t c) {
     if (idx < 1023) buffer[idx++] = c;
   };
 
   // Đẩy cả chuỗi vào bộ đệm
   auto putStr = [&](const char* s) {
+    while (*s && idx < 1023)
+      putChar(*(s++));
+  };
+
+  auto putWstr = [&](const uint16_t* s) {
     while (*s && idx < 1023)
       putChar(*(s++));
   };
@@ -134,6 +139,29 @@ void EFI::printf(const char* format, ...)
         // va_arg tự động biến char/short thành int
         uint16_t c = (uint16_t)va_arg(args, int);
         putChar(c);
+        break;
+      }
+      case 'w': // Chuỗi ký tự rộng
+      {
+        ++p;
+
+        switch (*p)
+        {
+        case 's': {
+          uint16_t* s = va_arg(args, uint16_t*);
+          if (s)
+            putWstr(s);
+          else
+            putWstr(EFI_TEXT("(null)"));
+          break;
+        }
+        default:
+          putChar('%');
+          putChar('w');
+          putChar(*p);
+          break;
+        }
+
         break;
       }
       case '%': // In ra dấu %

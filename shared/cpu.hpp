@@ -22,7 +22,7 @@ inline void cpu_halt()
   // để ngăn hệ điều hành làm treo CPU. Do đó, ta chỉ dùng nop trong vòng lặp chờ.
   __asm__ __volatile__("nop");
 #else
-#error "Kiến trúc chip này chưa được VNExos hỗ trợ!"
+#error "Dòng vi xử lý này chưa được VNExos hỗ trợ!"
 #endif
 }
 

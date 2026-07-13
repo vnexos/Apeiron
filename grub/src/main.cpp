@@ -255,7 +255,8 @@ extern "C" [[gnu::ms_abi]] EFI_STATUS vnexos_grub_main(EFI_HANDLE ImageHandle, E
   /* Dùng giao thức ảnh đã tải để truyền thông tin qua chương trình tiếp theo */
   EFI_LOADED_IMAGE_PROTOCOL* loadedChildImage;
   EFI_GUID                   loadedImageGuid = EFI_LOADED_IMAGE_PROTOCOL_GUID;
-  status                                     = bs->OpenProtocol(
+
+  status = bs->OpenProtocol(
       childImageHandle,
       &loadedImageGuid,
       (void**)&loadedChildImage,
@@ -269,6 +270,7 @@ extern "C" [[gnu::ms_abi]] EFI_STATUS vnexos_grub_main(EFI_HANDLE ImageHandle, E
     return status;
   }
 
+  loadedChildImage->DeviceHandle    = imageLip->DeviceHandle;
   loadedChildImage->LoadOptions     = (void*)params;
   loadedChildImage->LoadOptionsSize = sizeof(ApeironCommonParameters);
 
