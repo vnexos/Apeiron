@@ -3,4 +3,5 @@ build/
 firmware/
 shim/
 cert/*.key
-disk.img
+*.img
+*.iso

@@ -43,6 +43,7 @@
         gdisk \
         dosfstools \
         mtools \
+        xorriso \
         curl \
         python3-pefile && \
     git clone https://github.com/vnexos/Boreas.git && \
