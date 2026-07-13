@@ -95,7 +95,7 @@ $(DISK_IMG): $(SUBDIRS) certs logos
 # Giới hạn rõ ràng để FAT32 không tràn sang phân vùng 2
 	@mkfs.vfat -F 32 --offset=2048 -s 1 -n "VNEXOS_BOOT" $(DISK_IMG) 61440 > /dev/null
 
-	@cp $(CERT_DIR)/*.cer $(SYSROOT_DIR)/
+# 	@cp $(CERT_DIR)/*.cer $(SYSROOT_DIR)/
 # Tạo cấu trúc thư mục và sao chép Bộ nạp khởi động vào phân vùng 1 thông qua mtools
 	@mcopy -s -i $(DISK_IMG)@@1M $(SYSROOT_DIR)/* ::/
 

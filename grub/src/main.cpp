@@ -197,8 +197,6 @@ extern "C" [[gnu::ms_abi]] EFI_STATUS vnexos_grub_main(EFI_HANDLE ImageHandle, E
     return status;
   }
 
-  waitForKey();
-
   if (!Sign::verifyEfiFileSignature(buffer, size, key, keySize))
   {
     printf("LOI: Chu ky khong hop le: %s\nNhan phim bat ky de thoat...", "\\EFI\\BOOT\\vnexos.efi");

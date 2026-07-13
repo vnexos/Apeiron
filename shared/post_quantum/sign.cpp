@@ -100,7 +100,6 @@ bool Sign::verifyEfiFileSignature(uint8_t* rawData, uint64_t dataSize, const uin
 
   Signature* signature = (Signature*)(rawData + sigOffset);
 
-  EFI::printf("%16x\n", sigOffset);
   // 2 bước để xác thực chữ ký với khóa công khai
   if (memcmp(signature->parentKeyID, metadata.currentKey, sizeof(metadata.currentKey)) != 0)
     return false;
