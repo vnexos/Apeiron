@@ -114,4 +114,6 @@ QEMU_FLAGS := \
     -net none \
     -serial stdio \
     -display sdl \
+    -device qemu-xhci \
+    -device usb-kbd \
     -monitor telnet:127.0.0.1:5555,server,nowait
