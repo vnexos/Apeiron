@@ -10,7 +10,7 @@
 EDK2_TYPE      := aarch64
 EDK2_DIR       := $(ROOT_DIR)/firmware/$(EDK2_TYPE)
 
-FD_CODE        := AAVMF_CODE.fd
+FD_CODE        := AAVMF_CODE.secboot.fd
 FD_VARS        := AAVMF_VARS.fd
 
 # ==[ Cờ riêng của bộ xử lý ]===========================================

@@ -10,7 +10,7 @@
 EDK2_TYPE      := x64
 EDK2_DIR       := $(ROOT_DIR)/firmware/$(EDK2_TYPE)
 
-FD_CODE        := OVMF_CODE_4M.fd
+FD_CODE        := OVMF_CODE_4M.secboot.fd
 FD_VARS        := OVMF_VARS_4M.fd
 
 # ==[ Cờ riêng của bộ xử lý ]===========================================

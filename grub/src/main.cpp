@@ -64,6 +64,7 @@ extern "C" [[gnu::ms_abi]] EFI_STATUS vnexos_grub_main(EFI_HANDLE ImageHandle, E
 
   /* Khởi tạo thư viện EFI */
   init(ImageHandle, SystemTable);
+  printf("\r"); // Đưa con trỏ về phía đầu màn hình
 
   /* Cấu hình đồ họa */
   EFI_GRAPHICS_OUTPUT_PROTOCOL* gop = setupGraphics();
@@ -196,7 +197,9 @@ extern "C" [[gnu::ms_abi]] EFI_STATUS vnexos_grub_main(EFI_HANDLE ImageHandle, E
     return status;
   }
 
-  if (!Sign::verifyFileSignature(buffer, size, key, keySize))
+  waitForKey();
+
+  if (!Sign::verifyEfiFileSignature(buffer, size, key, keySize))
   {
     printf("LOI: Chu ky khong hop le: %s\nNhan phim bat ky de thoat...", "\\EFI\\BOOT\\vnexos.efi");
     waitForKey();
@@ -206,17 +209,21 @@ extern "C" [[gnu::ms_abi]] EFI_STATUS vnexos_grub_main(EFI_HANDLE ImageHandle, E
 
   bs->FreePool(key);
 
+  EFI_LOADED_IMAGE_PROTOCOL* imageLip     = nullptr;
+  EFI_GUID                   imageLipGuid = EFI_LOADED_IMAGE_PROTOCOL_GUID;
+  bs->OpenProtocol(ImageHandle, &imageLipGuid, (void**)&imageLip, ImageHandle, nullptr, EFI_OPEN_PROTOCOL_GET_PROTOCOL);
+
   EFI_HANDLE childImageHandle;
   status = bs->LoadImage(
       false,
       ImageHandle,
-      nullptr,
+      imageLip ? imageLip->FilePath : nullptr,
       buffer,
-      size - DILITHIUM_BYTES - 64, // Nên trừ đi phần chữ ký ở đây
+      size,
       &childImageHandle);
   if (EFI_ERROR(status))
   {
-    printf("LOI: Khong the tai tep EFI\nNhan phim bat ky de thoat...");
+    printf("LOI: Khong the tai tep EFI (Ma loi: %x)\nNhan phim bat ky de thoat...", status);
     waitForKey();
     printf("\n");
     return status;

@@ -31,6 +31,19 @@ bool verifyFileSignature(
     uint64_t       dataSize,
     const uint8_t* rawPublicKey,
     uint64_t       keySize);
+
+/**
+ * Xác thực tệp EFI ngay trên bộ nhớ
+ * @param rawData      Dữ liệu thô của tệp EFI đọc được
+ * @param dataSize     Kích thước của tệp EFI
+ * @param rawPublicKey Dữ liệu thô của khóa công khai
+ * @param keySize      Kích thước của khóa công khai
+ */
+bool verifyEfiFileSignature(
+    uint8_t*       rawData,
+    uint64_t       dataSize,
+    const uint8_t* rawPublicKey,
+    uint64_t       keySize);
 } // namespace Sign
 
 #endif // __SIGN_HPP

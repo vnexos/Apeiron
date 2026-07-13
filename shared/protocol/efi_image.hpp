@@ -42,9 +42,9 @@ typedef struct
   void*      SystemTable;
 
   /** Thiết bị lưu trữ nơi ảnh được tải lên. */
-  EFI_HANDLE DeviceHandle;
-  void*      FilePath;
-  void*      Reserved;
+  EFI_HANDLE                DeviceHandle;
+  EFI_DEVICE_PATH_PROTOCOL* FilePath;
+  void*                     Reserved;
 
   /** Các tùy chọn được truyền vào khi tải ảnh. */
   uint32_t LoadOptionsSize;
