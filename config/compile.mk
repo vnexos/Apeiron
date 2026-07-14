@@ -11,21 +11,12 @@ BOOT_ARCH_X86_64_CXX_FLAGS  := -mno-red-zone
 BOOT_ARCH_AARCH64_CXX_FLAGS := -mno-implicit-float
 BOOT_ARCH_RISCV64_CXX_FLAGS := -march=rv64imac -mno-implicit-float -mabi=lp64 -mcmodel=medany -mno-relax -msmall-data-limit=0 -fno-jump-tables -Wno-ignored-attributes
 
-define COMPILE_TEMPLATE
-
-$(2)/%.o: $(1)/%.cpp
-	@mkdir -p $$(dir $$@)
-	@echo "$$(MSG_CXX) Đang biên dịch: $$@"
-	@$$(CXX) $(3) $(5) -c $$< -o $$@
-
-$(2)/%.s.o: $(1)/%.s
-	@mkdir -p $$(dir $$@)
-	@echo "$$(MSG_ASM) Đang biên dịch: $$@"
-	@$$(ASM) $(4) -c $$< -o $$@
-
-endef
-
 # Biên dịch cho từng dòng Vi xử lý được hỗ trợ cho chương trình giai đoạn khởi động
+# 1: Thư mục chứa mã nguồn
+# 2: Thư mục chứa tệp đối tượng
+# 3: Các cờ biên dịch C++
+# 4: Các cờ biên dịch Assembly
+# 5: Các cờ tùy chỉnh cho C++
 define HYPER_BOOT_COMPILE_TEMPLATE
 $(2)/%.x86_64.o: $(1)/%.cpp
 	@mkdir -p $$(dir $$@)
@@ -60,6 +51,11 @@ $(2)/%.riscv64.s.o: $(1)/%.s
 endef
 
 # Biên dịch cho từng dòng Vi xử lý được hỗ trợ
+# 1: Thư mục chứa mã nguồn
+# 2: Thư mục chứa tệp đối tượng
+# 3: Các cờ biên dịch C++
+# 4: Các cờ biên dịch Assembly
+# 5: Các cờ tùy chỉnh cho C++
 define HYPER_COMPILE_TEMPLATE
 $(2)/%.x86_64.o: $(1)/%.cpp
 	@mkdir -p $$(dir $$@)

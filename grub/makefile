@@ -13,8 +13,6 @@ include $(ROOT_DIR)/config/linker.mk
 
 GRUB_DIR       := $(ROOT_DIR)/grub
 GRUB_BUILD_DIR := $(BUILD_DIR)/grub
-# Tệp ELF trung gian (chỉ dùng cho riscv64 trước khi chuyển sang PE)
-GRUB_ELF_SO    := $(GRUB_BUILD_DIR)/grub.elf
 SRCS           := $(shell find $(GRUB_DIR)/src -type f \( -name "*.cpp" -o -name "*.s" \))
 X86_64_OBJS    := $(patsubst $(GRUB_DIR)/src/%.cpp,$(GRUB_BUILD_DIR)/%.x86_64.o,$(filter %.cpp,$(SRCS))) \
 				  $(shell find $(BOOT_SHARED_DIR) -type f \( -name "*.x86_64.o" \))

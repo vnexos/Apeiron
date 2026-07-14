@@ -86,16 +86,3 @@ KERNEL_FLAGS   := $(CXX_BASE_FLAGS)
 
 BOOT_ASMFLAGS  := $(ARCH_ASM_FLAGS) --target=$(BOOT_TARGET)
 KERNEL_ASMFLAGS:= $(ARCH_ASM_FLAGS)
-
-# ==[ Cờ chạy QEMU ]====================================================
-TPM_DIR  := /tmp/tpm_state
-TPM_SOCK := $(TPM_DIR)/sock
-QEMU_FLAGS := \
-    $(QEMU_ARCH_FLAGS) \
-    -m 2G \
-    -net none \
-    -serial stdio \
-    -display sdl \
-    -device qemu-xhci \
-    -device usb-kbd \
-    -monitor telnet:127.0.0.1:5555,server,nowait

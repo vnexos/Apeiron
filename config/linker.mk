@@ -7,6 +7,14 @@
 # Xem tệp LICENSE tại thư mục gốc để biết thêm chi tiết.
 # =========================================================
 
+# Mẫu kịch bản xây dựng tệp EFI
+# 1: Thư mục chứa tệp đầu ra
+# 2: Các đối tượng của dòng Vi xử lý x86_64
+# 3: Các đối tượng của dòng Vi xử lý aarch64
+# 4: Các đối tượng của dòng Vi xử lý riscv64
+# 5: Tên của hàm bắt đầu (cho dòng x86_64 và aarch64)
+# 6: Đường dẫn tới tệp kịch bản liên kết (cho dòng riscv64)
+# 7: 1 - Tên tệp EFI dạng in hoa, mặc định - Tên tệp EFI dạng in thường
 define EFI_LINK_TEMPLATE
 
 ifeq ($(7),1)
