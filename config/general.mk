@@ -15,6 +15,7 @@ ROOT_DIR           := $(patsubst %/,%,$(dir $(CURRENT_CONFIG_DIR)))
 LIB_SHARED_DIR := $(ROOT_DIR)/shared
 BUILD_DIR      := $(ROOT_DIR)/build
 SYSROOT_DIR    := $(ROOT_DIR)/sysroot
+FIRMWARE_DIR   := $(ROOT_DIR)/firmware
 KERNEL_DIR     := $(SYSROOT_DIR)
 KERNEL_FILE    := $(KERNEL_DIR)/Apeiron.kern
 EFI_BIN_DIR    := $(SYSROOT_DIR)/EFI/BOOT

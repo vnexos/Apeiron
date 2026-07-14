@@ -62,7 +62,7 @@ VNEXOS_TYPE_UUID := c48d1722-723b-43d6-bead-f2b2623343dd
 VNEXOS_PART_UUID := 9c7ba30b-e2ee-4bbe-9fe4-ab5f23fe2b9b
 
 # ==[ KỊCH BẢN XÂY DỰNG HỆ THỐNG ]======================================
-.PHONY: all clean clean-all run certs $(SUBDIRS)
+.PHONY: all clean clean-all certs $(SUBDIRS)
 all: $(DISK_IMG) firmware/.ready
 	@echo "$(MSG_VNEXOS) Đã xây dựng xong chương trình!"
 
@@ -105,8 +105,8 @@ $(DISK_IMG): $(SUBDIRS) certs logos
 # Dấu hiệu đã sao chép firmware - Make kiểm tra file này thay vì thư mục firmware/
 # Chỉ chạy một lần duy nhất; xóa firmware/.ready để buộc sao chép lại
 firmware/.ready:
-	@mkdir -p $(dir $(EDK2_DIR))
-	@cp -r /usr/share/edk2/* $(dir $(EDK2_DIR)) || true
+	@mkdir -p $(FIRMWARE_DIR)
+	@cp -r /usr/share/edk2/* $(FIRMWARE_DIR) || true
 	@touch $@
 
 clean:
