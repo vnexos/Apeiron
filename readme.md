@@ -75,7 +75,11 @@
     ```bash
     sudo chmod +x *.sh
     ```
-6. Chạy chương trình chính thức:
+6. Xây dựng chương trình:
+    ```bash
+    ./build.sh
+    ```
+7. Chạy chương trình chính thức:
     - Cho dòng Vi xử lý Intel/AMD64
       ```bash
       ./run.sh x86_64
