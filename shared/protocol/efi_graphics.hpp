@@ -10,7 +10,7 @@
  *        chế độ hiển thị, cũng như thực hiện các thao tác sao chép
  *        khối điểm ảnh trực tiếp lên màn hình.
  */
-#ifndef __SHARED__PROTOCOL__EFI_GRAPHICS_HPP
+#if !defined(__SHARED__PROTOCOL__EFI_GRAPHICS_HPP) && defined(__EFI_ALLOWED)
 #define __SHARED__PROTOCOL__EFI_GRAPHICS_HPP
 
 #include <efi_types.hpp>

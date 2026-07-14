@@ -9,7 +9,7 @@
  *        của UEFI, bao gồm các thao tác mở, đọc, ghi, đóng tệp và
  *        truy vấn thông tin tệp hoặc phân vùng lưu trữ.
  */
-#ifndef __SHARED__PROTOCOL__EFI_FILE_HPP
+#if !defined(__SHARED__PROTOCOL__EFI_FILE_HPP) && defined(__EFI_ALLOWED)
 #define __SHARED__PROTOCOL__EFI_FILE_HPP
 
 #include <efi_types.hpp>

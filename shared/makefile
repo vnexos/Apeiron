@@ -17,7 +17,8 @@ $(eval $(call COMPILE_TEMPLATE,\
 	$(SHARED_DIR),\
 	$(SHARED_BUILD_DIR),\
 	$(BOOT_FLAGS),\
-	$(BOOT_ASMFLAGS)))
+	$(BOOT_ASMFLAGS),\
+	-D__EFI_ALLOWED))
 
 .PHONY: all clean
 all: \

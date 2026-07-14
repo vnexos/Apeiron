@@ -9,7 +9,7 @@
  *        firmware truyền vào hàm efi_main khi bootloader khởi chạy, cung
  *        cấp con trỏ đến mọi dịch vụ và giao thức quan trọng.
  */
-#ifndef __SHARED__EFI_SYSTEM_HPP
+#if !defined(__SHARED__EFI_SYSTEM_HPP) && defined(__EFI_ALLOWED)
 #define __SHARED__EFI_SYSTEM_HPP
 
 #include "efi_types.hpp"

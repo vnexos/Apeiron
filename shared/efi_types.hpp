@@ -8,7 +8,7 @@
  * @brief Định nghĩa các kiểu dữ liệu nguyên thủy, hằng số và cấu trúc
  *        nền tảng dùng chung cho toàn bộ giao diện lập trình UEFI.
  */
-#ifndef __SHARED__EFI_TYPES_HPP
+#if !defined(__SHARED__EFI_TYPES_HPP) && defined(__EFI_ALLOWED)
 #define __SHARED__EFI_TYPES_HPP
 
 #include <stdint.h>

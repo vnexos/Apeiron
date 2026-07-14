@@ -10,7 +10,7 @@
  *        khả năng hiển thị chữ lên màn hình, đọc phím bấm và truy vấn
  *        thông tin về ảnh đang chạy.
  */
-#ifndef __SHARED__PROTOCOL__EFI_TEXT_HPP
+#if !defined(__SHARED__PROTOCOL__EFI_TEXT_HPP) && defined(__EFI_ALLOWED)
 #define __SHARED__PROTOCOL__EFI_TEXT_HPP
 
 #include <efi_types.hpp>

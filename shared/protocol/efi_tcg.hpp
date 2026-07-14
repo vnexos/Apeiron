@@ -11,7 +11,7 @@
  *        bao gồm các thao tác đo lường toàn vẹn, mở rộng thanh ghi PCR,
  *        ghi nhật ký sự kiện khởi động và gửi lệnh thẳng tới TPM.
  */
-#ifndef __SHARED__EFI_TCG_HPP
+#if !defined(__SHARED__EFI_TCG_HPP) && defined(__EFI_ALLOWED)
 #define __SHARED__EFI_TCG_HPP
 
 #include "efi_types.hpp"

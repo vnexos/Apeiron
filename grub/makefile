@@ -23,7 +23,8 @@ $(eval $(call COMPILE_TEMPLATE,\
 	$(GRUB_DIR)/src,\
 	$(GRUB_BUILD_DIR),\
 	$(BOOT_FLAGS),\
-	$(BOOT_ASMFLAGS)))
+	$(BOOT_ASMFLAGS),\
+	-D__EFI_ALLOWED))
 
 .PHONY: all clean
 all: \

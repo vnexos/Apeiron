@@ -9,7 +9,7 @@
  *        bộ nhớ vật lý trong UEFI, bao gồm phân loại vùng nhớ, chiến
  *        lược cấp phát trang và bộ mô tả bản đồ bộ nhớ.
  */
-#ifndef __SHARED__EFI_MEMORY_HPP
+#if !defined(__SHARED__EFI_MEMORY_HPP) && defined(__EFI_ALLOWED)
 #define __SHARED__EFI_MEMORY_HPP
 
 #include <efi_types.hpp>

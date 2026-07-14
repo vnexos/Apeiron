@@ -8,7 +8,7 @@
  * @brief Đây là cầu nối giữa mã nguồn C++ và phần cứng thông qua
  *        firmware UEFI.
  */
-#ifndef __SHARED__EFI_HPP
+#if !defined(__SHARED__EFI_HPP) && defined(__EFI_ALLOWED)
 #define __SHARED__EFI_HPP
 
 /** Kiểu dữ liệu nguyên thủy, hằng số và cấu trúc thời gian. */

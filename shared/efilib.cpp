@@ -8,6 +8,7 @@
  * @brief Triển khai các hàm tiện ích.
  */
 #include "efilib.hpp"
+#if defined(__EFI_ALLOWED)
 #include <efi.hpp>
 #include <stdarg.h>
 
@@ -421,3 +422,4 @@ EFI_STATUS EFI::drawBmp(uint64_t imageAddress, uint64_t x, uint64_t y, uint32_t*
 
   return status;
 }
+#endif // __EFI_ALLOWED

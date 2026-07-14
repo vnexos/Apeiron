@@ -10,7 +10,7 @@
  *        khiển cho hệ điều hành, bao gồm quản lý bộ nhớ, sự kiện, giao
  *        thức, ảnh thực thi và bộ định thời.
  */
-#ifndef __SHARED__EFI_BOOT_HPP
+#if !defined(__SHARED__EFI_BOOT_HPP) && defined(__EFI_ALLOWED)
 #define __SHARED__EFI_BOOT_HPP
 
 #include "efi_types.hpp"

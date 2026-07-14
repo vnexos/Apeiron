@@ -8,7 +8,7 @@
  * @brief Khai báo các hàm tiện ích. Một số hàm gỡ lỗi có
  * thể sẽ bị xóa theo sự phát triển của VNExos Bản Nguyên.
  */
-#ifndef __SHARED__EFILIB_HPP
+#if !defined(__SHARED__EFILIB_HPP) && defined(__EFI_ALLOWED)
 #define __SHARED__EFILIB_HPP
 
 #include <efi.hpp>

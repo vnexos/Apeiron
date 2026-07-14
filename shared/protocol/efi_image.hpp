@@ -7,7 +7,7 @@
  * @file efi_image.hpp
  * @brief Định nghĩa Giao thức Ảnh đã tải
  */
-#ifndef __SHARED__PROTOCOL__EFI_IMAGE_HPP
+#if !defined(__SHARED__PROTOCOL__EFI_IMAGE_HPP) && defined(__EFI_ALLOWED)
 #define __SHARED__PROTOCOL__EFI_IMAGE_HPP
 
 #include <efi_types.hpp>

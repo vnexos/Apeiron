@@ -9,7 +9,7 @@
  *        khả năng truy vấn số lượng nhân xử lý, trạng thái và thực thi
  *        mã trên các nhân phụ (Application Processors).
  */
-#ifndef __SHARED__PROTOCOL__EFI_MP_HPP
+#if !defined(__SHARED__PROTOCOL__EFI_MP_HPP) && defined(__EFI_ALLOWED)
 #define __SHARED__PROTOCOL__EFI_MP_HPP
 
 #include <efi_types.hpp>
