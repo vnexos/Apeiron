@@ -11,42 +11,35 @@
 CURRENT_CONFIG_DIR := $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
 ROOT_DIR           := $(patsubst %/,%,$(dir $(CURRENT_CONFIG_DIR)))
 
-# ==[ Kiến trúc đích ]==================================================
-ARCH ?= x86_64
-
-# Nạp toàn bộ cấu hình riêng cho kiến trúc đã chọn.
-# Mỗi tệp arch/<kiến trúc>.mk khai báo: ARCH_CXX_FLAGS, ARCH_ASM_FLAGS,
-# BOOT_TARGET, KERN_TARGET, BOOT_LD, EFI_BIN_NAME, BOOT_LDFLAGS, QEMU_ARCH_FLAGS.
-include $(CURRENT_CONFIG_DIR)/arch/$(ARCH).mk
-
 # ==[ Đường dẫn đầu ra ]================================================
-SHARED_DIR := $(ROOT_DIR)/shared
-BUILD_DIR  := $(ROOT_DIR)/build/$(ARCH)
-SYSROOT_DIR:= $(ROOT_DIR)/sysroot
-KERNEL_DIR := $(SYSROOT_DIR)
-KERNEL_FILE:= $(KERNEL_DIR)/Apeiron.kern
-EFI_BIN_DIR:= $(SYSROOT_DIR)/EFI/BOOT
-EFI_BIN    := $(EFI_BIN_DIR)/$(EFI_BIN_NAME)
-DISK_IMG   := $(ROOT_DIR)/disk.img
-SHARED_BUILD_DIR := $(BUILD_DIR)/shared
+LIB_SHARED_DIR := $(ROOT_DIR)/shared
+BUILD_DIR      := $(ROOT_DIR)/build
+SYSROOT_DIR    := $(ROOT_DIR)/sysroot
+KERNEL_DIR     := $(SYSROOT_DIR)
+KERNEL_FILE    := $(KERNEL_DIR)/Apeiron.kern
+EFI_BIN_DIR    := $(SYSROOT_DIR)/EFI/BOOT
+EFI_BIN        := $(EFI_BIN_DIR)/$(EFI_BIN_NAME)
+DISK_IMG       := $(ROOT_DIR)/disk.img
+BOOT_SHARED_DIR:= $(BUILD_DIR)/boot
+SHARED_DIR     := $(BUILD_DIR)/shared
 
 # ==[ Tệp chữ ký số công khai ]==========================================
-CERT_DIR   := $(ROOT_DIR)/cert
-PUB_FILE   := $(CERT_DIR)/root.crt
-KEY_FILE   := $(CERT_DIR)/root.key
+CERT_DIR       := $(ROOT_DIR)/cert
+PUB_FILE       := $(CERT_DIR)/root.crt
+KEY_FILE       := $(CERT_DIR)/root.key
 
 # ==[ Tệp Biểu trưng ]===================================================
-LOGO_DIR      := $(ROOT_DIR)/assets
-SYS_LOGO_DIR  := $(SYSROOT_DIR)/assets/logos
+LOGO_DIR       := $(ROOT_DIR)/assets
+SYS_LOGO_DIR   := $(SYSROOT_DIR)/assets/logos
 
 # ==[ Công cụ biên dịch ]================================================
-TOOLS_ADDSBAT := python3 $(ROOT_DIR)/tools/add_sbat.py
+TOOLS_ADDSBAT  := python3 $(ROOT_DIR)/tools/add_sbat.py
 
 # clang++ đảm nhận cả biên dịch lẫn điều khiển liên kết.
 CXX  := clang++
 ASM  := clang++
 # ld.lld hỗ trợ biên dịch chéo đa kiến trúc tốt hơn trình liên kết hệ thống.
-KERN_LD := ld.lld
+KERN_LD := clang++
 QEMU    := qemu-system-$(ARCH)
 
 # ==[ Cờ biên dịch C++ dùng chung ]=====================================
@@ -61,8 +54,7 @@ CXX_BASE_FLAGS := \
     -fno-use-cxa-atexit \
     -fno-threadsafe-statics \
     -mno-stack-arg-probe \
-    -I$(SHARED_DIR) \
-    $(ARCH_CXX_FLAGS)
+    -I$(LIB_SHARED_DIR)
 # -std=c++23                      : Sử dụng tiêu chuẩn ngôn ngữ C++23 để tận dụng các tính năng hiện đại.
 # -ffreestanding                  : Biên dịch trong môi trường độc lập, không giả định sự tồn tại
 #                                   của thư viện chuẩn hay hệ điều hành.
@@ -89,21 +81,10 @@ CXX_BASE_FLAGS := \
 BOOT_FLAGS     := $(CXX_BASE_FLAGS) --target=$(BOOT_TARGET) -fshort-wchar -mno-stack-arg-probe $(BOOT_FLAGS_EXTRA)
 
 # KERNEL_FLAGS : Nhân tự quản lý chuỗi riêng (ASCII/UTF-8) nên giữ nguyên tập cờ cơ bản.
-KERNEL_FLAGS   := $(CXX_BASE_FLAGS) --target=$(KERN_TARGET)
+KERNEL_FLAGS   := $(CXX_BASE_FLAGS)
 
 BOOT_ASMFLAGS  := $(ARCH_ASM_FLAGS) --target=$(BOOT_TARGET)
-KERNEL_ASMFLAGS:= $(ARCH_ASM_FLAGS) --target=$(KERN_TARGET)
-
-# ==[ Cờ liên kết nhân ]================================================
-
-KERN_LDFLAGS := \
-    -nostdlib \
-    -static \
-    -z max-page-size=0x1000
-# -nostdlib              : Không liên kết với các thư viện hệ thống hoặc thư viện chuẩn mặc định.
-# -static                : Ép buộc liên kết tĩnh toàn bộ, không dùng thư viện liên kết động.
-# -z max-page-size=0x1000: Thiết lập kích thước trang bộ nhớ tối đa là 4KB (0x1000),
-#                          khớp với cấu trúc phân trang mặc định.
+KERNEL_ASMFLAGS:= $(ARCH_ASM_FLAGS)
 
 # ==[ Cờ chạy QEMU ]====================================================
 TPM_DIR  := /tmp/tpm_state

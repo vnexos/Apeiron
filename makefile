@@ -63,13 +63,14 @@ VNEXOS_PART_UUID := 9c7ba30b-e2ee-4bbe-9fe4-ab5f23fe2b9b
 
 # ==[ KỊCH BẢN XÂY DỰNG HỆ THỐNG ]======================================
 .PHONY: all clean clean-all run certs $(SUBDIRS)
-all: $(DISK_IMG)
+all: $(DISK_IMG) firmware/.ready
 	@echo "$(MSG_VNEXOS) Đã xây dựng xong chương trình!"
 
 $(SUBDIRS):
 	@$(MAKE) -C $@
 
 certs:
+	@mkdir -p $(EFI_BIN_DIR)/
 	@cp $(CERT_DIR)/root.crt $(EFI_BIN_DIR)/
 
 logos:
@@ -93,11 +94,11 @@ $(DISK_IMG): $(SUBDIRS) certs logos
 # Định dạng FAT32 cho phân vùng 1 (Bộ nạp khởi động UEFI)
 # 61440 = số sector của phân vùng 1 (30MB / 512B mỗi sector)
 # Giới hạn rõ ràng để FAT32 không tràn sang phân vùng 2
-	@mkfs.vfat -F 32 --offset=2048 -s 1 -n "VNEXOS_BOOT" $(DISK_IMG) 61440 > /dev/null
+	@mkfs.vfat -F 32 --offset=2048 -s 1 -n "VNEXOS_BOOT" $(DISK_IMG) 61440 > /dev/null 2>&1
 
 # 	@cp $(CERT_DIR)/*.cer $(SYSROOT_DIR)/
 # Tạo cấu trúc thư mục và sao chép Bộ nạp khởi động vào phân vùng 1 thông qua mtools
-	@mcopy -s -i $(DISK_IMG)@@1M $(SYSROOT_DIR)/* ::/
+	@mcopy -s -i $(DISK_IMG)@@1M $(SYSROOT_DIR)/* ::/ 2>/dev/null
 
 	@echo "$(MSG_IMG) Đã tạo disk image $(DISK_IMG)"
 
@@ -108,18 +109,8 @@ firmware/.ready:
 	@cp -r /usr/share/edk2/* $(dir $(EDK2_DIR)) || true
 	@touch $@
 
-run: all firmware/.ready
-	@echo "$(MSG_QEMU) Đang khởi chạy hệ thống..."
-	@$(QEMU) $(QEMU_FLAGS) \
-		-drive file=$(DISK_IMG),format=raw,media=disk
-
 clean:
 	@for dir in $(SUBDIRS); do $(MAKE) -C $$dir clean; done
 	@rm -f $(DISK_IMG)
 	@rm -rf $(BUILD_DIR) $(SYSROOT_DIR)
 	@echo "$(MSG_CLEAN) Dự án đã được làm sạch sâu!"
-
-clean-all:
-	@rm -rf $(ROOT_DIR)/build $(SYSROOT_DIR)
-	@rm -f $(DISK_IMG)
-	@echo "$(MSG_CLEAN) Toàn bộ dự án đã được làm sạch hoàn toàn!"

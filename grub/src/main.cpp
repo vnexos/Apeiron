@@ -15,6 +15,16 @@
 #include <post_quantum/sign.hpp>
 #include <string.hpp>
 
+#if defined(__x86_64__)
+#define VNEXOS_FILE EFI_TEXT("\\EFI\\BOOT\\vnexosx64.efi")
+#elif defined(__aarch64__)
+#define VNEXOS_FILE EFI_TEXT("\\EFI\\BOOT\\vnexosaa64.efi")
+#elif defined(__riscv)
+#define VNEXOS_FILE EFI_TEXT("\\EFI\\BOOT\\vnexosriscv64.efi")
+#else
+#error "Dòng vi xử lý này chưa được VNExos hỗ trợ!"
+#endif
+
 using namespace EFI;
 
 static const uint16_t* logoPath[4];
@@ -188,10 +198,10 @@ extern "C" [[gnu::ms_abi]] EFI_STATUS vnexos_grub_main(EFI_HANDLE ImageHandle, E
   /* Đọc bộ nạp mồi lên bộ nhớ, kiểm tra chữ ký và xử lý nó */
   uint8_t* buffer;
   uint64_t size;
-  status = loadFile(EFI_TEXT("\\EFI\\BOOT\\vnexos.efi"), &buffer, &size);
+  status = loadFile(VNEXOS_FILE, &buffer, &size);
   if (EFI_ERROR(status))
   {
-    printf("LOI: Khong the doc tep: %s\nNhan phim bat ky de thoat...", "\\EFI\\BOOT\\vnexos.efi");
+    printf("LOI: Khong the doc tep: %s\nNhan phim bat ky de thoat...", VNEXOS_FILE);
     waitForKey();
     printf("\n");
     return status;
@@ -199,7 +209,7 @@ extern "C" [[gnu::ms_abi]] EFI_STATUS vnexos_grub_main(EFI_HANDLE ImageHandle, E
 
   if (!Sign::verifyEfiFileSignature(buffer, size, key, keySize))
   {
-    printf("LOI: Chu ky khong hop le: %s\nNhan phim bat ky de thoat...", "\\EFI\\BOOT\\vnexos.efi");
+    printf("LOI: Chu ky khong hop le: %s\nNhan phim bat ky de thoat...", VNEXOS_FILE);
     waitForKey();
     printf("\n");
     return 1;
