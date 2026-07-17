@@ -69,6 +69,7 @@ all: $(DISK_IMG) firmware/.ready
 $(SUBDIRS):
 	@$(MAKE) -C $@
 
+# Sao chép các tệp chứng chỉ và biểu trưng vào đĩa
 certs:
 	@mkdir -p $(EFI_BIN_DIR)/
 	@cp $(CERT_DIR)/root.crt $(EFI_BIN_DIR)/

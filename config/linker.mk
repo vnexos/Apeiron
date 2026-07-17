@@ -1,5 +1,5 @@
 # =========================================================
-# MẪU BIÊN DỊCH CÁC TỆP MÃ LỆNH
+# MẪU LIÊN KẾT THÀNH CHƯƠNG TRÌNH HOÀN CHỈNH
 #
 # Copyright (c) 2026 VNExos Inc.
 #

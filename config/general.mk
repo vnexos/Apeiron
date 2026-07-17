@@ -11,6 +11,10 @@
 CURRENT_CONFIG_DIR := $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
 ROOT_DIR           := $(patsubst %/,%,$(dir $(CURRENT_CONFIG_DIR)))
 
+ifneq ($(ARCH),)
+include $(CURRENT_CONFIG_DIR)/arch/$(ARCH).mk
+endif
+
 # ==[ Đường dẫn đầu ra ]================================================
 LIB_SHARED_DIR := $(ROOT_DIR)/shared
 BUILD_DIR      := $(ROOT_DIR)/build

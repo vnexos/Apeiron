@@ -14,12 +14,17 @@ include $(ROOT_DIR)/config/linker.mk
 GRUB_DIR       := $(ROOT_DIR)/grub
 GRUB_BUILD_DIR := $(BUILD_DIR)/grub
 SRCS           := $(shell find $(GRUB_DIR)/src -type f \( -name "*.cpp" -o -name "*.s" \))
+ifeq ($(ARCH),)
 X86_64_OBJS    := $(patsubst $(GRUB_DIR)/src/%.cpp,$(GRUB_BUILD_DIR)/%.x86_64.o,$(filter %.cpp,$(SRCS))) \
 				  $(shell find $(BOOT_SHARED_DIR) -type f \( -name "*.x86_64.o" \))
 AARCH64_OBJS   := $(patsubst $(GRUB_DIR)/src/%.cpp,$(GRUB_BUILD_DIR)/%.aarch64.o,$(filter %.cpp,$(SRCS))) \
 				  $(shell find $(BOOT_SHARED_DIR) -type f \( -name "*.aarch64.o" \))
 RISCV64_OBJS   := $(patsubst $(GRUB_DIR)/src/%.cpp,$(GRUB_BUILD_DIR)/%.riscv64.o,$(filter %.cpp,$(SRCS))) \
 				  $(shell find $(BOOT_SHARED_DIR) -type f \( -name "*.riscv64.o" \))
+else
+OBJS           := $(patsubst $(GRUB_DIR)/src/%.cpp,$(GRUB_BUILD_DIR)/%.$(ARCH).o,$(filter %.cpp,$(SRCS))) \
+				  $(shell find $(BOOT_SHARED_DIR) -type f \( -name "*.$(ARCH).o" \))
+endif
 EFI_BINS       := $(EFI_BIN_DIR)/BOOTX64.EFI \
 				  $(EFI_BIN_DIR)/BOOTAA64.EFI \
 				  $(EFI_BIN_DIR)/BOOTRISCV64.EFI
