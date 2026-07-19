@@ -32,7 +32,7 @@ function(VNExosBuildEfi_riscv64
     # Ép các cờ áp dụng cho riscv64 đối với tệp C, C++, ASM
     target_compile_options(${TARGET_NAME} PRIVATE
         # Cho cả C, C++ và ASM
-        --target=aarch64-unknown-windows
+        --target=riscv64-unknown-none-elf
         -march=rv64imac
         -mabi=lp64
         -mcmodel=medany
@@ -75,6 +75,12 @@ function(VNExosBuildEfi_riscv64
     set_target_properties(${TARGET_NAME} PROPERTIES
         OUTPUT_NAME "${FILE_NAME}"
         SUFFIX "${EFI_SUFFIX}"
+    )
+
+    # Biến đổi tệp chương trình ELF sang EFI
+    add_custom_command(
+        TARGET ${TARGET_NAME} POST_BUILD
+        COMMAND ${ELF2EFI} $<TARGET_FILE:${TARGET_NAME}> $<TARGET_FILE:${TARGET_NAME}>
     )
 
     # Ký tệp bằng khóa gốc và khóa DB
