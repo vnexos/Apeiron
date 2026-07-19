@@ -9,6 +9,41 @@
 
 include(${VNExos_CONFIG_DIR}/source_filter.cmake)
 
+
+add_library(vnexos_flags_x86_64 INTERFACE)
+target_compile_options(vnexos_flags_x86_64 INTERFACE
+    # Cho cả C, C++ và ASM
+    --target=x86_64-unknown-windows
+    # Cho C, C++
+    $<$<COMPILE_LANGUAGE:C,CXX>:
+        -ffreestanding
+        -O2
+        -Wall 
+        -Wextra
+        -fno-asynchronous-unwind-tables
+        -mno-stack-arg-probe
+        -fshort-wchar
+        -D__EFI_ALLOWED
+    >
+    # Cho riêng C++
+    $<$<COMPILE_LANGUAGE:CXX>:
+        -fno-exceptions
+        -fno-rtti
+        -fno-use-cxa-atexit
+        -fno-threadsafe-statics
+    >
+)
+target_link_options(vnexos_flags_x86_64 INTERFACE
+    --target=x86_64-unknown-windows
+    -nostdlib
+    -fuse-ld=lld-link
+    -Wl,-subsystem:efi_application
+    -Wl,-nodefaultlib
+    -Wl,-dll
+    -Wl,-dynamicbase
+    -Wl,-noimplib
+)
+
 function(VNExosBuildEfi_x86_64 
     FILE_NAME DB_CERT DIL_CERT 
     ENTRYPOINT SRC_FILES
@@ -22,7 +57,7 @@ function(VNExosBuildEfi_x86_64
 
     # Thêm nguồn C, C++, ASM vào đích
     add_executable(${TARGET_NAME} ${SRC_FILES})
-    target_include_directories(${TARGET_NAME} PRIVATE "${VNExos_SHARED_INCLUDE_DIR}")
+    target_link_libraries(${TARGET_NAME} PRIVATE vnexos_flags_x86_64 vnexos_shared_x86_64)
 
     # Xác định hậu tố cho tệp đầu ra
     set(EFI_SUFFIX "X64.EFI")
@@ -31,41 +66,11 @@ function(VNExosBuildEfi_x86_64
         string(TOLOWER "${EFI_SUFFIX}" EFI_SUFFIX)
     endif()
 
-    # Ép các cờ áp dụng cho x86_64 đối với tệp C, C++, ASM
-    target_compile_options(${TARGET_NAME} PRIVATE
-        # Cho cả C, C++ và ASM
-        --target=x86_64-unknown-windows
-        # Cho C, C++
-        $<$<COMPILE_LANGUAGE:C,CXX>:
-            -ffreestanding
-            -O2
-            -Wall 
-            -Wextra
-            -fno-asynchronous-unwind-tables
-            -mno-stack-arg-probe
-            -fshort-wchar
-            -D__EFI_ALLOWED
-        >
-        # Cho riêng C++
-        $<$<COMPILE_LANGUAGE:CXX>:
-            -fno-exceptions
-            -fno-rtti
-            -fno-use-cxa-atexit
-            -fno-threadsafe-statics
-        >
-    )
 
-    # Ép LLD liên kết thành định dạng PE/UEFI
+
+    # Ép LLD liên kết điểm mấu chốt
     target_link_options(${TARGET_NAME} PRIVATE
-        --target=x86_64-unknown-windows
-        -nostdlib
-        -fuse-ld=lld-link
         -Wl,-entry:${ENTRYPOINT}
-        -Wl,-subsystem:efi_application
-        -Wl,-nodefaultlib
-        -Wl,-dll
-        -Wl,-dynamicbase
-        -Wl,-noimplib
     )
 
     # Đổi tên tệp đầu ra

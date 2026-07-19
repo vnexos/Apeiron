@@ -9,6 +9,44 @@
 
 include(${VNExos_CONFIG_DIR}/source_filter.cmake)
 
+
+add_library(vnexos_flags_riscv64 INTERFACE)
+target_compile_options(vnexos_flags_riscv64 INTERFACE
+    # Cho cả C, C++ và ASM
+    --target=riscv64-unknown-none-elf
+    -march=rv64imac
+    -mabi=lp64
+    -mcmodel=medany
+    # Cho C, C++
+    $<$<COMPILE_LANGUAGE:C,CXX>:
+        -ffreestanding
+        -O2
+        -Wall 
+        -Wextra
+        -fno-asynchronous-unwind-tables
+        -mno-implicit-float
+        -mno-relax
+        -msmall-data-limit=0
+        -fno-jump-tables
+        -fshort-wchar
+        -D__EFI_ALLOWED
+        -Wno-ignored-attributes
+    >
+    # Cho riêng C++
+    $<$<COMPILE_LANGUAGE:CXX>:
+        -fno-exceptions
+        -fno-rtti
+        -fno-use-cxa-atexit
+        -fno-threadsafe-statics
+    >
+)
+target_link_options(vnexos_flags_riscv64 INTERFACE
+    --target=riscv64-unknown-none-elf
+    -nostdlib
+    -fuse-ld=lld
+    -Wl,-m,elf64lriscv
+)
+
 function(VNExosBuildEfi_riscv64 
     FILE_NAME DB_CERT DIL_CERT 
     SRC_FILES
@@ -28,7 +66,7 @@ function(VNExosBuildEfi_riscv64
 
     # Thêm nguồn C, C++, ASM vào đích
     add_executable(${TARGET_NAME} ${SRC_FILES})
-    target_include_directories(${TARGET_NAME} PRIVATE "${VNExos_SHARED_INCLUDE_DIR}")
+    target_link_libraries(${TARGET_NAME} PRIVATE vnexos_flags_riscv64 vnexos_shared_riscv64)
 
     # Xác định hậu tố cho tệp đầu ra
     set(EFI_SUFFIX "RISCV64.EFI")
@@ -37,43 +75,10 @@ function(VNExosBuildEfi_riscv64
         string(TOLOWER "${EFI_SUFFIX}" EFI_SUFFIX)
     endif()
 
-    # Ép các cờ áp dụng cho riscv64 đối với tệp C, C++, ASM
-    target_compile_options(${TARGET_NAME} PRIVATE
-        # Cho cả C, C++ và ASM
-        --target=riscv64-unknown-none-elf
-        -march=rv64imac
-        -mabi=lp64
-        -mcmodel=medany
-        # Cho C, C++
-        $<$<COMPILE_LANGUAGE:C,CXX>:
-            -ffreestanding
-            -O2
-            -Wall 
-            -Wextra
-            -fno-asynchronous-unwind-tables
-            -mno-implicit-float
-            -mno-relax
-            -msmall-data-limit=0
-            -fno-jump-tables
-            -fshort-wchar
-            -D__EFI_ALLOWED
-            -Wno-ignored-attributes
-        >
-        # Cho riêng C++
-        $<$<COMPILE_LANGUAGE:CXX>:
-            -fno-exceptions
-            -fno-rtti
-            -fno-use-cxa-atexit
-            -fno-threadsafe-statics
-        >
-    )
 
-    # Dùng riêng ld.lld để liên kết
+
+    # Dùng riêng ld.lld để liên kết với script
     target_link_options(${TARGET_NAME} PRIVATE
-        --target=riscv64-unknown-none-elf
-        -nostdlib
-        -fuse-ld=lld
-        -Wl,-m,elf64lriscv
         -T ${LINKER_FILE}
     )
 

@@ -9,6 +9,47 @@
 
 include(${VNExos_CONFIG_DIR}/source_filter.cmake)
 
+
+add_library(vnexos_flags_aarch64 INTERFACE)
+target_compile_options(vnexos_flags_aarch64 INTERFACE
+    # Cho cả C, C++ và ASM
+    --target=aarch64-unknown-windows
+    -mgeneral-regs-only
+    # Cho C, C++
+    $<$<COMPILE_LANGUAGE:C,CXX>:
+        -ffreestanding
+        -O2
+        -Wall 
+        -Wextra
+        -fno-asynchronous-unwind-tables
+        -mno-stack-arg-probe
+        -mno-implicit-float
+        -fshort-wchar
+        -D__EFI_ALLOWED
+    >
+    # Cho riêng C++
+    $<$<COMPILE_LANGUAGE:CXX>:
+        -fno-exceptions
+        -fno-rtti
+        -fno-use-cxa-atexit
+        -fno-threadsafe-statics
+    >
+    # Cho riêng ASM
+    $<$<COMPILE_LANGUAGE:ASM>:
+        -march=armv8-a
+    >
+)
+target_link_options(vnexos_flags_aarch64 INTERFACE
+    --target=aarch64-unknown-windows
+    -nostdlib
+    -fuse-ld=lld-link
+    -Wl,-subsystem:efi_application
+    -Wl,-nodefaultlib
+    -Wl,-dll
+    -Wl,-dynamicbase
+    -Wl,-noimplib
+)
+
 function(VNExosBuildEfi_aarch64 
     FILE_NAME DB_CERT DIL_CERT 
     ENTRYPOINT SRC_FILES
@@ -22,7 +63,7 @@ function(VNExosBuildEfi_aarch64
 
     # Thêm nguồn C, C++, ASM vào đích
     add_executable(${TARGET_NAME} ${SRC_FILES})
-    target_include_directories(${TARGET_NAME} PRIVATE "${VNExos_SHARED_INCLUDE_DIR}")
+    target_link_libraries(${TARGET_NAME} PRIVATE vnexos_flags_aarch64 vnexos_shared_aarch64)
 
     # Xác định hậu tố cho tệp đầu ra
     set(EFI_SUFFIX "AA64.EFI")
@@ -31,47 +72,11 @@ function(VNExosBuildEfi_aarch64
         string(TOLOWER "${EFI_SUFFIX}" EFI_SUFFIX)
     endif()
 
-    # Ép các cờ áp dụng cho aarch64 đối với tệp C, C++, ASM
-    target_compile_options(${TARGET_NAME} PRIVATE
-        # Cho cả C, C++ và ASM
-        --target=aarch64-unknown-windows
-        -mgeneral-regs-only
-        # Cho C, C++
-        $<$<COMPILE_LANGUAGE:C,CXX>:
-            -ffreestanding
-            -O2
-            -Wall 
-            -Wextra
-            -fno-asynchronous-unwind-tables
-            -mno-stack-arg-probe
-            -mno-implicit-float
-            -fshort-wchar
-            -D__EFI_ALLOWED
-        >
-        # Cho riêng C++
-        $<$<COMPILE_LANGUAGE:CXX>:
-            -fno-exceptions
-            -fno-rtti
-            -fno-use-cxa-atexit
-            -fno-threadsafe-statics
-        >
-        # Cho riêng ASM
-        $<$<COMPILE_LANGUAGE:ASM>:
-            -march=armv8-a
-        >
-    )
 
-    # Ép LLD liên kết thành định dạng PE/UEFI
+
+    # Ép LLD liên kết điểm mấu chốt
     target_link_options(${TARGET_NAME} PRIVATE
-        --target=aarch64-unknown-windows
-        -nostdlib
-        -fuse-ld=lld-link
         -Wl,-entry:${ENTRYPOINT}
-        -Wl,-subsystem:efi_application
-        -Wl,-nodefaultlib
-        -Wl,-dll
-        -Wl,-dynamicbase
-        -Wl,-noimplib
     )
 
     # Đổi tên tệp đầu ra
