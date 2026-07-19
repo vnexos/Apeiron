@@ -57,6 +57,7 @@ function(VNExosBuildEfi_aarch64
     # Tên đích xây dựng (độc nhất)
     set(TARGET_NAME "${FILE_NAME}_aarch64")
     set(TARGET_NAME ${TARGET_NAME} PARENT_SCOPE)
+    set_property(GLOBAL APPEND PROPERTY VNExos_ALL_TARGET ${TARGET_NAME})
 
     # Lọc để lấy các mã Assembly đúng với dòng Vi xử lý
     VNExosFilterAssemblySource("aarch64" SRC_FILES)
@@ -71,8 +72,6 @@ function(VNExosBuildEfi_aarch64
     if(IS_LOWERCASE)
         string(TOLOWER "${EFI_SUFFIX}" EFI_SUFFIX)
     endif()
-
-
 
     # Ép LLD liên kết điểm mấu chốt
     target_link_options(${TARGET_NAME} PRIVATE

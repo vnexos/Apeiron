@@ -59,6 +59,7 @@ function(VNExosBuildEfi_riscv64
     # Tên đích xây dựng (độc nhất)
     set(TARGET_NAME "${FILE_NAME}_riscv64")
     set(TARGET_NAME ${TARGET_NAME} PARENT_SCOPE)
+    set_property(GLOBAL APPEND PROPERTY VNExos_ALL_TARGET ${TARGET_NAME})
     set(ELF2EFI python3 "${VNExos_TOOL_DIR}/elf2efi_riscv64.py")
     
     # Lọc để lấy các mã Assembly đúng với dòng Vi xử lý
@@ -74,8 +75,6 @@ function(VNExosBuildEfi_riscv64
     if(IS_LOWERCASE)
         string(TOLOWER "${EFI_SUFFIX}" EFI_SUFFIX)
     endif()
-
-
 
     # Dùng riêng ld.lld để liên kết với script
     target_link_options(${TARGET_NAME} PRIVATE

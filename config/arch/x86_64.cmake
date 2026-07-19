@@ -51,6 +51,7 @@ function(VNExosBuildEfi_x86_64
     # Tên đích xây dựng (độc nhất)
     set(TARGET_NAME "${FILE_NAME}_x86_64")
     set(TARGET_NAME ${TARGET_NAME} PARENT_SCOPE)
+    set_property(GLOBAL APPEND PROPERTY VNExos_ALL_TARGET ${TARGET_NAME})
     
     # Lọc để lấy các mã Assembly đúng với dòng Vi xử lý
     VNExosFilterAssemblySource("x86_64" SRC_FILES)
@@ -65,8 +66,6 @@ function(VNExosBuildEfi_x86_64
     if(IS_LOWERCASE)
         string(TOLOWER "${EFI_SUFFIX}" EFI_SUFFIX)
     endif()
-
-
 
     # Ép LLD liên kết điểm mấu chốt
     target_link_options(${TARGET_NAME} PRIVATE

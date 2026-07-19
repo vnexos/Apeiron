@@ -54,8 +54,30 @@ endforeach()
 # Khởi tạo mảng toàn cục rỗng
 set_property(GLOBAL PROPERTY VNExos_ALL_TARGET "")
 
+# Thư viện chung
 add_subdirectory(shared)
+
 add_subdirectory(grub)
 add_subdirectory(internal)
 
 get_property(ALL_TARGETS GLOBAL PROPERTY VNExos_ALL_TARGET)
+
+# Sinh ra tệp ảnh đĩa (disk.img)
+set(VNEXOS_BOOT_UUID "2ef6ee17-2a14-4db9-8129-42a6dc48f8af")
+set(VNEXOS_TYPE_UUID "c48d1722-723b-43d6-bead-f2b2623343dd")
+set(VNEXOS_PART_UUID "9c7ba30b-e2ee-4bbe-9fe4-ab5f23fe2b9b")
+set(DISK_IMG "${CMAKE_SOURCE_DIR}/disk.img")
+
+add_custom_command(
+    OUTPUT "${DISK_IMG}"
+    COMMAND dd if=/dev/zero of="${DISK_IMG}" bs=1M count=1024 status=none
+    COMMAND sgdisk -o "${DISK_IMG}" > /dev/null
+    COMMAND sgdisk -n 1:2048:+30MB -t 1:ef00 -c 1:"Bộ nạp khởi động VNExos" -u 1:${VNEXOS_BOOT_UUID} "${DISK_IMG}" > /dev/null
+    COMMAND sgdisk -n 2:0:0 -t 2:${VNEXOS_TYPE_UUID} -c 2:"Nhân lõi Apeiron" -u 2:${VNEXOS_PART_UUID} "${DISK_IMG}" > /dev/null
+    COMMAND mkfs.vfat -F 32 --offset=2048 -s 1 -n "VNEXOS_BOOT" "${DISK_IMG}" 61440 > /dev/null 2>&1
+    COMMAND mcopy -s -i "${DISK_IMG}@@1M" "${VNExos_SYSROOT_DIR}/*" ::/ 2>/dev/null
+    COMMENT "[ VNExos ] Đã tạo thành công disk image: ${DISK_IMG}"
+    DEPENDS ${ALL_TARGETS}
+)
+
+add_custom_target(disk_img ALL DEPENDS "${DISK_IMG}")

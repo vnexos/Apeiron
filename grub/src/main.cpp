@@ -91,10 +91,10 @@ extern "C" [[gnu::ms_abi]] EFI_STATUS vnexos_grub_main(EFI_HANDLE ImageHandle, E
   /* Đọc chứng chỉ gốc vào bộ nhớ */
   uint8_t* key;
   uint64_t keySize;
-  status = loadFile(EFI_TEXT("\\EFI\\BOOT\\root.crt"), &key, &keySize);
+  status = loadFile(EFI_TEXT("\\certs\\root.crt"), &key, &keySize);
   if (EFI_ERROR(status))
   {
-    printf("LOI: Khong the doc tep: %s\nNhan phim bat ky de thoat...", "\\EFI\\BOOT\\root.crt");
+    printf("LOI: Khong the doc tep: %s\nNhan phim bat ky de thoat...", EFI_TEXT("\\certs\\root.crt"));
     waitForKey();
     printf("\n");
     return status;

@@ -24,7 +24,7 @@
 |:-----------:|:---|----------|
 | ![Assembly](https://img.shields.io/badge/assembly-%23000000.svg?style=for-the-badge&logo=assemblyscript&logoColor=white) | **Assembly** <br>*(Hợp ngữ)* | Được dùng chủ yếu ở **Bộ nạp khởi động** và **Nhân hệ thống** cho các tác vụ yêu cầu phải tương tác trực tiếp với thanh ghi, cấu hình vi xử lý (CPU) hoặc các lệnh đặc quyền mà ngôn ngữ bậc cao không can thiệp được. |
 | ![C++](https://img.shields.io/badge/C%2B%2B-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white) | **C++** | Ngôn ngữ cốt lõi được sử dụng xuyên suốt để xây dựng toàn bộ **Quy trình hoạt động** của Nhân hệ thống, tầng trừu tượng phần cứng (HAL) và các thành phần dịch vụ quan trọng trong hệ sinh thái. |
-| ![Makefile](https://img.shields.io/badge/MAKEFILE-ef5350?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHBhdGggZmlsbD0iI2ZmZmZmZiIgZD0ibTI5LjUgMjQuMDItMS42LS45MmE0LjQgNC40IDAgMCAwIC4wOS0uOUExLjMgMS4zIDAgMCAwIDI4IDIyYTUuNiA1LjYgMCAwIDAtLjEtMS4xbDEuNi0uOTJhLjQ5My40OTMgMCAwIDAgLjE4LS42OGwtMS41LTIuNmEuNDUuNDUgMCAwIDAtLjE4LS4xOFY2LjAxYTIuMDA2IDIuMDA2IDAgMCAwLTItMkg0YTIuMDA2IDIuMDA2IDAgMCAwLTIgMlYyMmEyLjAwNiAyLjAwNiAwIDAgMCAyIDJoMTAuNTNsLS4wMy4wMmEuNDkzLjQ5MyAwIDAgMC0uMTguNjhsMS41IDIuNmEuNDkzLjQ5MyAwIDAgMCAuNjguMThsMS42LS45MmE1LjkgNS45IDAgMCAwIDEuOSAxLjA5djEuODVhLjQ5NS40OTUgMCAwIDAgLjUuNWgzYS40OTUuNDk1IDAgMCAwIC41LS41di0xLjg1YTUuOSA1LjkgMCAwIDAgMS45LTEuMDlsMS42LjkyYS40OTMuNDkzIDAgMCAwIC42OC0uMThsMS41LTIuNmEuNDkzLjQ5MyAwIDAgMC0uMTgtLjY4TTI0IDIyLjAxYTEuOTkgMS45OSAwIDAgMS0uODggMS42NWwtLjE4LjExYTIuMDQgMi4wNCAwIDAgMS0xLjg4IDBsLS4xOC0uMTFhMS45OSAxLjk5IDAgMCAxLS44OC0xLjY1VjIyYTIgMiAwIDAgMSAuODgtMS42NmwuMTgtLjExYTIuMDQgMi4wNCAwIDAgMSAxLjg4IDBsLjE4LjExQTIgMiAwIDAgMSAyNCAyMlptMi00LjYzLS4xLjA2YTUuOSA1LjkgMCAwIDAtMS45LTEuMDlWMTQuNWEuNDk1LjQ5NSAwIDAgMC0uNS0uNWgtM2EuNDk1LjQ5NSAwIDAgMC0uNS41djEuODVhNS45IDUuOSAwIDAgMC0xLjkgMS4wOWwtMS42LS45MmEuNDkzLjQ5MyAwIDAgMC0uNjguMThsLTEuNSAyLjZhLjQ5My40OTMgMCAwIDAgLjE4LjY4bDEuNi45MkE1LjYgNS42IDAgMCAwIDE2IDIydi4wMUw0IDIyVjEwLjAxaDIyWiIvPjwvc3ZnPg==) | **Makefile** | Công cụ quản lý và tự động hóa quy trình biên dịch (Build Toolchain), giúp điều phối việc đóng gói các phân vùng độc lập giữa các thành phần ngoại vi một cách chính xác. |
+| ![CMake](https://img.shields.io/badge/CMake-%23E55350.svg?style=for-the-badge&logo=cmake&logoColor=white) | **Makefile** | Công cụ quản lý và tự động hóa quy trình biên dịch (Build Toolchain), giúp điều phối việc đóng gói các phân vùng độc lập giữa các thành phần ngoại vi một cách chính xác. |
 | ![Bash](https://img.shields.io/badge/bash-121011.svg?style=for-the-badge&logo=gnu-bash&logoColor=white) | **Bash** | Các kịch bản lệnh (Script) hỗ trợ tự động hóa và thực hiện các thao tác điều phối dự án một cách nhanh chóng, tối ưu. |
 
 ### 📂 Chuẩn bị môi trường (Đối với môi trường Ubuntu)
@@ -64,14 +64,8 @@
 3. Khởi tạo khóa cho dự án và điền thông tin
     ```bash
     boreas -sign -g cert/open.key cert/open.crt
-    openssl req -newkey rsa:4096 -nodes -keyout vnexos_db.key \
-        -new -x509 -sha256 -days 7300 \
-        -subj "/CN=VNExos DB Key/O=VNExos Inc./C=VN/" \
-        -out vnexos_db.crt
     ```
-4. Xóa `.secboot` ở dòng 13 của các tệp:
-    - `aarch64.mk`
-    - `x86_64.mk`
+4. Xóa `.secboot` ở dòng 14 và dòng 25 của tệp `run.sh`.
 5. Đặt quyền chạy cho toàn bộ tệp kịch bản (nếu tệp không chạy được)
     ```bash
     sudo chmod +x *.sh
