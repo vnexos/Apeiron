@@ -102,10 +102,20 @@ bool Sign::verifyEfiFileSignature(uint8_t* rawData, uint64_t dataSize, const uin
 
   // 2 bước để xác thực chữ ký với khóa công khai
   if (memcmp(signature->parentKeyID, metadata.currentKey, sizeof(metadata.currentKey)) != 0)
+  {
+    *(uint32_t*)(rawData + checksumOffset)   = savedChecksum;
+    *(uint32_t*)(rawData + secDirOffset)     = savedSBOffset;
+    *(uint32_t*)(rawData + secDirOffset + 4) = savedSBSize;
     return false;
+  }
 
   if (memcmp(signature->parentKeyHash, metadata.currentCertHash, sizeof(metadata.currentCertHash)) != 0)
+  {
+    *(uint32_t*)(rawData + checksumOffset)   = savedChecksum;
+    *(uint32_t*)(rawData + secDirOffset)     = savedSBOffset;
+    *(uint32_t*)(rawData + secDirOffset + 4) = savedSBSize;
     return false;
+  }
 
   // Xác minh chữ ký
   uint8_t fileHash[32];
