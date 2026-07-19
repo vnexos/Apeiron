@@ -1,0 +1,103 @@
+# =========================================================
+# Copyright (c) 2026 VNExos Inc.
+#
+# Được cấp phép theo Giấy phép MIT.
+# Xem tệp LICENSE tại thư mục gốc để biết thêm chi tiết.
+#
+# Hàm biên dịch cho Vi xử lý: aarch64
+# =========================================================
+
+function(VNExosBuildEfi_aarch64 
+    FILE_NAME DB_CERT DIL_CERT 
+    SRC_FILES
+    IS_LOWERCASE)
+    # Tên đích xây dựng (độc nhất)
+    set(TARGET_NAME "${FILE_NAME}_aarch64")
+
+    # Thêm nguồn C, C++, ASM vào đích
+    add_executable(${TARGET_NAME} ${SRC_FILES})
+
+    # Xác định hậu tố cho tệp đầu ra
+    set(EFI_SUFFIX "AA64.EFI")
+
+    if(IS_LOWERCASE)
+        string(TOLOWER "${EFI_SUFFIX}" EFI_SUFFIX)
+    endif()
+
+    # Ép các cờ áp dụng cho aarch64 đối với tệp C, C++, ASM
+    target_compile_options(${TARGET_NAME} PRIVATE
+        # Cho cả C, C++ và ASM
+        --target=aarch64-unknown-windows
+        -mgeneral-regs-only
+        # Cho C, C++
+        $<$<COMPILE_LANGUAGE:C,CXX>:
+            -ffreestanding
+            -O2
+            -Wall 
+            -Wextra
+            -fno-asynchronous-unwind-tables
+            -mno-implicit-float
+            -fshort-wchar
+        >
+        # Cho riêng C++
+        $<$<COMPILE_LANGUAGE:CXX>:
+            -fno-exceptions
+            -fno-rtti
+            -fno-use-cxa-atexit
+            -fno-threadsafe-statics
+        >
+        # Cho riêng ASM
+        $<$<COMPILE_LANGUAGE:ASM>:
+            -march=armv8-a
+        >
+    )
+
+    # Ép LLD liên kết thành định dạng PE/UEFI
+    target_link_options(${TARGET_NAME} PRIVATE
+        --target=aarch64-unknown-windows
+        -nostdlib
+        -fuse-ld=lld-link
+        -Wl,-entry:vnexos_main
+        -Wl,-subsystem:efi_application
+        -Wl,-nodefaultlib
+        -Wl,-dll
+        -Wl,-dynamicbase
+        -Wl,-noimplib
+    )
+
+    # Đổi tên tệp đầu ra
+    set_target_properties(${TARGET_NAME} PROPERTIES
+        OUTPUT_NAME "${FILE_NAME}"
+        SUFFIX "${EFI_SUFFIX}"
+    )
+
+    # Ký tệp bằng thuật toán bằng khóa gốc và khóa DB
+    add_custom_command(
+        TARGET ${TARGET_NAME} POST_BUILD
+        COMMAND boreas -sign -s
+            ${VNExos_CERT_DIR}/${DIL_CERT}.key
+            ${VNExos_CERT_DIR}/${DIL_CERT}.crt
+            $<TARGET_FILE:${TARGET_NAME}>
+            $<TARGET_FILE:${TARGET_NAME}>
+
+        COMMAND sbsign
+            --key ${VNExos_CERT_DIR}/${DB_CERT}.key
+            --cert ${VNExos_CERT_DIR}/${DB_CERT}.crt
+            --output $<TARGET_FILE:${TARGET_NAME}>
+            $<TARGET_FILE:${TARGET_NAME}>
+
+        COMMENT "[ VNExos ] Đã ký tệp chương trình thành công!"
+    )
+
+    # Đẩy tệp chương trình vào mục `sysroot` sau khi dựng xong
+    add_custom_command(
+        TARGET ${TARGET_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${VNExos_SYSROOT_BOOT_DIR}"
+
+        COMMAND ${CMAKE_COMMAND} -E copy
+            "$<TARGET_FILE:${TARGET_NAME}>"
+            "${VNExos_SYSROOT_BOOT_DIR}/$<TARGET_FILE_NAME:${TARGET_NAME}>"
+        
+        COMMENT "[ VNExos ] Đã xây dựng xong chương trình: ${VNExos_SYSROOT_BOOT_DIR}/$<TARGET_FILE_NAME:${TARGET_NAME}>"
+    )
+endfunction()
