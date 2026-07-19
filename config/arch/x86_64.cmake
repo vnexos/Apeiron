@@ -22,7 +22,7 @@ function(VNExosBuildEfi_x86_64
 
     # Thêm nguồn C, C++, ASM vào đích
     add_executable(${TARGET_NAME} ${SRC_FILES})
-    include_directories("${VNExos_SHARED_INCLUDE_DIR}")
+    target_include_directories(${TARGET_NAME} PRIVATE "${VNExos_SHARED_INCLUDE_DIR}")
 
     # Xác định hậu tố cho tệp đầu ra
     set(EFI_SUFFIX "X64.EFI")
@@ -77,13 +77,13 @@ function(VNExosBuildEfi_x86_64
     # Ký tệp bằng thuật toán bằng khóa gốc và khóa DB
     add_custom_command(
         TARGET ${TARGET_NAME} POST_BUILD
-        COMMAND boreas -sign -s
+        COMMAND ${VNExos_BOREAS_TOOL} -sign -s
             ${VNExos_CERT_DIR}/${DIL_CERT}.key
             ${VNExos_CERT_DIR}/${DIL_CERT}.crt
             $<TARGET_FILE:${TARGET_NAME}>
             $<TARGET_FILE:${TARGET_NAME}>
 
-        COMMAND sbsign
+        COMMAND ${VNExos_SBSIGN_TOOL}
             --key ${VNExos_CERT_DIR}/${DB_CERT}.key
             --cert ${VNExos_CERT_DIR}/${DB_CERT}.crt
             --output $<TARGET_FILE:${TARGET_NAME}>
