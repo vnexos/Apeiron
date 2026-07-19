@@ -45,6 +45,8 @@
         mtools \
         xorriso \
         curl \
+        cmake \
+        ninja-build \
         python3-pefile && \
     git clone https://github.com/vnexos/Boreas.git && \
     cd Boreas && sudo make install && \
@@ -61,8 +63,7 @@
     ```
 3. Khởi tạo khóa cho dự án và điền thông tin
     ```bash
-    boreas -sign -g cert/root.key cert/root.crt
-    boreas -sign -g cert/vnexos.key cert/vnexos.crt
+    boreas -sign -g cert/open.key cert/open.crt
     openssl req -newkey rsa:4096 -nodes -keyout vnexos_db.key \
         -new -x509 -sha256 -days 7300 \
         -subj "/CN=VNExos DB Key/O=VNExos Inc./C=VN/" \
@@ -77,7 +78,7 @@
     ```
 6. Xây dựng chương trình:
     ```bash
-    ./build.sh
+    ./clean.sh && ./build.sh
     ```
 7. Chạy chương trình chính thức:
     - Cho dòng Vi xử lý Intel/AMD64
