@@ -7,15 +7,22 @@
 # Hàm biên dịch cho Vi xử lý: x86_64
 # =========================================================
 
+include(${VNExos_CONFIG_DIR}/source_filter.cmake)
+
 function(VNExosBuildEfi_x86_64 
     FILE_NAME DB_CERT DIL_CERT 
-    SRC_FILES
+    ENTRYPOINT SRC_FILES
     IS_LOWERCASE)
     # Tên đích xây dựng (độc nhất)
     set(TARGET_NAME "${FILE_NAME}_x86_64")
+    set(TARGET_NAME ${TARGET_NAME} PARENT_SCOPE)
+    
+    # Lọc để lấy các mã Assembly đúng với dòng Vi xử lý
+    VNExosFilterAssemblySource("x86_64" SRC_FILES)
 
     # Thêm nguồn C, C++, ASM vào đích
     add_executable(${TARGET_NAME} ${SRC_FILES})
+    include_directories("${VNExos_SHARED_INCLUDE_DIR}")
 
     # Xác định hậu tố cho tệp đầu ra
     set(EFI_SUFFIX "X64.EFI")
@@ -37,6 +44,7 @@ function(VNExosBuildEfi_x86_64
             -fno-asynchronous-unwind-tables
             -mno-stack-arg-probe
             -fshort-wchar
+            -D__EFI_ALLOWED
         >
         # Cho riêng C++
         $<$<COMPILE_LANGUAGE:CXX>:
@@ -52,7 +60,7 @@ function(VNExosBuildEfi_x86_64
         --target=x86_64-unknown-windows
         -nostdlib
         -fuse-ld=lld-link
-        -Wl,-entry:vnexos_main
+        -Wl,-entry:${ENTRYPOINT}
         -Wl,-subsystem:efi_application
         -Wl,-nodefaultlib
         -Wl,-dll

@@ -7,6 +7,8 @@
 # Hàm biên dịch cho Vi xử lý: RISC-V 64
 # =========================================================
 
+include(${VNExos_CONFIG_DIR}/source_filter.cmake)
+
 function(VNExosBuildEfi_riscv64 
     FILE_NAME DB_CERT DIL_CERT 
     SRC_FILES
@@ -18,9 +20,15 @@ function(VNExosBuildEfi_riscv64
 
     # Tên đích xây dựng (độc nhất)
     set(TARGET_NAME "${FILE_NAME}_riscv64")
+    set(TARGET_NAME ${TARGET_NAME} PARENT_SCOPE)
+    set(ELF2EFI python3 "${VNExos_TOOL_DIR}/elf2efi_riscv64.py")
+    
+    # Lọc để lấy các mã Assembly đúng với dòng Vi xử lý
+    VNExosFilterAssemblySource("riscv64" SRC_FILES)
 
     # Thêm nguồn C, C++, ASM vào đích
     add_executable(${TARGET_NAME} ${SRC_FILES})
+    include_directories("${VNExos_SHARED_INCLUDE_DIR}")
 
     # Xác định hậu tố cho tệp đầu ra
     set(EFI_SUFFIX "RISCV64.EFI")
@@ -48,6 +56,8 @@ function(VNExosBuildEfi_riscv64
             -msmall-data-limit=0
             -fno-jump-tables
             -fshort-wchar
+            -D__EFI_ALLOWED
+            -Wno-ignored-attributes
         >
         # Cho riêng C++
         $<$<COMPILE_LANGUAGE:CXX>:
@@ -56,17 +66,13 @@ function(VNExosBuildEfi_riscv64
             -fno-use-cxa-atexit
             -fno-threadsafe-statics
         >
-        # Cho riêng ASM
-        $<$<COMPILE_LANGUAGE:ASM>:
-            -march=armv8-a
-        >
     )
 
     # Dùng riêng ld.lld để liên kết
     target_link_options(${TARGET_NAME} PRIVATE
         --target=riscv64-unknown-none-elf
         -nostdlib
-        -fuse-ld=ld.lld
+        -fuse-ld=lld
         -Wl,-m,elf64lriscv
         -T ${LINKER_FILE}
     )

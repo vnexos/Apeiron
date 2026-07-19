@@ -28,7 +28,6 @@ set(VNExos_ARCH_DIR "${VNExos_CONFIG_DIR}/arch"                  CACHE PATH "Th�
 set(VNExos_FIRMWARE_DIR "${CMAKE_SOURCE_DIR}/firmware"           CACHE PATH "Thư mục chứa các tệp phần sụn")
 set(VNExos_TOOL_DIR "${CMAKE_SOURCE_DIR}/tools"                  CACHE PATH "Thư mục chứa các công cụ kịch bản đơn giản")
 set(VNExos_ASSET_DIR "${CMAKE_SOURCE_DIR}/assets"                CACHE PATH "Thư mục chứa tài nguyên")
-set(VNExos_LOGO_DIR "${VNExos_ASSET_DIR}/logos"                  CACHE PATH "Thư mục chứa biểu trưng")
 
 # Cấu hình các tệp đầu ra
 set(VNExos_SYSROOT_DIR "${CMAKE_SOURCE_DIR}/sysroot"             CACHE PATH "Thư mục chứa các tệp trong phân vùng UEFI trên ổ đĩa")

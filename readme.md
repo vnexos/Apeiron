@@ -78,7 +78,7 @@
     ```
 6. Xây dựng chương trình:
     ```bash
-    ./build.sh
+    ./clean.sh && ./build.sh
     ```
 7. Chạy chương trình chính thức:
     - Cho dòng Vi xử lý Intel/AMD64

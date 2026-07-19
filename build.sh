@@ -1,5 +1,5 @@
 #!/bin/bash
 
-make clean
+cmake -G Ninja -B build
 
-make
+cmake --build build
