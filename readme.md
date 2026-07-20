@@ -24,7 +24,7 @@
 |:-----------:|:---|----------|
 | ![Assembly](https://img.shields.io/badge/assembly-%23000000.svg?style=for-the-badge&logo=assemblyscript&logoColor=white) | **Assembly** <br>*(Hợp ngữ)* | Được dùng chủ yếu ở **Bộ nạp khởi động** và **Nhân hệ thống** cho các tác vụ yêu cầu phải tương tác trực tiếp với thanh ghi, cấu hình vi xử lý (CPU) hoặc các lệnh đặc quyền mà ngôn ngữ bậc cao không can thiệp được. |
 | ![C++](https://img.shields.io/badge/C%2B%2B-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white) | **C++** | Ngôn ngữ cốt lõi được sử dụng xuyên suốt để xây dựng toàn bộ **Quy trình hoạt động** của Nhân hệ thống, tầng trừu tượng phần cứng (HAL) và các thành phần dịch vụ quan trọng trong hệ sinh thái. |
-| ![CMake](https://img.shields.io/badge/CMake-%23E55350.svg?style=for-the-badge&logo=cmake&logoColor=white) | **Makefile** | Công cụ quản lý và tự động hóa quy trình biên dịch (Build Toolchain), giúp điều phối việc đóng gói các phân vùng độc lập giữa các thành phần ngoại vi một cách chính xác. |
+| ![CMake](https://img.shields.io/badge/CMake-%23E55350.svg?style=for-the-badge&logo=cmake&logoColor=white) | **CMake** | Công cụ quản lý và tự động hóa quy trình biên dịch (Build Toolchain), giúp điều phối việc đóng gói các phân vùng độc lập giữa các thành phần ngoại vi một cách chính xác. |
 | ![Bash](https://img.shields.io/badge/bash-121011.svg?style=for-the-badge&logo=gnu-bash&logoColor=white) | **Bash** | Các kịch bản lệnh (Script) hỗ trợ tự động hóa và thực hiện các thao tác điều phối dự án một cách nhanh chóng, tối ưu. |
 
 ### 📂 Chuẩn bị môi trường (Đối với môi trường Ubuntu)
@@ -112,7 +112,9 @@ apeiron/                 ← Thư mục gốc (Mã nguồn mở)
 ├── .clang-format        ← Chứa các cấu hình định dạng mã C++
 ├── compile_flags.txt    ← Chứa các cờ cho tiện ích clangd
 ├── makefile             ← Quản lý toàn bộ xây dựng, chạy thử dự án
+├── clean.sh             ← Kịch bản dọn dẹp
 ├── build.sh             ← Kịch bản xây dựng
+├── iso.sh               ← Kịch bản đóng gói thành tệp ISO
 ├── run.sh               ← Kịch bản chạy
 ├── readme.md            ← là tệp này!
 └── LICENSE              ← Giấy phép bản quyền cho dự án
