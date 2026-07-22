@@ -2,7 +2,7 @@
 # =========================================================
 # CÔNG CỤ CHUYỂN ĐỔI ELF -> PE/EFI CHO RISC-V 64-BIT
 #
-# Copyright (c) 2026 VNExos Inc.
+# Copyright (c) 2026 VNExos
 #
 # Được cấp phép theo Giấy phép MIT.
 # Xem tệp LICENSE tại thư mục gốc để biết thêm chi tiết.

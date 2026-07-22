@@ -2,7 +2,7 @@
 # VNExos Bản Nguyên - HỆ ĐIỀU HÀNH VIỆT NAM
 # VNExos Apeiron - VIETNAMESE OPERATING SYSTEM
 #
-# Copyright (c) 2026 VNExos Inc.
+# Copyright (c) 2026 VNExos
 #
 # Được cấp phép theo Giấy phép MIT.
 # Xem tệp LICENSE tại thư mục gốc để biết thêm chi tiết.

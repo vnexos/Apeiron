@@ -1,6 +1,6 @@
 GIẤY PHÉP MIT KÈM PHỤ LỤC ĐỘC QUYỀN
 
-Copyright (c) 2026 VNExos Inc.
+Copyright (c) 2026 VNExos
 
 Theo đây, quyền cho phép được cấp miễn phí cho bất kỳ ai có được một bản sao 
 của phần mềm này và các tệp tài liệu liên quan (sau đây gọi là "Phần mềm"), 
@@ -34,16 +34,16 @@ thư mục /config và /modules.
 2. CÁC THÀNH PHẦN ĐỘC QUYỀN: Giấy phép này KHÔNG áp dụng cho bất kỳ tệp tin, 
 thư mục con hoặc tài nguyên nào nằm bên trong thư mục /internal. Thư mục 
 /internal chứa mã nguồn hoàn toàn bảo mật, riêng tư và độc quyền, thuộc sở hữu 
-duy nhất của VNExos Inc.
+duy nhất của VNExos.
 
 3. CÁC THÀNH PHẦN MẬT MÃ: Giấy phép Công cộng Toàn bách khoa GNU Phiên bản 3 
 (GPLv3) được áp dụng HOÀN TOÀN và ĐỘC QUYỀN cho tất cả mã nguồn, thông số kỹ 
 thuật toán học và các triển khai thuật toán nằm trong thư mục /shared/post_quantum. 
 Thành phần này đại diện cho phân hệ mật mạ hậu lượng tử mã nguồn mở của 
-VNExos Inc., và bất kỳ tác phẩm phái sinh nào sử dụng các tài sản này đều phải 
+VNExos, và bất kỳ tác phẩm phái sinh nào sử dụng các tài sản này đều phải 
 tuân thủ các điều khoản copyleft của GPLv3.
 
-VNEXOS INC. BẢO LƯU TẤT CẢ CÁC QUYỀN ĐỐI VỚI THƯ MỤC /internal. Nghiêm cấm mọi 
+VNExos BẢO LƯU TẤT CẢ CÁC QUYỀN ĐỐI VỚI THƯ MỤC /internal. Nghiêm cấm mọi 
 hành vi sao chép, phân phối, sửa đổi, đảo ngược mã nguồn (reverse engineering) 
 hoặc hiển thị công khai bất kỳ tệp tin nào trong thư mục /internal dưới mọi 
-hình thức khi chưa có sự cho phép bằng văn bản chính thức từ VNExos Inc.
+hình thức khi chưa có sự cho phép bằng văn bản chính thức từ VNExos

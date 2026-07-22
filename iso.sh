@@ -2,7 +2,7 @@
 # =========================================================
 # VNExos Bản Nguyên - ĐÓNG GÓI ISO KHỞI ĐỘNG UEFI
 #
-# Copyright (c) 2026 VNExos Inc.
+# Copyright (c) 2026 VNExos
 #
 # Được cấp phép theo Giấy phép MIT.
 # Xem tệp LICENSE tại thư mục gốc để biết thêm chi tiết.
@@ -38,7 +38,7 @@ mkdir -p "$ISO_STAGING"
 # Sao chép toàn bộ sysroot vào thư mục staging
 cp -r "$SYSROOT"/* "$ISO_STAGING"/
 
-# --- Bước 2: Tạo file ảnh phân vùng EFI (FAT32) ---
+# --- Bước 2: Tạo tệp ảnh phân vùng EFI (FAT32) ---
 # Tính toán kích thước cần thiết: tổng dung lượng sysroot + 1MB dự phòng
 SYSROOT_SIZE_KB=$(du -sk "$SYSROOT" | cut -f1)
 EFI_SIZE_MB=$(( (SYSROOT_SIZE_KB / 1024) + 4 ))
@@ -51,10 +51,10 @@ echo "  [IMG] Tạo ảnh EFI ${EFI_SIZE_MB}MB..."
 dd if=/dev/zero of="$EFI_IMG" bs=1M count="$EFI_SIZE_MB" status=none
 mkfs.vfat -F 12 "$EFI_IMG" > /dev/null
 
-# Tạo cấu trúc thư mục EFI/BOOT bên trong file ảnh
+# Tạo cấu trúc thư mục EFI/BOOT bên trong tệp ảnh
 mmd -i "$EFI_IMG" ::/EFI ::/EFI/BOOT
 
-# Copy các file EFI vào ảnh
+# Copy các tệp EFI vào ảnh
 mcopy -i "$EFI_IMG" "$SYSROOT"/EFI/BOOT/* ::/EFI/BOOT/
 
 # Copy kernel nếu tồn tại
@@ -72,7 +72,7 @@ if [ -d "$SYSROOT/assets" ]; then
             mmd -i "$EFI_IMG" "::/${rel}" 2>/dev/null || true
         fi
     done
-    # Copy toàn bộ file
+    # Copy toàn bộ tệp
     find "$SYSROOT/assets" -type f | while read -r file; do
         rel="${file#$SYSROOT/}"
         dest_dir="$(dirname "$rel")"
@@ -80,7 +80,7 @@ if [ -d "$SYSROOT/assets" ]; then
     done
 fi
 
-# Đặt file EFI image vào staging
+# Đặt tệp ảnh EFI vào staging
 mv "$EFI_IMG" "$ISO_STAGING/"
 
 # --- Bước 3: Đóng gói ISO với xorriso ---

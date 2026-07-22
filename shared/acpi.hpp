@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2026 VNExos Inc.
+ * Copyright (c) 2026 VNExos
  *
  * Được cấp phép theo Giấy phép MIT.
  * Xem tệp LICENSE tại thư mục gốc để biết thêm chi tiết.
@@ -168,7 +168,7 @@ typedef struct __attribute__((packed))
   uint16_t        Version;      // Phiên bản của bảng (Mặc định là 1)
   uint8_t         Status;       // Trạng thái (Bit 0 = 1: Logo đang hiển thị hợp lệ)
   uint8_t         ImageType;    // Loại định dạng ảnh (Luôn là 0: Định dạng BMP)
-  uint64_t        ImageAddress; // Địa chỉ vật lý 64-bit chứa file ảnh BMP gốc của hãng
+  uint64_t        ImageAddress; // Địa chỉ vật lý 64-bit chứa tệp ảnh BMP gốc của hãng
   uint32_t        ImageXOffset; // Tọa độ X để hiển thị ảnh trên màn hình
   uint32_t        ImageYOffset; // Tọa độ Y để hiển thị ảnh trên màn hình
 } ACPI_BGRT;

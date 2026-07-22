@@ -1,7 +1,7 @@
 /* =========================================================
  * TẬP LỆNH LIÊN KẾT CHO BỘ NẠP MỒI RISC-V 64-BIT (UEFI)
  *
- * Copyright (c) 2026 VNExos Inc.
+ * Copyright (c) 2026 VNExos
  *
  * Được cấp phép theo Giấy phép MIT.
  * Xem tệp LICENSE tại thư mục gốc để biết thêm chi tiết.
