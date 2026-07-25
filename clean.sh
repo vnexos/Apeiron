@@ -1,4 +1,4 @@
 #!/bin/bash
 
-rm -rf sysroot/
-cmake --build build --target clean || true
+rm -rf sysroot/ disk.img
+rm -rf build
