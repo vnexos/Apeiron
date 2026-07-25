@@ -18,6 +18,7 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 
 # Mặc định Hệ điều hành sẽ hỗ trợ cho toàn bộ các Vi xử lý sau
 set(VNExos_ARCHS "x86_64;aarch64;riscv64" CACHE STRING "Danh sách các kiến trúc cần biên dịch")
+set(VNExos_APP_PIE TRUE                   CACHE BOOL   "Độc lập vị trí")
 
 # Cấu hình các tệp hệ thống
 set(VNExos_SYSTEM_FIRMWARE_DIR "/usr/share/edk2"                 CACHE PATH "Thư mục hệ thống chứa các tệp phần sụn")

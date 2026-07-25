@@ -9,11 +9,9 @@
 
 include(${VNExos_CONFIG_DIR}/source_filter.cmake)
 
-
 add_library(vnexos_flags_aarch64 INTERFACE)
 target_compile_options(vnexos_flags_aarch64 INTERFACE
-    # Cho cả C, C++ và ASM
-    --target=aarch64-unknown-windows
+    # Cho C, C++ và ASM
     -mgeneral-regs-only
     # Cho C, C++
     $<$<COMPILE_LANGUAGE:C,CXX>:
@@ -24,8 +22,6 @@ target_compile_options(vnexos_flags_aarch64 INTERFACE
         -fno-asynchronous-unwind-tables
         -mno-stack-arg-probe
         -mno-implicit-float
-        -fshort-wchar
-        -D__EFI_ALLOWED
     >
     # Cho riêng C++
     $<$<COMPILE_LANGUAGE:CXX>:
@@ -40,8 +36,20 @@ target_compile_options(vnexos_flags_aarch64 INTERFACE
     >
 )
 target_link_options(vnexos_flags_aarch64 INTERFACE
-    --target=aarch64-unknown-windows
     -nostdlib
+)
+
+add_library(vnexos_efi_flags_aarch64 INTERFACE)
+target_link_libraries(vnexos_efi_flags_aarch64 INTERFACE vnexos_flags_aarch64)
+target_compile_options(vnexos_efi_flags_aarch64 INTERFACE
+    --target=aarch64-unknown-windows
+    $<$<COMPILE_LANGUAGE:C,CXX>:
+        -fshort-wchar
+        -D__EFI_ALLOWED
+    >
+)
+target_link_options(vnexos_efi_flags_aarch64 INTERFACE
+    --target=aarch64-unknown-windows
     -fuse-ld=lld-link
     -Wl,-subsystem:efi_application
     -Wl,-nodefaultlib
@@ -50,12 +58,30 @@ target_link_options(vnexos_flags_aarch64 INTERFACE
     -Wl,-noimplib
 )
 
+add_library(vnexos_bin_flags_aarch64 INTERFACE)
+target_link_libraries(vnexos_bin_flags_aarch64 INTERFACE vnexos_flags_aarch64)
+target_compile_options(vnexos_bin_flags_aarch64 INTERFACE
+    --target=aarch64-unknown-none-elf
+    $<$<COMPILE_LANGUAGE:C,CXX>:
+        -ffunction-sections
+    >
+)
+target_link_options(vnexos_bin_flags_aarch64 INTERFACE
+    --target=aarch64-unknown-none-elf
+    -nostdlib
+    -fuse-ld=lld
+    -Wl,--oformat=binary
+    $<$<BOOL:${VNExos_APP_PIE}>:
+        -Wl,-pie
+    >
+)
+
 function(VNExosBuildEfi_aarch64 
     FILE_NAME DB_CERT DIL_CERT 
     ENTRYPOINT SRC_FILES
     IS_LOWERCASE)
     # Tên đích xây dựng (độc nhất)
-    set(TARGET_NAME "${FILE_NAME}_aarch64")
+    set(TARGET_NAME "efi_${FILE_NAME}_aarch64")
     set(TARGET_NAME ${TARGET_NAME} PARENT_SCOPE)
     set_property(GLOBAL APPEND PROPERTY VNExos_ALL_TARGET ${TARGET_NAME})
 
@@ -64,7 +90,7 @@ function(VNExosBuildEfi_aarch64
 
     # Thêm nguồn C, C++, ASM vào đích
     add_executable(${TARGET_NAME} ${SRC_FILES})
-    target_link_libraries(${TARGET_NAME} PRIVATE vnexos_flags_aarch64 vnexos_shared_aarch64)
+    target_link_libraries(${TARGET_NAME} PRIVATE vnexos_efi_flags_aarch64 vnexos_efi_shared_aarch64)
 
     # Xác định hậu tố cho tệp đầu ra
     set(EFI_SUFFIX "AA64.EFI")
@@ -113,4 +139,31 @@ function(VNExosBuildEfi_aarch64
         
         COMMENT "[ VNExos ] Đã xây dựng xong chương trình: ${VNExos_SYSROOT_BOOT_DIR}/$<TARGET_FILE_NAME:${TARGET_NAME}>"
     )
+endfunction()
+
+function(VNExosBuildBinMap_aarch64
+    FILE_NAME CERT LINKER_SCRIPT SRC_FILES)
+    # Tên đích xây dựng (độc nhất)
+    set(TARGET_NAME "binmap_${FILE_NAME}_aarch64")
+    set(TARGET_NAME ${TARGET_NAME} PARENT_SCOPE)
+    set(FILE_NAME "${FILE_NAME}_aarch64")
+
+    # Lọc để lấy các mã Assembly đúng với dòng Vi xử lý
+    VNExosFilterAssemblySource("aarch64" SRC_FILES)
+
+    # Thêm nguồn C, C++, ASM vào đích
+    add_executable(${TARGET_NAME} ${SRC_FILES})
+    target_link_libraries(${TARGET_NAME} PRIVATE vnexos_bin_flags_aarch64 vnexos_shared_aarch64)
+
+    target_link_options(${TARGET_NAME} PRIVATE
+        -Wl,-T,${LINKER_SCRIPT}
+        -Wl,-Map=$<TARGET_FILE_DIR:${TARGET_NAME}>/${FILE_NAME}.map
+    )
+
+    set_target_properties(${TARGET_NAME} PROPERTIES
+        OUTPUT_NAME "${FILE_NAME}"
+        SUFFIX ".bin"
+    )
+
+    set(RESULT_FILE "${CMAKE_CURRENT_BINARY_DIR}/${FILE_NAME}" PARENT_SCOPE)
 endfunction()

@@ -9,11 +9,8 @@
 
 include(${VNExos_CONFIG_DIR}/source_filter.cmake)
 
-
 add_library(vnexos_flags_x86_64 INTERFACE)
 target_compile_options(vnexos_flags_x86_64 INTERFACE
-    # Cho cả C, C++ và ASM
-    --target=x86_64-unknown-windows
     # Cho C, C++
     $<$<COMPILE_LANGUAGE:C,CXX>:
         -ffreestanding
@@ -22,8 +19,6 @@ target_compile_options(vnexos_flags_x86_64 INTERFACE
         -Wextra
         -fno-asynchronous-unwind-tables
         -mno-stack-arg-probe
-        -fshort-wchar
-        -D__EFI_ALLOWED
     >
     # Cho riêng C++
     $<$<COMPILE_LANGUAGE:CXX>:
@@ -33,7 +28,17 @@ target_compile_options(vnexos_flags_x86_64 INTERFACE
         -fno-threadsafe-statics
     >
 )
-target_link_options(vnexos_flags_x86_64 INTERFACE
+
+add_library(vnexos_efi_flags_x86_64 INTERFACE)
+target_link_libraries(vnexos_efi_flags_x86_64 INTERFACE vnexos_flags_x86_64)
+target_compile_options(vnexos_efi_flags_x86_64 INTERFACE
+    --target=x86_64-unknown-windows
+    $<$<COMPILE_LANGUAGE:C,CXX>:
+        -fshort-wchar
+        -D__EFI_ALLOWED
+    >
+)
+target_link_options(vnexos_efi_flags_x86_64 INTERFACE
     --target=x86_64-unknown-windows
     -nostdlib
     -fuse-ld=lld-link
@@ -44,21 +49,38 @@ target_link_options(vnexos_flags_x86_64 INTERFACE
     -Wl,-noimplib
 )
 
+add_library(vnexos_bin_flags_x86_64 INTERFACE)
+target_link_libraries(vnexos_bin_flags_x86_64 INTERFACE vnexos_flags_x86_64)
+target_compile_options(vnexos_bin_flags_x86_64 INTERFACE
+    --target=x86_64
+    $<$<COMPILE_LANGUAGE:C,CXX>:
+        -ffunction-sections
+    >
+)
+target_link_options(vnexos_bin_flags_x86_64 INTERFACE
+    --target=x86_64-unknown-none-elf
+    -nostdlib
+    -fuse-ld=lld
+    -Wl,--oformat=binary
+    $<$<BOOL:${VNExos_APP_PIE}>:
+        -Wl,-pie
+    >
+)
+
 function(VNExosBuildEfi_x86_64 
     FILE_NAME DB_CERT DIL_CERT 
     ENTRYPOINT SRC_FILES
     IS_LOWERCASE)
     # Tên đích xây dựng (độc nhất)
-    set(TARGET_NAME "${FILE_NAME}_x86_64")
+    set(TARGET_NAME "efi_${FILE_NAME}_x86_64")
     set(TARGET_NAME ${TARGET_NAME} PARENT_SCOPE)
-    set_property(GLOBAL APPEND PROPERTY VNExos_ALL_TARGET ${TARGET_NAME})
     
     # Lọc để lấy các mã Assembly đúng với dòng Vi xử lý
     VNExosFilterAssemblySource("x86_64" SRC_FILES)
 
     # Thêm nguồn C, C++, ASM vào đích
     add_executable(${TARGET_NAME} ${SRC_FILES})
-    target_link_libraries(${TARGET_NAME} PRIVATE vnexos_flags_x86_64 vnexos_shared_x86_64)
+    target_link_libraries(${TARGET_NAME} PRIVATE vnexos_efi_flags_x86_64 vnexos_efi_shared_x86_64)
 
     # Xác định hậu tố cho tệp đầu ra
     set(EFI_SUFFIX "X64.EFI")
@@ -107,4 +129,31 @@ function(VNExosBuildEfi_x86_64
         
         COMMENT "[ VNExos ] Đã xây dựng xong chương trình: ${VNExos_SYSROOT_BOOT_DIR}/$<TARGET_FILE_NAME:${TARGET_NAME}>"
     )
+endfunction()
+
+function(VNExosBuildBinMap_x86_64
+    FILE_NAME CERT LINKER_SCRIPT SRC_FILES)
+    # Tên đích xây dựng (độc nhất)
+    set(TARGET_NAME "binmap_${FILE_NAME}_x86_64")
+    set(TARGET_NAME ${TARGET_NAME} PARENT_SCOPE)
+    set(FILE_NAME "${FILE_NAME}_x86_64")
+
+    # Lọc để lấy các mã Assembly đúng với dòng Vi xử lý
+    VNExosFilterAssemblySource("x86_64" SRC_FILES)
+
+    # Thêm nguồn C, C++, ASM vào đích
+    add_executable(${TARGET_NAME} ${SRC_FILES})
+    target_link_libraries(${TARGET_NAME} PRIVATE vnexos_bin_flags_x86_64 vnexos_shared_x86_64)
+
+    target_link_options(${TARGET_NAME} PRIVATE
+        -Wl,-T,${LINKER_SCRIPT}
+        -Wl,-Map=$<TARGET_FILE_DIR:${TARGET_NAME}>/${FILE_NAME}.map
+    )
+
+    set_target_properties(${TARGET_NAME} PROPERTIES
+        OUTPUT_NAME "${FILE_NAME}"
+        SUFFIX ".bin"
+    )
+
+    set(RESULT_FILE "${CMAKE_CURRENT_BINARY_DIR}/${FILE_NAME}" PARENT_SCOPE)
 endfunction()

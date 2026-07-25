@@ -42,5 +42,6 @@ foreach(ARCH IN LISTS VNExos_ARCHS)
                 FALSE                 # Có dùng ký tự in thường không? FALSE - Dùng ký tự in hoa
             )
         endif()
+        set_property(GLOBAL APPEND PROPERTY VNExos_ALL_TARGET ${TARGET_NAME})
     endif()
 endforeach()

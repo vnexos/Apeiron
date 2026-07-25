@@ -19,12 +19,17 @@ foreach(ARCH IN LISTS VNExos_ARCHS)
     set(ARCH_SOURCES ${SHARED_SOURCES})
     VNExosFilterAssemblySource("${ARCH}" ARCH_SOURCES)
     
+    set(TARGET_EFI_SHARED "vnexos_efi_shared_${ARCH}")
+    add_library(${TARGET_EFI_SHARED} STATIC ${ARCH_SOURCES})
+    
+    # Kế thừa toàn bộ cờ kiến trúc thông qua thư viện INTERFACE
+    target_link_libraries(${TARGET_EFI_SHARED} PUBLIC vnexos_efi_flags_${ARCH})
+    
+    # Xuất thư mục inc để các target khác thấy khi liên kết với shared
+    target_include_directories(${TARGET_EFI_SHARED} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
     set(TARGET_SHARED "vnexos_shared_${ARCH}")
     add_library(${TARGET_SHARED} STATIC ${ARCH_SOURCES})
-    
-    # Kế thừa toàn bộ cờ kiến trúc thông qua INTERFACE library
-    target_link_libraries(${TARGET_SHARED} PUBLIC vnexos_flags_${ARCH})
-    
-    # Export thư mục inc để các target khác thấy khi link với shared
+    target_link_libraries(${TARGET_SHARED} PUBLIC vnexos_bin_flags_${ARCH})
     target_include_directories(${TARGET_SHARED} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 endforeach()

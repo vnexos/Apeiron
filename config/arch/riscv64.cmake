@@ -28,8 +28,6 @@ target_compile_options(vnexos_flags_riscv64 INTERFACE
         -mno-relax
         -msmall-data-limit=0
         -fno-jump-tables
-        -fshort-wchar
-        -D__EFI_ALLOWED
         -Wno-ignored-attributes
     >
     # Cho riêng C++
@@ -47,6 +45,32 @@ target_link_options(vnexos_flags_riscv64 INTERFACE
     -Wl,-m,elf64lriscv
 )
 
+add_library(vnexos_efi_flags_riscv64 INTERFACE)
+target_link_libraries(vnexos_efi_flags_riscv64 INTERFACE vnexos_flags_riscv64)
+target_compile_options(vnexos_efi_flags_riscv64 INTERFACE
+    $<$<COMPILE_LANGUAGE:C,CXX>:
+        -fshort-wchar
+        -D__EFI_ALLOWED
+    >
+)
+
+add_library(vnexos_bin_flags_riscv64 INTERFACE)
+target_link_libraries(vnexos_bin_flags_riscv64 INTERFACE vnexos_flags_riscv64)
+target_compile_options(vnexos_bin_flags_riscv64 INTERFACE
+    $<$<COMPILE_LANGUAGE:C,CXX>:
+        -ffunction-sections
+    >
+)
+target_link_options(vnexos_bin_flags_riscv64 INTERFACE
+    --target=riscv64-unknown-none-elf
+    -nostdlib
+    -fuse-ld=lld
+    -Wl,--oformat=binary
+    $<$<BOOL:${VNExos_APP_PIE}>:
+        -Wl,-pie
+    >
+)
+
 function(VNExosBuildEfi_riscv64 
     FILE_NAME DB_CERT DIL_CERT 
     SRC_FILES
@@ -57,9 +81,8 @@ function(VNExosBuildEfi_riscv64
     endif()
 
     # Tên đích xây dựng (độc nhất)
-    set(TARGET_NAME "${FILE_NAME}_riscv64")
+    set(TARGET_NAME "efi_${FILE_NAME}_riscv64")
     set(TARGET_NAME ${TARGET_NAME} PARENT_SCOPE)
-    set_property(GLOBAL APPEND PROPERTY VNExos_ALL_TARGET ${TARGET_NAME})
     set(ELF2EFI python3 "${VNExos_TOOL_DIR}/elf2efi_riscv64.py")
     
     # Lọc để lấy các mã Assembly đúng với dòng Vi xử lý
@@ -67,7 +90,7 @@ function(VNExosBuildEfi_riscv64
 
     # Thêm nguồn C, C++, ASM vào đích
     add_executable(${TARGET_NAME} ${SRC_FILES})
-    target_link_libraries(${TARGET_NAME} PRIVATE vnexos_flags_riscv64 vnexos_shared_riscv64)
+    target_link_libraries(${TARGET_NAME} PRIVATE vnexos_efi_flags_riscv64 vnexos_efi_shared_riscv64)
 
     # Xác định hậu tố cho tệp đầu ra
     set(EFI_SUFFIX "RISCV64.EFI")
@@ -122,4 +145,31 @@ function(VNExosBuildEfi_riscv64
         
         COMMENT "[ VNExos ] Đã xây dựng xong chương trình: ${VNExos_SYSROOT_BOOT_DIR}/$<TARGET_FILE_NAME:${TARGET_NAME}>"
     )
+endfunction()
+
+function(VNExosBuildBinMap_riscv64
+    FILE_NAME CERT LINKER_SCRIPT SRC_FILES)
+    # Tên đích xây dựng (độc nhất)
+    set(TARGET_NAME "binmap_${FILE_NAME}_riscv64")
+    set(TARGET_NAME ${TARGET_NAME} PARENT_SCOPE)
+    set(FILE_NAME "${FILE_NAME}_riscv64")
+
+    # Lọc để lấy các mã Assembly đúng với dòng Vi xử lý
+    VNExosFilterAssemblySource("riscv64" SRC_FILES)
+
+    # Thêm nguồn C, C++, ASM vào đích
+    add_executable(${TARGET_NAME} ${SRC_FILES})
+    target_link_libraries(${TARGET_NAME} PRIVATE vnexos_bin_flags_riscv64 vnexos_shared_riscv64)
+
+    target_link_options(${TARGET_NAME} PRIVATE
+        -Wl,-T,${LINKER_SCRIPT}
+        -Wl,-Map=$<TARGET_FILE_DIR:${TARGET_NAME}>/${FILE_NAME}.map
+    )
+
+    set_target_properties(${TARGET_NAME} PROPERTIES
+        OUTPUT_NAME "${FILE_NAME}"
+        SUFFIX ".bin"
+    )
+
+    set(RESULT_FILE "${CMAKE_CURRENT_BINARY_DIR}/${FILE_NAME}" PARENT_SCOPE)
 endfunction()
