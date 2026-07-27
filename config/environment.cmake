@@ -40,6 +40,9 @@ set(VNExos_SYSROOT_LOGO_DIR "${VNExos_SYSROOT_DIR}/assets/logos" CACHE PATH "Th�
 # Cấu hình cho tệp chứng chỉ để ký bộ nạp mồi
 set(VNExos_GRUB_CERT "open"                                    CACHE STRING "Tên của tệp chứng chỉ để ký chương trình")
 
+# Cấu hình cho các công cụ dùng chung cho dự án
+set(VNExos_TOOL_PACKUSX python3 "${VNExos_TOOL_DIR}/bins2usx.py" CACHE PATH "Đường dẫn tới công cụ đóng gói tệp USX")
+
 # Kiểm tra các công cụ cho môi trường
 find_program(VNExos_SBSIGN_TOOL sbsign)
 if(NOT VNExos_SBSIGN_TOOL)

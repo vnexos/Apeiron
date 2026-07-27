@@ -55,6 +55,7 @@ target_compile_options(vnexos_bin_flags_x86_64 INTERFACE
     --target=x86_64
     $<$<COMPILE_LANGUAGE:C,CXX>:
         -ffunction-sections
+        -Wno-extern-initializer
     >
 )
 target_link_options(vnexos_bin_flags_x86_64 INTERFACE
@@ -153,6 +154,7 @@ function(VNExosBuildBinMap_x86_64
     set_target_properties(${TARGET_NAME} PROPERTIES
         OUTPUT_NAME "${FILE_NAME}"
         SUFFIX ".bin"
+        POSITION_INDEPENDENT_CODE ${VNExos_APP_PIE}
     )
 
     set(RESULT_FILE "${CMAKE_CURRENT_BINARY_DIR}/${FILE_NAME}" PARENT_SCOPE)
