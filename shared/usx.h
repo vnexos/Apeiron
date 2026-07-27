@@ -157,4 +157,23 @@ typedef struct __attribute__((packed))
   uint64_t PatchOffset;      // Vị trí trong tệp này cần được vá
 } USXImport;                 // 32 Byte
 
-#endif                       // __USX_H
+typedef struct
+{
+  const uint64_t LibName;  // đổi từ uint64_t sang con trỏ thật
+  const uint64_t SymName;
+  const uint64_t PatchPtr; // con trỏ tới chính biến con trỏ hàm cần vá
+} __USXImportDesc;
+
+#define USX_EXPORT_FUNC __attribute__((section(".text.vnexos_usx_export")))
+#define USX_EXPORT_DATA __attribute__((section(".data.vnexos_usx_export")))
+
+#define USX_IMPORT(lib, ret, name, ...)                                                                                    \
+  extern __attribute__((weak, used, section(".vnexos_usx_import.ptr")))                  ret (*name)(__VA_ARGS__) = 0;     \
+  __attribute__((used, section(".vnexos_usx_import.str"))) static const char             __usx_lib_##name[]       = lib;   \
+  __attribute__((used, section(".vnexos_usx_import.str"))) static const char             __usx_sym_##name[]       = #name; \
+  __attribute__((used, section(".vnexos_usx_import.desc"))) static const __USXImportDesc __usx_desc_##name        = {      \
+      (uint64_t)__usx_lib_##name,                                                                                          \
+      (uint64_t)__usx_sym_##name,                                                                                          \
+      (uint64_t)&name}
+
+#endif // __USX_H
