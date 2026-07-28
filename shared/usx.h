@@ -6,7 +6,11 @@
  *
  * @file usx.hpp
  * @brief Định nghĩa cấu trúc cho Tệp thực thi bảo mật đa
- * năng (Universal Secured Executable - USX)
+ * năng (Universal Secured Executable - USX). Các phần đệm
+ * trong cấu trúc là để dịch vị ví của các bảng đứng liền
+ * sau thành các vị trí chẵn 8 nhằm tăng tốc độ tải các
+ * phân vùng ra RAM (CPU hoạt động tốt nhất với các vị trí
+ * chia hết cho 8)
  */
 #ifndef __USX_H
 #define __USX_H
@@ -62,7 +66,11 @@
 #define USX_SYMBOL_FUNCTION 0x00           // Ký hiệu là một hàm
 #define USX_SYMBOL_VARIABLE 0x01           // Ký hiệu là một biến/dữ liệu
 
-typedef struct __attribute__((packed))
+#define __USX_STRUCT       struct __attribute__((packed))
+#define __USX_STRINGIFY(x) #x
+#define __USX_TOSTRING(x)  __USX_STRINGIFY(x)
+
+typedef __USX_STRUCT
 {
   /* NHẬN DIỆN VÀ KIỂM SOÁT (8 Byte) */
   uint8_t  MagicBytes[4]; // Bắt buộc phải là 'U', 'S', 'X', 0
@@ -89,9 +97,10 @@ typedef struct __attribute__((packed))
 
   /* BẢO HIỂM VÀ PHẦN ĐỆM (4 Byte) */
   uint32_t HeaderCRC32; // Tổng kiểm của Tiêu đề
-} USXHeader;            // 64 Byte
+}
+USXHeader;              // 64 Byte
 
-typedef struct __attribute__((packed))
+typedef __USX_STRUCT
 {
   /* CẤU HÌNH CHUNG CỦA VI XỬ LÝ */
   uint32_t ArchId;     // 17-bit phía sau sẽ dành cho các chip không thông dụng khác
@@ -113,17 +122,19 @@ typedef struct __attribute__((packed))
 
   /* PHẦN ĐỆM */
   uint32_t Reserved2; // Để dành 2, bắt buộc là 0
-} USXArch;            // 56 Byte
+}
+USXArch;              // 56 Byte
 
-typedef struct __attribute__((packed))
+typedef __USX_STRUCT
 {
   uint64_t SignatureOffset; // Vị trí của Chữ ký
   uint32_t SignatureSize;   // Kích thước của Chữ ký
   uint64_t KEMOffset;       // Vị trí của gói khóa
   uint32_t KEMSize;         // Kích thước của gói khóa
-} USXSecurity;              // 24 Byte
+}
+USXSecurity;                // 24 Byte
 
-typedef struct __attribute__((packed))
+typedef __USX_STRUCT
 {
   /* THÔNG TIN CHUNG CỦA PHÂN VÙNG */
   uint64_t NameOffset;  // Vị trí của Chuỗi trong mảng chuỗi
@@ -137,43 +148,56 @@ typedef struct __attribute__((packed))
   /* CÁC CỜ TRẠNG THÁI VÀ PHẦN ĐỆM */
   uint16_t Flags;       // Bit 0 = Có thể thực thi?, Bit 1 = Có thể ghi?
   uint8_t  Reserved[6]; // Để dành, bắt buộc là 0
-} USXSection;           // 48 Byte
+}
+USXSection;             // 48 Byte
 
-typedef struct __attribute((packed))
+typedef __USX_STRUCT
 {
   uint64_t NameOffset;   // Vị trí của tên hàm/biến trong mảng chuỗi
   uint32_t NameSize;     // Kích thước của chuỗi
   uint64_t SymbolOffset; // Vị trí của hàm/biến trong khối
   uint8_t  SymbolType;   // 0 = Hàm, 1 = Biến/Dữ liệu
   uint8_t  Reserved[3];  // Để dành, bắt buộc là 0
-} USXExport;             // 24 Byte
+}
+USXExport;               // 24 Byte
 
-typedef struct __attribute__((packed))
+typedef __USX_STRUCT
 {
   uint64_t LibNameOffset;    // Vị trí của tên thư viện trong mảng chuỗi
   uint32_t LibNameSize;      // Kích thước của chuỗi
   uint64_t SymbolNameOffset; // Vị trí của tên hàm/biến cần nhập
   uint32_t SymbolNameSize;   // Kích thước của chuỗi
   uint64_t PatchOffset;      // Vị trí trong tệp này cần được vá
-} USXImport;                 // 32 Byte
+}
+USXImport;                   // 32 Byte
 
-typedef struct
+typedef __USX_STRUCT
 {
   const uint64_t LibName;  // đổi từ uint64_t sang con trỏ thật
   const uint64_t SymName;
   const uint64_t PatchPtr; // con trỏ tới chính biến con trỏ hàm cần vá
-} __USXImportDesc;
+}
+__USXImportDesc;
 
-#define USX_EXPORT_FUNC __attribute__((section(".text.vnexos_usx_export")))
-#define USX_EXPORT_DATA __attribute__((section(".data.vnexos_usx_export")))
+#define __USX_USED_IMPORT_SECTION(_section) \
+  __attribute__((used, section(".vnexos_usx_import." __USX_TOSTRING(_section))))
+#define __USX_EXPORT_SECTION(_section) \
+  __attribute__((section("." __USX_TOSTRING(_section) ".vnexos_usx_export")))
 
-#define USX_IMPORT(lib, ret, name, ...)                                                                                    \
-  extern __attribute__((weak, used, section(".vnexos_usx_import.ptr")))                  ret (*name)(__VA_ARGS__) = 0;     \
-  __attribute__((used, section(".vnexos_usx_import.str"))) static const char             __usx_lib_##name[]       = lib;   \
-  __attribute__((used, section(".vnexos_usx_import.str"))) static const char             __usx_sym_##name[]       = #name; \
-  __attribute__((used, section(".vnexos_usx_import.desc"))) static const __USXImportDesc __usx_desc_##name        = {      \
-      (uint64_t)__usx_lib_##name,                                                                                          \
-      (uint64_t)__usx_sym_##name,                                                                                          \
-      (uint64_t)&name}
+#define USX_EXPORT_FUNC __USX_EXPORT_SECTION(text)
+#define USX_EXPORT_DATA __USX_EXPORT_SECTION(data)
+
+#define USX_IMPORT(lib, ret, name, ...)                                                     \
+  extern __attribute__((weak)) ret (*name)(__VA_ARGS__) __USX_USED_IMPORT_SECTION(ptr) = 0; \
+  __USX_USED_IMPORT_SECTION(str)                                                            \
+  static const char __usx_lib_##name[] = lib;                                               \
+  __USX_USED_IMPORT_SECTION(str)                                                            \
+  static const char __usx_sym_##name[] = #name;                                             \
+  __USX_USED_IMPORT_SECTION(desc)                                                           \
+  static const __USXImportDesc __usx_desc_##name = {                                        \
+      (uint64_t)__usx_lib_##name,                                                           \
+      (uint64_t)__usx_sym_##name,                                                           \
+      (uint64_t)&name,                                                                      \
+  }
 
 #endif // __USX_H
