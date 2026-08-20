@@ -69,6 +69,7 @@
 #define __USX_STRUCT       struct __attribute__((packed))
 #define __USX_STRINGIFY(x) #x
 #define __USX_TOSTRING(x)  __USX_STRINGIFY(x)
+#define __USX_STRIP(...)   __VA_ARGS__
 
 typedef __USX_STRUCT
 {
@@ -79,9 +80,10 @@ typedef __USX_STRUCT
   uint16_t TargetArch;    // Các nhân được hỗ trợ trong tệp thực thi này. Sử dụng các Bit trong danh sách USX_ARCH_
 
   /* THÔNG TIN CHUNG CỦA ỨNG DỤNG (8 Byte) */
-  uint8_t  AppVersion[4]; // Phiên bản của ứng dụng lần lượt là: Major, Minor, Patch và Build
-  uint16_t Flags;         // Cờ điều khiển: Bit 0 = Mã hóa?, Bit 1 = Đã ký?, Bit 2 = Hỗ trợ đóng gói khóa, Bit 3 = Độc lập vị trí
-  uint16_t HeaderSize;    // Kích thước của Tiêu đề (USXHeader)
+  uint16_t AppVersionOffset; // Phiên bản của ứng dụng trong bảng chuỗi
+  uint16_t AppVersionSize;   // Độ dài của phiên bản trong bảng chuỗi
+  uint16_t Flags;            // Cờ điều khiển: Bit 0 = Mã hóa?, Bit 1 = Đã ký?, Bit 2 = Hỗ trợ đóng gói khóa, Bit 3 = Độc lập vị trí
+  uint16_t HeaderSize;       // Kích thước của Tiêu đề (USXHeader)
 
   /* ĐIỂM VÀO (8 Byte) */
   uint64_t EntryPoint; // Điểm bắt đầu của chương trình trên RAM (Địa chỉ ảo)
@@ -171,33 +173,31 @@ typedef __USX_STRUCT
 }
 USXImport;                   // 32 Byte
 
-typedef __USX_STRUCT
-{
-  const uint64_t LibName;  // đổi từ uint64_t sang con trỏ thật
-  const uint64_t SymName;
-  const uint64_t PatchPtr; // con trỏ tới chính biến con trỏ hàm cần vá
-}
-__USXImportDesc;
-
 #define __USX_USED_IMPORT_SECTION(_section) \
-  __attribute__((used, section(".vnexos_usx_import." __USX_TOSTRING(_section))))
+  __attribute__((used, section(".vnexos_usx_import" __USX_TOSTRING(_section))))
 #define __USX_EXPORT_SECTION(_section) \
   __attribute__((section("." __USX_TOSTRING(_section) ".vnexos_usx_export")))
 
 #define USX_EXPORT_FUNC __USX_EXPORT_SECTION(text)
 #define USX_EXPORT_DATA __USX_EXPORT_SECTION(data)
 
-#define USX_IMPORT(lib, ret, name, ...)                                                     \
-  extern __attribute__((weak)) ret (*name)(__VA_ARGS__) __USX_USED_IMPORT_SECTION(ptr) = 0; \
-  __USX_USED_IMPORT_SECTION(str)                                                            \
-  static const char __usx_lib_##name[] = lib;                                               \
-  __USX_USED_IMPORT_SECTION(str)                                                            \
-  static const char __usx_sym_##name[] = #name;                                             \
-  __USX_USED_IMPORT_SECTION(desc)                                                           \
-  static const __USXImportDesc __usx_desc_##name = {                                        \
-      (uint64_t)__usx_lib_##name,                                                           \
-      (uint64_t)__usx_sym_##name,                                                           \
-      (uint64_t)&name,                                                                      \
-  }
+// Hiện tại các hàm đa hình đã có thể được xuất nhưng chỉ nhập được vào
+// duy nhất một hàm cùng tên trong chương trình. Nhưng vậy là vừa đủ cho
+// môi trường Nhân lõi.
+// TODO: Cách duy nhất là xây lại trình biên dịch C++ khác
+#define USX_IMPORT(lib, ret, name, ...)                                                      \
+  extern __attribute__((weak)) ret (*name)(__VA_ARGS__) __USX_USED_IMPORT_SECTION(.ptr) = 0; \
+  __USX_USED_IMPORT_SECTION(.str)                                                            \
+  static const char __usx_lib_##name[] = lib;                                                \
+  _Pragma("GCC diagnostic push")                                                             \
+      _Pragma("GCC diagnostic ignored \"-Wunused-parameter\"")                               \
+          __USX_USED_IMPORT_SECTION(.sym)                                                    \
+              __attribute__((weak))                                                          \
+              ret                                                                            \
+              __usx_sym_##name(__VA_ARGS__)                                                  \
+  {                                                                                          \
+    __builtin_trap();                                                                        \
+  }                                                                                          \
+  _Pragma("GCC diagnostic pop")
 
 #endif // __USX_H

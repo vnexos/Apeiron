@@ -15,6 +15,7 @@ set(CMAKE_TOOLCHAIN_FILE "${VNExos_CONFIG_DIR}/compiler.cmake")
 
 # Khai báo dự án
 project(VNExos_Apeiron LANGUAGES CXX C ASM)
+set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 
 # Lấy cấu hình môi trường
 include(${VNExos_CONFIG_DIR}/environment.cmake)
