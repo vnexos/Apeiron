@@ -38,7 +38,7 @@ if(NOT EXISTS "${VNExos_SYSROOT_DIR}")
     # Sao chép các tệp chứng chỉ
     file(COPY "${VNExos_CERT_DIR}/root.crt" DESTINATION "${VNExos_SYSROOT_CERT_DIR}/")
     file(COPY "${VNExos_CERT_DIR}/open.crt" DESTINATION "${VNExos_SYSROOT_CERT_DIR}/")
-    file(COPY "${VNExos_CERT_DIR}/vnexos_db.crt" DESTINATION "${VNExos_SYSROOT_CERT_DIR}/")
+    file(COPY "${VNExos_CERT_DIR}/vnexos_db.cer" DESTINATION "${VNExos_SYSROOT_CERT_DIR}/")
 
     # Sao chép biểu trưng
     file(GLOB LOGO_FILES "${VNExos_ASSET_DIR}/*.bmp")

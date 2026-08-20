@@ -3,5 +3,6 @@ build/
 firmware/
 shim/
 cert/*.key
+cert/open.crt
 *.img
 *.iso
