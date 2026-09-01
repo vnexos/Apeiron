@@ -29,6 +29,10 @@
 /** Giao thức tệp ảnh đã tải */
 #include <protocol/efi_image.hpp>
 
+/** Giao thức Xác thực Bảo mật Kiến trúc (Security1 và Security2). */
+#include <protocol/efi_security.hpp>
+#include <protocol/efi_security2.hpp>
+
 /** Kiểu bộ nhớ, chiến lược cấp phát và bộ mô tả bản đồ bộ nhớ. */
 #include <efi_memory.hpp>
 

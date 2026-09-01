@@ -29,6 +29,92 @@ using namespace EFI;
 
 static const uint16_t* logoPath[4];
 
+/**************************************************************
+ * GẮN MÓC XÁC THỰC BẢO MẬT
+ **************************************************************/
+
+/** Con trỏ hàm gốc của Security1 và Security2, dùng để khôi phục sau. */
+static EFI_SECURITY_FILE_AUTHENTICATION_STATE OriginalSecurity1Handler = nullptr;
+static EFI_SECURITY2_FILE_AUTHENTICATION      OriginalSecurity2Handler = nullptr;
+
+/** Con trỏ đến giao thức Security1 và Security2 hiện có trong firmware. */
+static EFI_SECURITY_ARCH_PROTOCOL*  Security1Protocol = nullptr;
+static EFI_SECURITY2_ARCH_PROTOCOL* Security2Protocol = nullptr;
+
+/**
+ * Hàm bỏ qua xác thực Security1 — luôn trả về EFI_SUCCESS để
+ * bỏ qua xác thực RSA/Authenticode của Khởi động An toàn (Secure Boot).
+ */
+[[gnu::ms_abi]] static EFI_STATUS BypassSecurity1Auth(
+    const EFI_SECURITY_ARCH_PROTOCOL* /* This */,
+    uint32_t /* AuthenticationStatus */,
+    const EFI_DEVICE_PATH_PROTOCOL* /* File */)
+{
+  return EFI_SUCCESS;
+}
+
+/**
+ * Hàm bỏ qua xác thực Security2 — luôn trả về EFI_SUCCESS để
+ * bỏ qua xác thực RSA/Authenticode của Khởi động An toàn (Secure Boot).
+ */
+[[gnu::ms_abi]] static EFI_STATUS BypassSecurity2Auth(
+    const EFI_SECURITY2_ARCH_PROTOCOL* /* This */,
+    const EFI_DEVICE_PATH_PROTOCOL* /* DevicePath */,
+    void* /* FileBuffer */,
+    uint64_t /* FileSize */,
+    uint8_t /* BootPolicy */)
+{
+  return EFI_SUCCESS;
+}
+
+/**
+ * Tìm và gắn móc các giao thức Security1/Security2 để bỏ qua xác thực RSA.
+ * Lưu lại các hàm xử lý gốc để khôi phục sau.
+ */
+static void installSecurityHooks(EFI_BOOT_SERVICES* bs)
+{
+  EFI_GUID sec1Guid = EFI_SECURITY_ARCH_PROTOCOL_GUID;
+  EFI_GUID sec2Guid = EFI_SECURITY2_ARCH_PROTOCOL_GUID;
+
+  /* Gắn móc Security1 nếu tồn tại */
+  if (!EFI_ERROR(bs->LocateProtocol(&sec1Guid, nullptr, (void**)&Security1Protocol)))
+  {
+    OriginalSecurity1Handler                   = Security1Protocol->FileAuthenticationState;
+    Security1Protocol->FileAuthenticationState = BypassSecurity1Auth;
+  }
+
+  /* Gắn móc Security2 nếu tồn tại */
+  if (!EFI_ERROR(bs->LocateProtocol(&sec2Guid, nullptr, (void**)&Security2Protocol)))
+  {
+    OriginalSecurity2Handler              = Security2Protocol->FileAuthentication;
+    Security2Protocol->FileAuthentication = BypassSecurity2Auth;
+  }
+}
+
+/**
+ * Khôi phục các hàm xử lý Security1/Security2 về trạng thái gốc.
+ */
+static void uninstallSecurityHooks()
+{
+  if (Security1Protocol && OriginalSecurity1Handler)
+  {
+    Security1Protocol->FileAuthenticationState = OriginalSecurity1Handler;
+    OriginalSecurity1Handler                   = nullptr;
+    Security1Protocol                          = nullptr;
+  }
+
+  if (Security2Protocol && OriginalSecurity2Handler)
+  {
+    Security2Protocol->FileAuthentication = OriginalSecurity2Handler;
+    OriginalSecurity2Handler              = nullptr;
+    Security2Protocol                     = nullptr;
+  }
+}
+
+/**************************************************************
+ * CÁC HÀM PHỤ TRỢ
+ **************************************************************/
+
 ACPI_BGRT* getBgrt(EFI_SYSTEM_TABLE* SystemTable)
 {
   EFI_GUID Acpi20TableGuid = {
@@ -195,7 +281,7 @@ extern "C" [[gnu::ms_abi]] EFI_STATUS vnexos_grub_main(EFI_HANDLE ImageHandle, E
     }
   }
 
-  /* Đọc bộ nạp mồi lên bộ nhớ, kiểm tra chữ ký và xử lý nó */
+  /* Đọc bộ nạp mồi lên bộ nhớ và kiểm tra chữ ký */
   uint8_t* buffer;
   uint64_t size;
   status = loadFile(VNEXOS_FILE, &buffer, &size);
@@ -207,11 +293,13 @@ extern "C" [[gnu::ms_abi]] EFI_STATUS vnexos_grub_main(EFI_HANDLE ImageHandle, E
     return status;
   }
 
-  if (!Sign::verifyEfiFileSignature(buffer, size, key, keySize))
+  /* Xác thực chữ ký Dilithium trước khi tải */
+  if (!Sign::verifyFileSignature(buffer, size, key, keySize))
   {
     printf("LOI [2]: Chu ky khong hop le: %ws\nNhan phim bat ky de thoat...", VNEXOS_FILE);
     waitForKey();
     printf("\n");
+    bs->FreePool(buffer);
     return 1;
   }
 
@@ -221,6 +309,9 @@ extern "C" [[gnu::ms_abi]] EFI_STATUS vnexos_grub_main(EFI_HANDLE ImageHandle, E
   EFI_GUID                   imageLipGuid = EFI_LOADED_IMAGE_PROTOCOL_GUID;
   bs->OpenProtocol(ImageHandle, &imageLipGuid, (void**)&imageLip, ImageHandle, nullptr, EFI_OPEN_PROTOCOL_GET_PROTOCOL);
 
+  /* Gắn móc Security1/Security2 để bỏ qua xác thực RSA của Khởi động An toàn (Secure Boot) */
+  installSecurityHooks(bs);
+
   EFI_HANDLE childImageHandle;
   status = bs->LoadImage(
       false,
@@ -229,6 +320,10 @@ extern "C" [[gnu::ms_abi]] EFI_STATUS vnexos_grub_main(EFI_HANDLE ImageHandle, E
       buffer,
       size,
       &childImageHandle);
+
+  /* Khôi phục các hàm xử lý bảo mật gốc ngay sau khi tải ảnh xong */
+  uninstallSecurityHooks();
+
   if (EFI_ERROR(status))
   {
     printf("LOI [3]: Khong the tai tep EFI (Ma loi: %x)\nNhan phim bat ky de thoat...", status);

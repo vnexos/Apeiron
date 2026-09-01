@@ -110,14 +110,22 @@ function(VNExosBuildEfi_x86_64
             $<TARGET_FILE:${TARGET_NAME}>
             $<TARGET_FILE:${TARGET_NAME}>
 
-        COMMAND ${VNExos_SBSIGN_TOOL}
-            --key ${VNExos_CERT_DIR}/${DB_CERT}.key
-            --cert ${VNExos_CERT_DIR}/${DB_CERT}.crt
-            --output $<TARGET_FILE:${TARGET_NAME}>
-            $<TARGET_FILE:${TARGET_NAME}>
-
         COMMENT "[ VNExos ] Đã ký tệp chương trình thành công!"
     )
+
+    if(NOT DB_CERT STREQUAL "")
+        add_custom_command(
+            TARGET ${TARGET_NAME} POST_BUILD
+
+            COMMAND ${VNExos_SBSIGN_TOOL}
+                --key ${VNExos_CERT_DIR}/${DB_CERT}.key
+                --cert ${VNExos_CERT_DIR}/${DB_CERT}.crt
+                --output $<TARGET_FILE:${TARGET_NAME}>
+                $<TARGET_FILE:${TARGET_NAME}>
+
+            COMMENT "[ VNExos ] Đã ký tệp chương trình bằng khóa DB!"
+        )
+    endif()
 
     # Đẩy tệp chương trình vào mục `sysroot` sau khi dựng xong
     add_custom_command(
