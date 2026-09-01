@@ -42,14 +42,14 @@ cp -r "$SYSROOT"/* "$ISO_STAGING"/
 # Tính toán kích thước cần thiết: tổng dung lượng sysroot + 1MB dự phòng
 SYSROOT_SIZE_KB=$(du -sk "$SYSROOT" | cut -f1)
 EFI_SIZE_MB=$(( (SYSROOT_SIZE_KB / 1024) + 4 ))
-# Tối thiểu 4MB để FAT32 hoạt động ổn định
-if [ "$EFI_SIZE_MB" -lt 4 ]; then
-    EFI_SIZE_MB=4
+# Tối thiểu 16MB để FAT16 hoạt động ổn định
+if [ "$EFI_SIZE_MB" -lt 16 ]; then
+    EFI_SIZE_MB=16
 fi
 
 echo "  [IMG] Tạo ảnh EFI ${EFI_SIZE_MB}MB..."
 dd if=/dev/zero of="$EFI_IMG" bs=1M count="$EFI_SIZE_MB" status=none
-mkfs.vfat -F 12 "$EFI_IMG" > /dev/null
+mkfs.vfat -F 16 "$EFI_IMG" > /dev/null
 
 # Tạo cấu trúc thư mục EFI/BOOT bên trong tệp ảnh
 mmd -i "$EFI_IMG" ::/EFI ::/EFI/BOOT
@@ -58,8 +58,8 @@ mmd -i "$EFI_IMG" ::/EFI ::/EFI/BOOT
 mcopy -i "$EFI_IMG" "$SYSROOT"/EFI/BOOT/* ::/EFI/BOOT/
 
 # Copy kernel nếu tồn tại
-if [ -f "$SYSROOT/Apeiron.kern" ]; then
-    mcopy -i "$EFI_IMG" "$SYSROOT/Apeiron.kern" ::/
+if [ -f "$SYSROOT/apeiron.kern" ]; then
+    mcopy -i "$EFI_IMG" "$SYSROOT/apeiron.kern" ::/
 fi
 
 # Copy assets nếu tồn tại
@@ -80,17 +80,23 @@ if [ -d "$SYSROOT/assets" ]; then
     done
 fi
 
+# Copy certs nếu tồn tại
+if [ -d "$SYSROOT/certs" ]; then
+    mmd -i "$EFI_IMG" ::/certs || true
+    find "$SYSROOT/certs" -type f | while read -r file; do
+        rel="${file#$SYSROOT/}"
+        mcopy -i "$EFI_IMG" "$file" "::/${rel}" 2>/dev/null || true
+    done
+fi
+
 # Đặt tệp ảnh EFI vào staging
 mv "$EFI_IMG" "$ISO_STAGING/"
 
 # --- Bước 3: Đóng gói ISO với xorriso ---
-echo "  [ISO] Đang tạo ISO hybrid UEFI..."
+echo "  [ISO] Đang tạo ISO khởi động UEFI..."
 xorriso -as mkisofs \
     -R -J -joliet-long \
     -V "VNEXOS_BOOT" \
-    -append_partition 2 0xef "$ISO_STAGING/$EFI_IMG" \
-    -appended_part_as_gpt \
-    -eltorito-alt-boot \
     -e "$EFI_IMG" \
     -no-emul-boot \
     -o "$OUTPUT" \
