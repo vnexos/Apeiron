@@ -94,7 +94,7 @@ extern "C" [[gnu::ms_abi]] EFI_STATUS vnexos_grub_main(EFI_HANDLE ImageHandle, E
   status = loadFile(EFI_TEXT("\\certs\\root.crt"), &key, &keySize);
   if (EFI_ERROR(status))
   {
-    printf("LOI: Khong the doc tep: %s\nNhan phim bat ky de thoat...", EFI_TEXT("\\certs\\root.crt"));
+    printf("LOI [0]: Khong the doc tep: %ws\nNhan phim bat ky de thoat...", EFI_TEXT("\\certs\\root.crt"));
     waitForKey();
     printf("\n");
     return status;
@@ -186,7 +186,7 @@ extern "C" [[gnu::ms_abi]] EFI_STATUS vnexos_grub_main(EFI_HANDLE ImageHandle, E
         drawBmp((uint64_t)imageData, logoX, logoY);
       } else
       {
-        printf("LOI: Tep bieu trung khong the xac thuc: %s\nNhan phim bat ky de thoat...", logoPath[logoPathIndex]);
+        printf("LOI [0]: Tep bieu trung khong the xac thuc: %ws\nNhan phim bat ky de thoat...", logoPath[logoPathIndex]);
         waitForKey();
         printf("\n");
         return status;
@@ -201,7 +201,7 @@ extern "C" [[gnu::ms_abi]] EFI_STATUS vnexos_grub_main(EFI_HANDLE ImageHandle, E
   status = loadFile(VNEXOS_FILE, &buffer, &size);
   if (EFI_ERROR(status))
   {
-    printf("LOI: Khong the doc tep: %s\nNhan phim bat ky de thoat...", VNEXOS_FILE);
+    printf("LOI [1]: Khong the doc tep: %s\nNhan phim bat ky de thoat...", VNEXOS_FILE);
     waitForKey();
     printf("\n");
     return status;
@@ -209,7 +209,7 @@ extern "C" [[gnu::ms_abi]] EFI_STATUS vnexos_grub_main(EFI_HANDLE ImageHandle, E
 
   if (!Sign::verifyEfiFileSignature(buffer, size, key, keySize))
   {
-    printf("LOI: Chu ky khong hop le: %s\nNhan phim bat ky de thoat...", VNEXOS_FILE);
+    printf("LOI [2]: Chu ky khong hop le: %ws\nNhan phim bat ky de thoat...", VNEXOS_FILE);
     waitForKey();
     printf("\n");
     return 1;
@@ -231,7 +231,7 @@ extern "C" [[gnu::ms_abi]] EFI_STATUS vnexos_grub_main(EFI_HANDLE ImageHandle, E
       &childImageHandle);
   if (EFI_ERROR(status))
   {
-    printf("LOI: Khong the tai tep EFI (Ma loi: %x)\nNhan phim bat ky de thoat...", status);
+    printf("LOI [3]: Khong the tai tep EFI (Ma loi: %x)\nNhan phim bat ky de thoat...", status);
     waitForKey();
     printf("\n");
     return status;
@@ -245,7 +245,7 @@ extern "C" [[gnu::ms_abi]] EFI_STATUS vnexos_grub_main(EFI_HANDLE ImageHandle, E
   status = bs->AllocatePool(EfiLoaderData, sizeof(ApeironCommonParameters), (void**)&params);
   if (EFI_ERROR(status))
   {
-    printf("LOI: Khong the cap phat bo nho\nNhan phim bat ky de thoat...");
+    printf("LOI [4]: Khong the cap phat bo nho\nNhan phim bat ky de thoat...");
     waitForKey();
     printf("\n");
     return status;
@@ -274,7 +274,7 @@ extern "C" [[gnu::ms_abi]] EFI_STATUS vnexos_grub_main(EFI_HANDLE ImageHandle, E
       EFI_OPEN_PROTOCOL_GET_PROTOCOL);
   if (EFI_ERROR(status))
   {
-    printf("LOI: Khong the mo giao thuc anh da tai cho tep EFI\nNhan phim bat ky de thoat...");
+    printf("LOI [5]: Khong the mo giao thuc anh da tai cho tep EFI\nNhan phim bat ky de thoat...");
     waitForKey();
     printf("\n");
     return status;
