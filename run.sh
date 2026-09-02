@@ -18,7 +18,8 @@ if [[ "$ARCH" == "x86_64" ]]; then
         -M q35 \
         -cpu host \
         -enable-kvm \
-        -vga virtio"
+        -vga virtio \
+        -drive file=disk.img,format=raw,media=disk"
 elif [[ "$ARCH" == "aarch64" ]]; then
     EDK2_TYPE="aarch64"
     EDK2_DIR="$FIRMWARE/$EDK2_TYPE"
@@ -28,7 +29,8 @@ elif [[ "$ARCH" == "aarch64" ]]; then
     QEMU_ARCH_FLAGS="\
         -M virt \
         -cpu cortex-a57 \
-        -device virtio-gpu-pci"
+        -device virtio-gpu-pci \
+        -drive file=disk.img,format=raw,media=disk"
 elif [[ "$ARCH" == "riscv64" ]]; then
     EDK2_TYPE="riscv64"
     EDK2_DIR="$FIRMWARE/$EDK2_TYPE"
@@ -38,7 +40,9 @@ elif [[ "$ARCH" == "riscv64" ]]; then
     QEMU_ARCH_FLAGS="\
         -M virt \
         -cpu rv64 \
-        -device virtio-gpu-pci"
+        -device virtio-gpu-pci \
+        -device virtio-blk-pci,drive=hd0 \
+        -drive file=disk.img,format=raw,id=hd0"
 else
     echo "Không hỗ trợ dòng Vi xử lý: $ARCH"
     exit 1
@@ -53,5 +57,4 @@ $QEMU $QEMU_ARCH_FLAGS \
     -display sdl \
     -device qemu-xhci \
     -device usb-kbd \
-    -monitor telnet:127.0.0.1:5555,server,nowait \
-    -drive file=disk.img,format=raw,media=disk
+    -monitor telnet:127.0.0.1:5555,server,nowait
