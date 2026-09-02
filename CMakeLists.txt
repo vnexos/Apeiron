@@ -59,7 +59,7 @@ set_property(GLOBAL PROPERTY VNExos_ALL_TARGET "")
 add_subdirectory(shared)
 
 add_subdirectory(grub)
-add_subdirectory(internal)
+add_subdirectory(core)
 
 get_property(ALL_TARGETS GLOBAL PROPERTY VNExos_ALL_TARGET)
 
