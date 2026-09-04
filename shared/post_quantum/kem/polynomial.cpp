@@ -168,7 +168,7 @@ void polyFromMsg(Polynomial* r, const uint8_t msg[KYBER_INDCPA_MSGBYTES])
   }
 }
 
-void polyCompress(uint8_t* r, const Polynomial* a)
+void polyCompress(uint8_t r[KYBER_POLYCOMPRESSEDBYTES_DV], const Polynomial* a)
 {
   for (int i = 0; i < 32; i++)
   {
@@ -186,7 +186,7 @@ void polyCompress(uint8_t* r, const Polynomial* a)
   }
 }
 
-void polyDecompress(Polynomial* r, const uint8_t* a)
+void polyDecompress(Polynomial* r, const uint8_t a[KYBER_POLYCOMPRESSEDBYTES_DV])
 {
   for (int i = 0; i < 32; i++)
   {
