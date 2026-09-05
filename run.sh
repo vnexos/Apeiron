@@ -51,7 +51,7 @@ fi
 $QEMU $QEMU_ARCH_FLAGS \
     -drive if=pflash,format=raw,readonly=on,file=$EDK2_DIR/$FD_CODE \
     -drive if=pflash,format=raw,file=$EDK2_DIR/$FD_VARS \
-    -m 2G \
+    -m 1G \
     -net none \
     -serial stdio \
     -display sdl \

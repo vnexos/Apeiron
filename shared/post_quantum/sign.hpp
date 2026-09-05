@@ -11,6 +11,7 @@
 #define __SIGN_HPP
 
 #include <stdint.h>
+#include <usx.h>
 
 namespace Sign {
 typedef struct
@@ -44,6 +45,19 @@ bool verifyEfiFileSignature(
     uint64_t       dataSize,
     const uint8_t* rawPublicKey,
     uint64_t       keySize);
+/**
+ * Xác thực tệp USX ngay trên bộ nhớ
+ * @param rawData      Dữ liệu thô của tệp USX đọc được
+ * @param dataSize     Kích thước của tệp USX
+ * @param rawPublicKey Dữ liệu thô của khóa công khai
+ * @param keySize      Kích thước của khóa công khai
+ */
+USXSecurity* verifyUsxFileSignature(
+    uint8_t*       rawData,
+    uint64_t       dataSize,
+    const uint8_t* rawPublicKey,
+    uint64_t       keySize);
+
 } // namespace Sign
 
 #endif // __SIGN_HPP

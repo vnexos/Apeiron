@@ -41,6 +41,11 @@ namespace EFI {
 void init(EFI_HANDLE _imageHandle, EFI_SYSTEM_TABLE* _systemTable);
 
 /**
+ * Lấy các dịch vụ khởi động
+ */
+EFI_BOOT_SERVICES* getBootServices();
+
+/**
  * Quét sạch màn hình
  */
 void clear();
@@ -58,6 +63,14 @@ void printf(const char* format, ...);
 void waitForKey(uint8_t k = 0);
 
 /**
+ * Lấy thông tin thư mục
+ * @param path      Đường dẫn thư mục
+ * @param dirHandle Thông tin thư mục
+ * @return 0 nếu chạy thành công, 1 thì ngược lại
+ */
+EFI_STATUS loadDir(const uint16_t* path, EFI_FILE_PROTOCOL** dirHandle);
+
+/**
  * Đọc tệp vào một vùng nhớ chỉ định
  * @param path   Đường dẫn tới tệp
  * @param buffer Bộ nhớ mà tệp được ghi vào
@@ -65,6 +78,14 @@ void waitForKey(uint8_t k = 0);
  * @return 0 nếu chạy thành công, 1 thì ngược lại
  */
 EFI_STATUS loadFile(const uint16_t* path, uint8_t** buffer, uint64_t* size);
+
+/**
+ * Băm tệp bằng thuật toán SHAV-256
+ * @param path Đường dẫn tới tệp
+ * @param hash Mã băm tệp
+ * @return 0 nếu chạy thành công, 1 thì ngược lại
+ */
+EFI_STATUS hashFile(const uint16_t* path, uint8_t* hash);
 
 /**
  * Cấu hình đồ họa thông qua giao thức đồ họa

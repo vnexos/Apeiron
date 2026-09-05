@@ -11,6 +11,43 @@
 #include "string.hpp"
 
 extern "C" {
+uint64_t strlen(const char* str)
+{
+  if (!str)
+    return 0;
+  const char* p = str;
+  while (*p)
+    ++p;
+  return (uint64_t)(p - str);
+}
+
+uint64_t wstrlen(const uint16_t* str)
+{
+  if (!str)
+    return 0;
+  const uint16_t* p = str;
+  while (*p)
+    ++p;
+  return (uint64_t)(p - str);
+}
+
+int wstrcmp(const uint16_t* str1, const uint16_t* str2, uint64_t size)
+{
+  if (!str1 || !str2)
+    return (str1 == str2) ? 0 : (str1 ? 1 : -1);
+
+  while (size > 0 && *str1 && (*str1 == *str2))
+  {
+    ++str1;
+    ++str2;
+    --size;
+  }
+
+  if (size == 0)
+    return 0;
+
+  return (int)(*str1 - *str2);
+}
 
 void* memcpy(void* dest, const void* src, uint64_t n)
 {

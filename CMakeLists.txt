@@ -63,6 +63,18 @@ add_subdirectory(core)
 
 get_property(ALL_TARGETS GLOBAL PROPERTY VNExos_ALL_TARGET)
 
+# Mã hóa tệp nhân lõi apeiron.kern
+add_custom_target(EncryptCoreKernel ALL
+    COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/encrypt.sh" 
+        "${VNExos_SYSROOT_BOOT_DIR}"
+        "${VNExos_SYSROOT_KERN_DIR}"
+        "${VNExos_CERT_DIR}/root.crt"
+        "${VNExos_CERT_DIR}/root.key"
+    COMMENT "Đang mã hóa nhân lõi apeiron.kern..."
+    DEPENDS ${ALL_TARGETS}
+    VERBATIM
+)
+
 # Sinh ra tệp ảnh đĩa (disk.img)
 set(VNEXOS_BOOT_UUID "2ef6ee17-2a14-4db9-8129-42a6dc48f8af")
 set(VNEXOS_TYPE_UUID "c48d1722-723b-43d6-bead-f2b2623343dd")

@@ -10,6 +10,7 @@
 #include "efilib.hpp"
 #if defined(__EFI_ALLOWED)
 #include <efi.hpp>
+#include <post_quantum/crypto/sha3.hpp>
 #include <stdarg.h>
 
 static EFI_HANDLE         ImageHandle;
@@ -22,6 +23,11 @@ void EFI::init(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable)
 {
   ::ImageHandle = ImageHandle;
   ::SystemTable = SystemTable;
+}
+
+EFI_BOOT_SERVICES* EFI::getBootServices()
+{
+  return SystemTable->BootServices;
 }
 
 void EFI::clear()
@@ -156,6 +162,11 @@ void EFI::printf(const char* format, ...)
             putWstr(EFI_TEXT("(null)"));
           break;
         }
+        case 'c': {
+          uint16_t c = (uint16_t)va_arg(args, int);
+          putChar(c);
+          break;
+        }
         default:
           putChar('%');
           putChar('w');
@@ -214,6 +225,56 @@ void EFI::waitForKey(uint8_t k)
   }
 }
 
+static EFI_STATUS getRoot()
+{
+  EFI_STATUS         status;
+  EFI_BOOT_SERVICES* bs = SystemTable->BootServices;
+
+  // Lấy tệp hiện tại để truy vết phân vùng khởi động
+  EFI_LOADED_IMAGE_PROTOCOL* loadedImage;
+  EFI_GUID                   loadedImageGuid = EFI_LOADED_IMAGE_PROTOCOL_GUID;
+
+  status = bs->OpenProtocol(
+      ImageHandle, &loadedImageGuid, (void**)&loadedImage,
+      ImageHandle, nullptr, EFI_OPEN_PROTOCOL_GET_PROTOCOL);
+  if (EFI_ERROR(status)) return status;
+
+  // Mở giao thức Tệp hệ thống trên phân vùng khởi động
+  EFI_SIMPLE_FILE_SYSTEM_PROTOCOL* fileSystem;
+  EFI_GUID                         fileSystemGuid = EFI_SIMPLE_FILE_SYSTEM_PROTOCOL_GUID;
+
+  status = bs->OpenProtocol(
+      loadedImage->DeviceHandle, &fileSystemGuid, (void**)&fileSystem,
+      ImageHandle, nullptr, EFI_OPEN_PROTOCOL_GET_PROTOCOL);
+  if (EFI_ERROR(status)) return status;
+
+  // Mở thư mục gốc
+  status = fileSystem->OpenVolume(fileSystem, &rootDir);
+  if (EFI_ERROR(status)) return status;
+  return 0;
+}
+
+EFI_STATUS EFI::loadDir(const uint16_t* path, EFI_FILE_PROTOCOL** dirHandle)
+{
+  EFI_STATUS status;
+
+  if (!rootDir)
+  {
+    status = getRoot();
+    if (EFI_ERROR(status))
+      return status;
+  }
+
+  status = rootDir->Open(
+      rootDir,
+      dirHandle,
+      (uint16_t*)path,
+      EFI_FILE_MODE_READ,
+      0);
+
+  return status;
+}
+
 EFI_STATUS EFI::loadFile(const uint16_t* path, uint8_t** buffer, uint64_t* size)
 {
   EFI_STATUS         status;
@@ -221,27 +282,9 @@ EFI_STATUS EFI::loadFile(const uint16_t* path, uint8_t** buffer, uint64_t* size)
 
   if (!rootDir)
   {
-    // Lấy tệp hiện tại để truy vết phân vùng khởi động
-    EFI_LOADED_IMAGE_PROTOCOL* loadedImage;
-    EFI_GUID                   loadedImageGuid = EFI_LOADED_IMAGE_PROTOCOL_GUID;
-
-    status = bs->OpenProtocol(
-        ImageHandle, &loadedImageGuid, (void**)&loadedImage,
-        ImageHandle, nullptr, EFI_OPEN_PROTOCOL_GET_PROTOCOL);
-    if (EFI_ERROR(status)) return status;
-
-    // Mở giao thức Tệp hệ thống trên phân vùng khởi động
-    EFI_SIMPLE_FILE_SYSTEM_PROTOCOL* fileSystem;
-    EFI_GUID                         fileSystemGuid = EFI_SIMPLE_FILE_SYSTEM_PROTOCOL_GUID;
-
-    status = bs->OpenProtocol(
-        loadedImage->DeviceHandle, &fileSystemGuid, (void**)&fileSystem,
-        ImageHandle, nullptr, EFI_OPEN_PROTOCOL_GET_PROTOCOL);
-    if (EFI_ERROR(status)) return status;
-
-    // Mở thư mục gốc
-    status = fileSystem->OpenVolume(fileSystem, &rootDir);
-    if (EFI_ERROR(status)) return status;
+    status = getRoot();
+    if (EFI_ERROR(status))
+      return status;
   }
 
   // Mở tệp tin theo đường dẫn
@@ -280,6 +323,21 @@ EFI_STATUS EFI::loadFile(const uint16_t* path, uint8_t** buffer, uint64_t* size)
 
   *size = readSize;
 
+  return 0;
+}
+
+EFI_STATUS EFI::hashFile(const uint16_t* path, uint8_t* hash)
+{
+  uint8_t* buffer;
+  uint64_t size;
+
+  EFI_STATUS status = loadFile(path, &buffer, &size);
+  if (EFI_ERROR(status))
+  {
+    return 1;
+  }
+
+  Crypto::VNExos::sha256(hash, buffer, size);
   return 0;
 }
 

@@ -14,6 +14,10 @@
 #include <stdint.h>
 
 extern "C" {
+uint64_t strlen(const char* str);
+uint64_t wstrlen(const uint16_t* str);
+int      wstrcmp(const uint16_t* str1, const uint16_t* str2, uint64_t size = UINT64_MAX);
+
 void* memcpy(void* dest, const void* src, uint64_t n);
 void* memset(void* dest, int c, uint64_t n);
 void* memmove(void* dest, const void* src, uint64_t n);

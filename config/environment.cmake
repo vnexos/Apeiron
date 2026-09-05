@@ -34,6 +34,7 @@ set(VNExos_ASSET_DIR "${CMAKE_SOURCE_DIR}/assets"                CACHE PATH "Th�
 set(VNExos_SYSROOT_DIR "${CMAKE_SOURCE_DIR}/sysroot"             CACHE PATH "Thư mục chứa các tệp trong phân vùng UEFI trên ổ đĩa")
 set(VNExos_SYSROOT_CERT_DIR "${VNExos_SYSROOT_DIR}/certs"        CACHE PATH "Thư mục chứa các chứng chỉ số")
 set(VNExos_SYSROOT_KERN_DIR "${VNExos_SYSROOT_DIR}"              CACHE PATH "Thư mục chứa nhân lõi Hệ điều hành")
+set(VNExos_SYSROOT_KERN_FILE "apeiron.kern"                      CACHE PATH "Thư mục chứa các biểu trưng")
 set(VNExos_SYSROOT_BOOT_DIR "${VNExos_SYSROOT_DIR}/EFI/BOOT"     CACHE PATH "Thư mục chứa các chương trình khởi động của UEFI")
 set(VNExos_SYSROOT_LOGO_DIR "${VNExos_SYSROOT_DIR}/assets/logos" CACHE PATH "Thư mục chứa các biểu trưng")
 
