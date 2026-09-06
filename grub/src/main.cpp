@@ -294,7 +294,7 @@ extern "C" [[gnu::ms_abi]] EFI_STATUS vnexos_grub_main(EFI_HANDLE ImageHandle, E
   }
 
   /* Xác thực chữ ký Dilithium trước khi tải */
-  if (!Sign::verifyFileSignature(buffer, size, key, keySize))
+  if (!Sign::verifyEfiFileSignature(buffer, size, key, keySize))
   {
     printf("LOI [2]: Chu ky khong hop le: %ws\nNhan phim bat ky de thoat...", VNEXOS_FILE);
     waitForKey();

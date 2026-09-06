@@ -137,9 +137,10 @@ bool Sign::verifyEfiFileSignature(uint8_t* rawData, uint64_t dataSize, const uin
   *(uint64_t*)(rawData + secDirOffset)   = 0;
 
   // Chữ ký ở cuối tệp mặc định
-  uint64_t sigOffset = savedSBOffset == 0 ? dataSize : savedSBOffset - (DILITHIUM_BYTES + 64);
+  uint64_t baseOffset = (savedSBOffset == 0) ? dataSize : savedSBOffset;
+  uint64_t sigOffset  = (baseOffset - (DILITHIUM_BYTES + 64));
 
-  sigOffset = sigOffset & ~0xf; // Căn lề 16 byte
+  sigOffset = sigOffset & ~0xfull; // Căn lề 16 byte
 
   Signature* signature = (Signature*)(rawData + sigOffset);
 
