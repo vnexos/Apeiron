@@ -23,7 +23,7 @@
 #define USX_MAGIC_3 0x00
 
 #define USX_VERSION_1_0 0x01               // Phiên bản định dạng USX 1.0
-                                           // Loader phải reject nếu Version trong file > Version cao nhất mình hỗ trợ
+                                     // Loader phải reject nếu Version trong file > Version cao nhất mình hỗ trợ
 
 #define USX_TYPE_EXECUTABLE     0x00       // Tệp thực thi
 #define USX_TYPE_STATIC_LINKED  0x01       // Tệp liên kết tĩnh
@@ -50,6 +50,38 @@
 #define USX_ARCH_AVR         0x2000        // Dòng Vi xử lý Atmel AVR
 #define USX_ARCH_SUPERH      0x4000        // Dòng Vi xử lý SuperH (SH4)
 #define USX_ARCH_OTHER       0x8000        // Dòng Vi xử lý Dị giáo (Custom/FPGA/VM)
+
+#if defined(__x86_64__) || defined(_M_X64)
+#define USX_CURRENT_ARCH USX_ARCH_X86_64
+#elif defined(__aarch64__) || defined(_M_ARM64)
+#define USX_CURRENT_ARCH USX_ARCH_AARCH64
+#elif defined(__riscv) && (__riscv_xlen == 64)
+#define USX_CURRENT_ARCH USX_ARCH_RISCV64
+#elif defined(__i386__) || defined(_M_IX86)
+#define USX_CURRENT_ARCH USX_ARCH_X86
+#elif defined(__arm__) || defined(_M_ARM)
+#define USX_CURRENT_ARCH USX_ARCH_AARCH32
+#elif defined(__mips64) || (defined(__mips__) && _MIPS_SIM == _ABI64)
+#define USX_CURRENT_ARCH USX_ARCH_MIPS64
+#elif defined(__mips__)
+#define USX_CURRENT_ARCH USX_ARCH_MIPS32
+#elif defined(__powerpc64__) || defined(__ppc64__) || defined(_ARCH_PPC64)
+#define USX_CURRENT_ARCH USX_ARCH_PPC64
+#elif defined(__sparc64__) || (defined(__sparc__) && defined(__arch64__))
+#define USX_CURRENT_ARCH USX_ARCH_SPARC64
+#elif defined(__s390x__)
+#define USX_CURRENT_ARCH USX_ARCH_S390X
+#elif defined(__loongarch64) || (defined(__loongarch__) && defined(__loongarch_lp64))
+#define USX_CURRENT_ARCH USX_ARCH_LOONGARCH64
+#elif defined(__ia64__) || defined(_M_IA64)
+#define USX_CURRENT_ARCH USX_ARCH_IA64
+#elif defined(__AVR__)
+#define USX_CURRENT_ARCH USX_ARCH_AVR
+#elif defined(__sh__)
+#define USX_CURRENT_ARCH USX_ARCH_SUPERH
+#else
+#define USX_CURRENT_ARCH USX_ARCH_OTHER
+#endif
 
 #define USX_AFLAG_BIG_ENDIAN (1 << 0)      // Mã thô của Vi xử lý này là Big-endian (mặc định Little-endian nếu tắt)
 

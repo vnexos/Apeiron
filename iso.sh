@@ -62,6 +62,9 @@ if [ -f "$SYSROOT/apeiron.kern" ]; then
     mcopy -i "$EFI_IMG" "$SYSROOT/apeiron.kern" ::/
 fi
 
+# Copy các khóa bảo mật
+mcopy -i "$EFI_IMG" "$SYSROOT"/key.* ::/
+
 # Copy assets nếu tồn tại
 if [ -d "$SYSROOT/assets" ]; then
     mmd -i "$EFI_IMG" ::/assets || true
