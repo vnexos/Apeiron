@@ -20,6 +20,12 @@ typedef struct
   uint8_t currentCertHash[32];
 } KeyMetadata;
 
+enum BootTrustLevel : uint64_t {
+  BOOT_TRUST_UNKNOWN   = 0x0000000000000000ULL,
+  BOOT_TRUST_OFFICIAL  = 0x5A5AA5A5F0F00F0FULL, // Bit xen kẽ phức tạp
+  BOOT_TRUST_DEVELOPER = 0xA5A55A5A0F0FF0F0ULL  // Nghịch đảo bit hoàn toàn
+};
+
 /**
  * Xác thực tệp ngay trên bộ nhớ
  * @param rawData      Dữ liệu thô của tệp đọc được
