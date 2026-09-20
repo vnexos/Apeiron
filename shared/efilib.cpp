@@ -46,8 +46,9 @@ void EFI::printf(const char* format, ...)
   };
 
   // Đẩy cả chuỗi vào bộ đệm
-  auto putStr = [&](const char* s) {
-    while (*s && idx < 1023)
+  auto putStr = [&](const char* s, uint64_t len = UINT64_MAX) {
+    uint64_t i = 0;
+    while (*s && idx < 1023 && i++ < len)
       putChar(*(s++));
   };
 
@@ -136,7 +137,7 @@ void EFI::printf(const char* format, ...)
       {
         char* s = va_arg(args, char*);
         if (s)
-          putStr(s);
+          putStr(s, width == 0 ? UINT64_MAX : width);
         else
           putStr("(null)");
         break;
@@ -275,7 +276,7 @@ EFI_STATUS EFI::loadDir(const uint16_t* path, EFI_FILE_PROTOCOL** dirHandle)
   return status;
 }
 
-EFI_STATUS EFI::loadFile(const uint16_t* path, uint8_t** buffer, uint64_t* size)
+EFI_STATUS EFI::loadFile(const uint16_t* path, uint8_t** buffer, uint64_t* size, bool usingPages)
 {
   EFI_STATUS         status;
   EFI_BOOT_SERVICES* bs = SystemTable->BootServices;
@@ -308,7 +309,10 @@ EFI_STATUS EFI::loadFile(const uint16_t* path, uint8_t** buffer, uint64_t* size)
 
   uint64_t readSize = *size;
 
-  status = bs->AllocatePool(EfiLoaderData, readSize, (void**)buffer);
+  if (usingPages)
+    status = bs->AllocatePages(AllocateAnyPages, EfiLoaderData, (readSize + 0xfff) / 0x1000, (uint64_t*)buffer);
+  else
+    status = bs->AllocatePool(EfiLoaderData, readSize, (void**)buffer);
   if (EFI_ERROR(status))
     return status;
 

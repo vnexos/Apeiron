@@ -77,7 +77,7 @@ EFI_STATUS loadDir(const uint16_t* path, EFI_FILE_PROTOCOL** dirHandle);
  * @param size   Kích thước của tệp
  * @return 0 nếu chạy thành công, 1 thì ngược lại
  */
-EFI_STATUS loadFile(const uint16_t* path, uint8_t** buffer, uint64_t* size);
+EFI_STATUS loadFile(const uint16_t* path, uint8_t** buffer, uint64_t* size, bool usingPages = false);
 
 /**
  * Băm tệp bằng thuật toán SHAV-256
