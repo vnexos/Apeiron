@@ -321,7 +321,10 @@ EFI_STATUS EFI::loadFile(const uint16_t* path, uint8_t** buffer, uint64_t* size,
   fileHandle->Close(fileHandle);
   if (EFI_ERROR(status))
   {
-    bs->FreePool(*buffer);
+    if (usingPages)
+      bs->FreePages(*(uint64_t*)buffer, (*size + 0xfff) / 0x1000);
+    else
+      bs->FreePool(*buffer);
     return status;
   }
 
